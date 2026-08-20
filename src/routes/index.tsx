@@ -10,7 +10,6 @@ export const Route = createFileRoute("/")({
 function Index() {
 	return (
 		<div className="p-2">
-			<h3>Welcome Home!</h3>
 			<h1 className="text-center text-2xl">사건 메모</h1>
 			<NewCaseBtn />
 			<CaseList cases={cases} />
