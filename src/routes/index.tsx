@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import CaseList from "@/components/CaseList";
-import NewCaseBtn from "@/components/NewCaseBtn";
+import NewCaseBtn from "@/components/ui/NewCaseBtn";
 import type { Case } from "@/lib/types";
 
 export const Route = createFileRoute("/")({
@@ -18,7 +18,7 @@ function Index() {
 	);
 }
 
-const cases: Case[] = [
+export const cases: Case[] = [
 	{
 		id: "1",
 		caseNumber: "2023가합12345",

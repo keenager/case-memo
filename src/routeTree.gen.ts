@@ -10,17 +10,30 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as CaseNumberRouteImport } from './routes/$caseNumber'
+import { Route as CaseNumberRouteRouteImport } from './routes/$caseNumber/route'
+import { Route as R111caseNumberRouteImport } from './routes/111caseNumber'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as CaseNumberHearingsRouteRouteImport } from './routes/$caseNumber/hearings/route'
+import { Route as CaseNumberNotesRouteImport } from './routes/$caseNumber/notes'
+import { Route as CaseNumberPrinciplesPrecedentsRouteImport } from './routes/$caseNumber/principles-precedents'
+import { Route as CaseNumberTriralsRouteRouteImport } from './routes/$caseNumber/trirals/route'
+import { Route as CaseNumberWitnessTestimonyRouteImport } from './routes/$caseNumber/witness-testimony'
+import { Route as CaseNumberHearingsHearingsIdRouteImport } from './routes/$caseNumber/hearings/$hearingsId'
+import { Route as CaseNumberTriralsTrialsIdRouteImport } from './routes/$caseNumber/trirals/$trialsId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CaseNumberRoute = CaseNumberRouteImport.update({
+const CaseNumberRouteRoute = CaseNumberRouteRouteImport.update({
   id: '/$caseNumber',
   path: '/$caseNumber',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const R111caseNumberRoute = R111caseNumberRouteImport.update({
+  id: '/111caseNumber',
+  path: '/111caseNumber',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -28,34 +41,132 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CaseNumberHearingsRouteRoute = CaseNumberHearingsRouteRouteImport.update({
+  id: '/hearings',
+  path: '/hearings',
+  getParentRoute: () => CaseNumberRouteRoute,
+} as any)
+const CaseNumberNotesRoute = CaseNumberNotesRouteImport.update({
+  id: '/notes',
+  path: '/notes',
+  getParentRoute: () => CaseNumberRouteRoute,
+} as any)
+const CaseNumberPrinciplesPrecedentsRoute =
+  CaseNumberPrinciplesPrecedentsRouteImport.update({
+    id: '/principles-precedents',
+    path: '/principles-precedents',
+    getParentRoute: () => CaseNumberRouteRoute,
+  } as any)
+const CaseNumberTriralsRouteRoute = CaseNumberTriralsRouteRouteImport.update({
+  id: '/trirals',
+  path: '/trirals',
+  getParentRoute: () => CaseNumberRouteRoute,
+} as any)
+const CaseNumberWitnessTestimonyRoute =
+  CaseNumberWitnessTestimonyRouteImport.update({
+    id: '/witness-testimony',
+    path: '/witness-testimony',
+    getParentRoute: () => CaseNumberRouteRoute,
+  } as any)
+const CaseNumberHearingsHearingsIdRoute =
+  CaseNumberHearingsHearingsIdRouteImport.update({
+    id: '/$hearingsId',
+    path: '/$hearingsId',
+    getParentRoute: () => CaseNumberHearingsRouteRoute,
+  } as any)
+const CaseNumberTriralsTrialsIdRoute =
+  CaseNumberTriralsTrialsIdRouteImport.update({
+    id: '/$trialsId',
+    path: '/$trialsId',
+    getParentRoute: () => CaseNumberTriralsRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/$caseNumber': typeof CaseNumberRoute
+  '/$caseNumber': typeof CaseNumberRouteRouteWithChildren
+  '/111caseNumber': typeof R111caseNumberRoute
   '/about': typeof AboutRoute
+  '/$caseNumber/hearings': typeof CaseNumberHearingsRouteRouteWithChildren
+  '/$caseNumber/trirals': typeof CaseNumberTriralsRouteRouteWithChildren
+  '/$caseNumber/notes': typeof CaseNumberNotesRoute
+  '/$caseNumber/principles-precedents': typeof CaseNumberPrinciplesPrecedentsRoute
+  '/$caseNumber/witness-testimony': typeof CaseNumberWitnessTestimonyRoute
+  '/$caseNumber/hearings/$hearingsId': typeof CaseNumberHearingsHearingsIdRoute
+  '/$caseNumber/trirals/$trialsId': typeof CaseNumberTriralsTrialsIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/$caseNumber': typeof CaseNumberRoute
+  '/$caseNumber': typeof CaseNumberRouteRouteWithChildren
+  '/111caseNumber': typeof R111caseNumberRoute
   '/about': typeof AboutRoute
+  '/$caseNumber/hearings': typeof CaseNumberHearingsRouteRouteWithChildren
+  '/$caseNumber/trirals': typeof CaseNumberTriralsRouteRouteWithChildren
+  '/$caseNumber/notes': typeof CaseNumberNotesRoute
+  '/$caseNumber/principles-precedents': typeof CaseNumberPrinciplesPrecedentsRoute
+  '/$caseNumber/witness-testimony': typeof CaseNumberWitnessTestimonyRoute
+  '/$caseNumber/hearings/$hearingsId': typeof CaseNumberHearingsHearingsIdRoute
+  '/$caseNumber/trirals/$trialsId': typeof CaseNumberTriralsTrialsIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/$caseNumber': typeof CaseNumberRoute
+  '/$caseNumber': typeof CaseNumberRouteRouteWithChildren
+  '/111caseNumber': typeof R111caseNumberRoute
   '/about': typeof AboutRoute
+  '/$caseNumber/hearings': typeof CaseNumberHearingsRouteRouteWithChildren
+  '/$caseNumber/trirals': typeof CaseNumberTriralsRouteRouteWithChildren
+  '/$caseNumber/notes': typeof CaseNumberNotesRoute
+  '/$caseNumber/principles-precedents': typeof CaseNumberPrinciplesPrecedentsRoute
+  '/$caseNumber/witness-testimony': typeof CaseNumberWitnessTestimonyRoute
+  '/$caseNumber/hearings/$hearingsId': typeof CaseNumberHearingsHearingsIdRoute
+  '/$caseNumber/trirals/$trialsId': typeof CaseNumberTriralsTrialsIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/$caseNumber' | '/about'
+  fullPaths:
+    | '/'
+    | '/$caseNumber'
+    | '/111caseNumber'
+    | '/about'
+    | '/$caseNumber/hearings'
+    | '/$caseNumber/trirals'
+    | '/$caseNumber/notes'
+    | '/$caseNumber/principles-precedents'
+    | '/$caseNumber/witness-testimony'
+    | '/$caseNumber/hearings/$hearingsId'
+    | '/$caseNumber/trirals/$trialsId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/$caseNumber' | '/about'
-  id: '__root__' | '/' | '/$caseNumber' | '/about'
+  to:
+    | '/'
+    | '/$caseNumber'
+    | '/111caseNumber'
+    | '/about'
+    | '/$caseNumber/hearings'
+    | '/$caseNumber/trirals'
+    | '/$caseNumber/notes'
+    | '/$caseNumber/principles-precedents'
+    | '/$caseNumber/witness-testimony'
+    | '/$caseNumber/hearings/$hearingsId'
+    | '/$caseNumber/trirals/$trialsId'
+  id:
+    | '__root__'
+    | '/'
+    | '/$caseNumber'
+    | '/111caseNumber'
+    | '/about'
+    | '/$caseNumber/hearings'
+    | '/$caseNumber/trirals'
+    | '/$caseNumber/notes'
+    | '/$caseNumber/principles-precedents'
+    | '/$caseNumber/witness-testimony'
+    | '/$caseNumber/hearings/$hearingsId'
+    | '/$caseNumber/trirals/$trialsId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  CaseNumberRoute: typeof CaseNumberRoute
+  CaseNumberRouteRoute: typeof CaseNumberRouteRouteWithChildren
+  R111caseNumberRoute: typeof R111caseNumberRoute
   AboutRoute: typeof AboutRoute
 }
 
@@ -72,7 +183,14 @@ declare module '@tanstack/react-router' {
       id: '/$caseNumber'
       path: '/$caseNumber'
       fullPath: '/$caseNumber'
-      preLoaderRoute: typeof CaseNumberRouteImport
+      preLoaderRoute: typeof CaseNumberRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/111caseNumber': {
+      id: '/111caseNumber'
+      path: '/111caseNumber'
+      fullPath: '/111caseNumber'
+      preLoaderRoute: typeof R111caseNumberRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -82,12 +200,110 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/$caseNumber/hearings': {
+      id: '/$caseNumber/hearings'
+      path: '/hearings'
+      fullPath: '/$caseNumber/hearings'
+      preLoaderRoute: typeof CaseNumberHearingsRouteRouteImport
+      parentRoute: typeof CaseNumberRouteRoute
+    }
+    '/$caseNumber/notes': {
+      id: '/$caseNumber/notes'
+      path: '/notes'
+      fullPath: '/$caseNumber/notes'
+      preLoaderRoute: typeof CaseNumberNotesRouteImport
+      parentRoute: typeof CaseNumberRouteRoute
+    }
+    '/$caseNumber/principles-precedents': {
+      id: '/$caseNumber/principles-precedents'
+      path: '/principles-precedents'
+      fullPath: '/$caseNumber/principles-precedents'
+      preLoaderRoute: typeof CaseNumberPrinciplesPrecedentsRouteImport
+      parentRoute: typeof CaseNumberRouteRoute
+    }
+    '/$caseNumber/trirals': {
+      id: '/$caseNumber/trirals'
+      path: '/trirals'
+      fullPath: '/$caseNumber/trirals'
+      preLoaderRoute: typeof CaseNumberTriralsRouteRouteImport
+      parentRoute: typeof CaseNumberRouteRoute
+    }
+    '/$caseNumber/witness-testimony': {
+      id: '/$caseNumber/witness-testimony'
+      path: '/witness-testimony'
+      fullPath: '/$caseNumber/witness-testimony'
+      preLoaderRoute: typeof CaseNumberWitnessTestimonyRouteImport
+      parentRoute: typeof CaseNumberRouteRoute
+    }
+    '/$caseNumber/hearings/$hearingsId': {
+      id: '/$caseNumber/hearings/$hearingsId'
+      path: '/$hearingsId'
+      fullPath: '/$caseNumber/hearings/$hearingsId'
+      preLoaderRoute: typeof CaseNumberHearingsHearingsIdRouteImport
+      parentRoute: typeof CaseNumberHearingsRouteRoute
+    }
+    '/$caseNumber/trirals/$trialsId': {
+      id: '/$caseNumber/trirals/$trialsId'
+      path: '/$trialsId'
+      fullPath: '/$caseNumber/trirals/$trialsId'
+      preLoaderRoute: typeof CaseNumberTriralsTrialsIdRouteImport
+      parentRoute: typeof CaseNumberTriralsRouteRoute
+    }
   }
 }
 
+interface CaseNumberHearingsRouteRouteChildren {
+  CaseNumberHearingsHearingsIdRoute: typeof CaseNumberHearingsHearingsIdRoute
+}
+
+const CaseNumberHearingsRouteRouteChildren: CaseNumberHearingsRouteRouteChildren =
+  {
+    CaseNumberHearingsHearingsIdRoute: CaseNumberHearingsHearingsIdRoute,
+  }
+
+const CaseNumberHearingsRouteRouteWithChildren =
+  CaseNumberHearingsRouteRoute._addFileChildren(
+    CaseNumberHearingsRouteRouteChildren,
+  )
+
+interface CaseNumberTriralsRouteRouteChildren {
+  CaseNumberTriralsTrialsIdRoute: typeof CaseNumberTriralsTrialsIdRoute
+}
+
+const CaseNumberTriralsRouteRouteChildren: CaseNumberTriralsRouteRouteChildren =
+  {
+    CaseNumberTriralsTrialsIdRoute: CaseNumberTriralsTrialsIdRoute,
+  }
+
+const CaseNumberTriralsRouteRouteWithChildren =
+  CaseNumberTriralsRouteRoute._addFileChildren(
+    CaseNumberTriralsRouteRouteChildren,
+  )
+
+interface CaseNumberRouteRouteChildren {
+  CaseNumberHearingsRouteRoute: typeof CaseNumberHearingsRouteRouteWithChildren
+  CaseNumberTriralsRouteRoute: typeof CaseNumberTriralsRouteRouteWithChildren
+  CaseNumberNotesRoute: typeof CaseNumberNotesRoute
+  CaseNumberPrinciplesPrecedentsRoute: typeof CaseNumberPrinciplesPrecedentsRoute
+  CaseNumberWitnessTestimonyRoute: typeof CaseNumberWitnessTestimonyRoute
+}
+
+const CaseNumberRouteRouteChildren: CaseNumberRouteRouteChildren = {
+  CaseNumberHearingsRouteRoute: CaseNumberHearingsRouteRouteWithChildren,
+  CaseNumberTriralsRouteRoute: CaseNumberTriralsRouteRouteWithChildren,
+  CaseNumberNotesRoute: CaseNumberNotesRoute,
+  CaseNumberPrinciplesPrecedentsRoute: CaseNumberPrinciplesPrecedentsRoute,
+  CaseNumberWitnessTestimonyRoute: CaseNumberWitnessTestimonyRoute,
+}
+
+const CaseNumberRouteRouteWithChildren = CaseNumberRouteRoute._addFileChildren(
+  CaseNumberRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  CaseNumberRoute: CaseNumberRoute,
+  CaseNumberRouteRoute: CaseNumberRouteRouteWithChildren,
+  R111caseNumberRoute: R111caseNumberRoute,
   AboutRoute: AboutRoute,
 }
 export const routeTree = rootRouteImport

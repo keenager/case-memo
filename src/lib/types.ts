@@ -7,3 +7,9 @@ export type Case = {
 	filedAt: Date;
 	createdAt: Date;
 };
+
+export type SectionType = {
+	title: string;
+	route: string;
+	order: number;
+};

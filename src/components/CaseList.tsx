@@ -2,7 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { FileTextIcon, TrashIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Case } from "@/lib/types";
-import { Badge } from "./ui/badge";
+import BadgeCaseType from "./ui/BadgeCaseType";
 import {
 	Card,
 	CardAction,
@@ -34,11 +34,6 @@ export default function CaseList({ cases }: { cases: Case[] }) {
 	);
 }
 
-const caseTypeLabel = {
-	CIVIL: "민사",
-	CRIMINAL: "형사",
-};
-
 const CaseCard = ({ case: caseItem }: { case: Case }) => {
 	return (
 		<Card>
@@ -46,15 +41,7 @@ const CaseCard = ({ case: caseItem }: { case: Case }) => {
 				<CardTitle>{caseItem.caseNumber}</CardTitle>
 				<CardDescription>
 					<div className="flex items-center gap-2">
-						<Badge
-							className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-								caseItem.caseType === "CRIMINAL"
-									? "bg-red-100 text-red-700"
-									: "bg-blue-100 text-blue-700"
-							}`}
-						>
-							{caseTypeLabel[caseItem.caseType]}
-						</Badge>
+						<BadgeCaseType caseType={caseItem.caseType} />
 						<span className="font-medium">{caseItem.caseNumber}</span>
 						<span className="text-muted-foreground">{caseItem.caseName}</span>
 					</div>
