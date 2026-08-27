@@ -7,7 +7,7 @@ import { Route as PrinciplesPrecedentsRoute } from "@/routes/$caseNumber/princip
 // import { Route as TriralsRouteRoute } from "./routes/$caseNumber/trirals/route";
 import { Route as WitnessTestimonyRoute } from "@/routes/$caseNumber/witness-testimony";
 import { Button } from "../ui/button";
-import Section from "./Section";
+import SectionItem from "./SectionItem";
 
 const DEFAULT_SECTIONS: SectionType[] = [
 	{ title: "기일 진행", route: HearingsRouteRoute.fullPath, order: 0 },
@@ -28,7 +28,7 @@ export default function SectionsPanel() {
 			</p>
 			<div className="flex-1 mr-2">
 				{DEFAULT_SECTIONS.map((section) => (
-					<Section key={section.order} section={section} />
+					<SectionItem key={section.order} section={section} />
 				))}
 			</div>
 

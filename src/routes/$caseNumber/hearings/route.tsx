@@ -12,13 +12,15 @@ function RouteComponent() {
 			<div className="w-48 border-r text-center flex flex-col">
 				<p className="py-2">기일</p>
 				<Separator className="mb-2" />
-				{hearingList.map((date) => (
+				{hearingList.map((date, idx) => (
 					<Link
 						key={date}
 						to="/$caseNumber/hearings/$hearingsId"
 						params={{ caseNumber, hearingsId: date }}
 					>
-						<p key={date}>{date}</p>
+						<p>
+							{idx + 1}차 {date}
+						</p>
 						<Separator className="my-2" />
 					</Link>
 				))}

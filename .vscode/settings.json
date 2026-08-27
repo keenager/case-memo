@@ -8,5 +8,12 @@
 		"other": true,
 		"comments": "off",
 		"strings": "off"
+	},
+	"js/ts.suggest.autoImports": true,
+	"js/ts.preferences.includePackageJsonAutoImports": "auto",
+
+	"css.validate": false,
+	"files.associations": {
+		"*.css": "tailwindcss"
 	}
 }

@@ -2,7 +2,7 @@ import { Link, useParams } from "@tanstack/react-router";
 import type { SectionType } from "@/lib/types";
 import { Button } from "../ui/button";
 
-export default function Section({ section }: { section: SectionType }) {
+export default function SectionItem({ section }: { section: SectionType }) {
 	const { caseNumber } = useParams({ strict: false });
 
 	return (
