@@ -1,3 +1,4 @@
+import { Separator } from "@base-ui/react/separator";
 import type React from "react";
 
 export type MemoLayoutProps = {
@@ -13,10 +14,13 @@ export default function MemoLayout({
 	children,
 }: MemoLayoutProps & { children: React.ReactNode }) {
 	return (
-		<div className="flex-1 m-2 flex flex-col">
-			<h1 className="text-center mb-2 items-center">
-				{caseNumber} {hearingsId} {sectionName}
+		<div className="flex-1 m-2 flex flex-col gap-1">
+			<h1 className="flex flex-wrap items-center justify-center gap-2">
+				<span>{caseNumber}</span>
+				<span>{hearingsId}</span>
+				<span>{sectionName}</span>
 			</h1>
+			<Separator />
 			{children}
 		</div>
 	);

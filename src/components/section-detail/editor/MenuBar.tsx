@@ -23,8 +23,8 @@ import {
 	Strikethrough,
 	Undo2,
 } from "lucide-react";
-import { Button } from "../ui/button";
-import { ButtonGroup } from "../ui/button-group";
+import { Button } from "@/components/ui/button";
+import { ButtonGroup } from "@/components/ui/button-group";
 import { menuBarStateSelector } from "./menuBarState";
 
 export function MenuBar({ editor }: { editor: Editor }) {

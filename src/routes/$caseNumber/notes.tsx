@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import MemoEditor from "@/components/editor/MemoEditor";
+import MemoEditor from "@/components/section-detail/editor/MemoEditor";
 import type { MemoLayoutProps } from "@/components/section-detail/MemoLayout";
 import MemoLayout from "@/components/section-detail/MemoLayout";
 
