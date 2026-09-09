@@ -1,27 +1,31 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
+import Database from "@tauri-apps/plugin-sql";
 import CaseInfoPanel from "@/components/info-panel/InfoPanel";
 import SectionsPanel from "@/components/section-panel/SectionPanel";
 import type { Case } from "@/lib/types";
-import { cases } from "../index";
+import { snakeToCamel } from "@/lib/utils";
 
 export const Route = createFileRoute("/$caseNumber")({
-	// In a loader
-	// loader: ({ params }) => fetchPost(params.postId),
-	// Or in a component
+	loader: async ({ params }) => {
+		const db = await Database.load("sqlite:test.db");
+		const loadedCases = (await db.select(
+			"SELECT * FROM cases WHERE case_number = $1",
+			[params.caseNumber],
+		)) as Case[];
+		return loadedCases;
+	},
 	component: MemoLayout,
 });
 
 function MemoLayout() {
-	const { caseNumber } = Route.useParams();
-	const caseDetail: Case =
-		cases.find((c) => c.caseNumber === caseNumber) || cases[0]; // 기본값으로 첫 번째 사건을 사용
+	const [selectedCase] = snakeToCamel(Route.useLoaderData());
 
 	return (
 		<div className="flex-1 overflow-y-auto flex">
 			{/* 좌측 패널 */}
 			<div className="w-48 border-r flex flex-col shrink-0 overflow-hidden">
 				{/* 핵심 정보 + 상세보기 */}
-				<CaseInfoPanel caseDetail={caseDetail} />
+				<CaseInfoPanel selectedCase={selectedCase} />
 				{/* 섹션 목록 */}
 				<SectionsPanel />
 			</div>

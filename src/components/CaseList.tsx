@@ -27,14 +27,15 @@ export default function CaseList({ cases }: { cases: Case[] }) {
 					params={{ caseNumber: c.caseNumber }}
 					key={c.id}
 				>
-					<CaseCard key={c.id} case={c} />
+					<CaseCard caseItem={c} />
 				</Link>
 			))}
 		</div>
 	);
 }
 
-const CaseCard = ({ case: caseItem }: { case: Case }) => {
+const CaseCard = ({ caseItem }: { caseItem: Case }) => {
+	console.log("Rendering CaseCard for case:", caseItem);
 	return (
 		<Card>
 			<CardHeader>

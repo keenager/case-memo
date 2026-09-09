@@ -1,11 +1,13 @@
 CREATE TABLE IF NOT EXISTS cases (
 	id 					INTEGER PRIMARY KEY,
 	court_name			TEXT NOT NULL,
+	case_type			TEXT NOT NULL,
 	case_number			TEXT NOT NULL,
 	case_name			TEXT NOT NULL,
+	filed_at			TEXT NOT NULL,
 	plaintiff			TEXT NOT NULL,
-	defendant			TEXT NOT NULL,
 	plaintiff_lawyer	TEXT,
+	defendant			TEXT NOT NULL,
 	defendant_lawyer	TEXT,
 	created_at			TEXT DEFAULT CURRENT_TIMESTAMP,
 	updated_at			TEXT DEFAULT CURRENT_TIMESTAMP

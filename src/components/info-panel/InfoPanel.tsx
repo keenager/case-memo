@@ -9,7 +9,11 @@ import {
 import CoreInfo from "./CoreInfo";
 import DetailInfo from "./DetailInfor";
 
-export default function CaseInfoPanel({ caseDetail }: { caseDetail: Case }) {
+export default function CaseInfoPanel({
+	selectedCase,
+}: {
+	selectedCase: Case;
+}) {
 	const [isOpen, setIsOpen] = useState(false);
 	// const { criminalCase } = caseDetail;
 
@@ -26,7 +30,7 @@ export default function CaseInfoPanel({ caseDetail }: { caseDetail: Case }) {
 	return (
 		<Collapsible open={isOpen} onOpenChange={setIsOpen}>
 			{/* 항상 보이는 핵심 정보 */}
-			<CoreInfo caseDetail={caseDetail} />
+			<CoreInfo selectedCase={selectedCase} />
 
 			{/* 상세보기 토글 */}
 			<CollapsibleTrigger className="w-full flex items-center justify-center gap-1 py-1.5 text-xs text-muted-foreground hover:bg-muted transition-colors border-t">
@@ -43,7 +47,7 @@ export default function CaseInfoPanel({ caseDetail }: { caseDetail: Case }) {
 
 			{/* 펼쳐지는 상세 정보 */}
 			<CollapsibleContent>
-				<DetailInfo caseDetail={caseDetail} />
+				<DetailInfo selectedCase={selectedCase} />
 			</CollapsibleContent>
 		</Collapsible>
 	);

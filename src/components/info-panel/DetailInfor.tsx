@@ -1,23 +1,23 @@
 import type { Case } from "@/lib/types";
 import { Separator } from "../ui/separator";
 
-export default function DetailInfo({ caseDetail }: { caseDetail: Case }) {
+export default function DetailInfo({ selectedCase }: { selectedCase: Case }) {
 	return (
 		<div className="px-4 pb-4 space-y-3 text-sm border-t pt-3">
 			{/* 기본 정보 */}
 			<div className="space-y-1">
 				<p className="text-xs font-medium text-muted-foreground">기본 정보</p>
-				<p>{caseDetail.court}</p>
+				<p>{selectedCase.courtName}</p>
 				<p className="text-muted-foreground">
-					{/* {format(new Date(caseDetail.filedAt), "yyyy. MM. dd.", {
+					{/* {format(new Date(selectedCase.filedAt), "yyyy. MM. dd.", {
 								locale: ko,
 							})}{" "} */}
-					접수
+					{selectedCase.filedAt} 접수
 				</p>
 			</div>
 
 			{/* 형사 당사자 */}
-			{caseDetail.caseType === "CRIMINAL" && (
+			{selectedCase.caseType === "CRIMINAL" && (
 				<div className="space-y-3">
 					{/* 검사 */}
 					<p>검사</p>
