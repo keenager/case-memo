@@ -2,23 +2,25 @@ import { createFileRoute, Outlet } from "@tanstack/react-router";
 import Database from "@tauri-apps/plugin-sql";
 import CaseInfoPanel from "@/components/info-panel/InfoPanel";
 import SectionsPanel from "@/components/section-panel/SectionPanel";
+import { snakeToCamel } from "@/lib/dbProcess";
 import type { Case } from "@/lib/types";
-import { snakeToCamel } from "@/lib/utils";
 
 export const Route = createFileRoute("/$caseNumber")({
 	loader: async ({ params }) => {
 		const db = await Database.load("sqlite:test.db");
+
 		const loadedCases = (await db.select(
 			"SELECT * FROM cases WHERE case_number = $1",
 			[params.caseNumber],
 		)) as Case[];
-		return loadedCases;
+
+		return { loadedCases };
 	},
 	component: MemoLayout,
 });
 
 function MemoLayout() {
-	const [selectedCase] = snakeToCamel(Route.useLoaderData());
+	const [selectedCase] = snakeToCamel(Route.useLoaderData().loadedCases);
 
 	return (
 		<div className="flex-1 overflow-y-auto flex">

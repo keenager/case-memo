@@ -1,10 +1,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "@tanstack/react-router";
 import Database from "@tauri-apps/plugin-sql";
+import { PlusIcon } from "lucide-react";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import type z from "zod";
-import { newCaseFormSchema } from "@/lib/types";
+import { type Case, newCaseFormSchema } from "@/lib/types";
 import { Button } from "./button";
 import {
 	Dialog,
@@ -17,7 +18,6 @@ import {
 } from "./dialog";
 import { Field, FieldError, FieldGroup, FieldLabel } from "./field";
 import { Input } from "./input";
-import NewCaseBtn from "./NewCaseBtn";
 
 const fieldInfo = [
 	{ id: "caseNumber", name: "caseNumber", label: "Case Number" },
@@ -44,7 +44,9 @@ export default function NewCaseDialog() {
 			courtName: "",
 			filedAt: "",
 			plaintiff: "",
+			plaintiffLawyer: "",
 			defendant: "",
+			defendantLawyer: "",
 		},
 		mode: "onChange",
 	});
@@ -59,6 +61,17 @@ export default function NewCaseDialog() {
 		// Here you can handle the form submission, e.g., save to database or state
 		try {
 			const db = await Database.load("sqlite:test.db");
+
+			// 법원명과 사건번호를 통해 같은 사건이 이미 존재한다면 경고를 띄우기.
+			const existingCase: Case[] = await db.select(
+				"SELECT * FROM cases WHERE court_name = $1 AND case_number = $2",
+				[data.courtName, data.caseNumber],
+			);
+			if (existingCase.length > 0) {
+				// TODO: 토스트 메시지 띄우기
+				throw new Error("이미 존재하는 사건입니다.");
+			}
+
 			const result = await db.execute(
 				`
                 INSERT INTO cases (court_name, case_type, case_number, case_name, filed_at, plaintiff, plaintiff_lawyer, defendant, defendant_lawyer)
@@ -78,18 +91,24 @@ export default function NewCaseDialog() {
 			);
 			console.log("Case saved:", result);
 		} catch (error) {
+			// TODO: 토스트 메시지 띄우기
 			console.error("Error saving case:", error);
 		}
 		setOpen(false); // Close the dialog after submission
+		form.reset(); // Reset the form after submission
 		navi({ to: "/" });
 	}
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
 			<div className="flex justify-end mb-4">
-				<DialogTrigger>
-					<NewCaseBtn />
-				</DialogTrigger>
+				<DialogTrigger
+					render={
+						<Button>
+							<PlusIcon className="w-4 h-4 mr-2" />새 사건
+						</Button>
+					}
+				/>
 			</div>
 			<DialogContent className="sm:max-w-sm">
 				<form onSubmit={form.handleSubmit(onSubmit)}>

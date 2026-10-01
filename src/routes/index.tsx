@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import Database from "@tauri-apps/plugin-sql";
 import CaseList from "@/components/CaseList";
 import NewCaseDialog from "@/components/ui/NewCaseDialog";
-import { snakeToCamel } from "@/lib/utils";
+import { snakeToCamel } from "@/lib/dbProcess";
 
 export const Route = createFileRoute("/")({
 	loader: async () => {
@@ -21,7 +21,6 @@ function Index() {
 			<h1 className="text-center text-2xl">사건 메모</h1>
 			<NewCaseDialog />
 			<CaseList cases={cases} />
-			{/* <CreateCaseModal open={modalOpen} onClose={() => setModalOpen(false)} /> */}
 		</div>
 	);
 }

@@ -1,4 +1,5 @@
 import "@/components/section-detail/editor/styles.css";
+import { useParams } from "@tanstack/react-router";
 import { EditorContent, useEditor } from "@tiptap/react";
 import { BubbleMenu, FloatingMenu } from "@tiptap/react/menus";
 import StarterKit from "@tiptap/starter-kit";
@@ -8,7 +9,15 @@ import { debounce } from "@/lib/debounce";
 import { MenuBar } from "./MenuBar";
 import { isEmpty, saveMemo } from "./utils";
 
-export default function MemoEditor() {
+export type MemoEditorProps = {
+	sectionType: string;
+	contents: string | undefined;
+};
+
+export default function MemoEditor({ sectionType, contents }: MemoEditorProps) {
+	const { caseNumber } = useParams({ from: "/$caseNumber" });
+
+	//TODO: 자동저장 기능 구현하기
 	const debouncedSave = useRef(
 		debounce(() => {
 			console.log("업데이트!!!");
@@ -17,7 +26,7 @@ export default function MemoEditor() {
 
 	const editor = useEditor({
 		extensions: [StarterKit],
-		content: content,
+		content: contents ? JSON.parse(contents) : "",
 		editorProps: {
 			attributes: { class: "prose prose-sm max-w-none focus:outline-none" },
 		},
@@ -29,20 +38,28 @@ export default function MemoEditor() {
 	});
 
 	const clickHandler = () => {
-		saveMemo(editor.getJSON());
+		//TODO: 기일 진행 부분 저장 관련해서 손보기.
+		saveMemo(caseNumber, sectionType, editor.getJSON());
 	};
+
 	return (
-		<div>
+		<>
 			<MenuBar editor={editor} />
-			<Button onClick={clickHandler}>저장</Button>
-			<EditorContent editor={editor} className="flex-1" />
-			<FloatingMenu editor={editor}>This is the floating menu</FloatingMenu>
-			<BubbleMenu editor={editor}>This is the bubble menu</BubbleMenu>
-		</div>
+			<div>
+				<Button onClick={clickHandler}>저장</Button>
+			</div>
+			<EditorContent editor={editor} className="flex-1 border rounded-md p-1" />
+			<FloatingMenu editor={editor} className="border">
+				This is the floating menu
+			</FloatingMenu>
+			<BubbleMenu editor={editor} className="border">
+				This is the bubble menu
+			</BubbleMenu>
+		</>
 	);
 }
 
-const content = "Hello!";
+// const content = "Hello!";
 // `<h2>
 //   Hi there,
 // </h2>

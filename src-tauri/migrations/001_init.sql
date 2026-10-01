@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS memos (
 	case_id				INTEGER NOT NULL REFERENCES cases(id) ON DELETE CASCADE,
 	section_type		TEXT NOT NULL,
 	hearing_id			INTEGER REFERENCES hearings(id) ON DELETE CASCADE,
-	content				TEXT,
+	contents			TEXT,
 	created_at			TEXT DEFAULT CURRENT_TIMESTAMP,
 	updated_at			TEXT DEFAULT CURRENT_TIMESTAMP
 );

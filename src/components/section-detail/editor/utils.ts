@@ -1,5 +1,6 @@
 import DataBase from "@tauri-apps/plugin-sql";
 import type { Editor } from "@tiptap/core";
+import type { Memo } from "@/lib/types";
 
 export function isEmpty(content: ReturnType<Editor["getJSON"]>) {
 	return !Object.keys(content.content[0]).includes("content");
@@ -11,22 +12,45 @@ export function isEmpty(content: ReturnType<Editor["getJSON"]>) {
 	// }
 }
 
-export async function saveMemo(content: ReturnType<Editor["getJSON"]>) {
+export async function saveMemo(
+	caseNumber: string,
+	sectionType: string,
+	contents: ReturnType<Editor["getJSON"]>,
+) {
 	try {
-		console.log("contents to save: ", content);
+		console.log("contents to save: ", contents);
 		const db = await DataBase.load("sqlite:test.db");
 
-		const result = await db.execute(
-			//case_id는 foreign key로 연결되어 있어, 실제로는 case_id를 받아와야 함. 현재는 임시로 "caseId"라는 문자열을 넣어둠.
-			"INSERT INTO memos (case_id, section_type, content) VALUES ($1, $2)",
-			["caseId", "tempSectionType", JSON.stringify(content)],
-		);
-		console.log("Memo saved:", result);
+		const [{ id: caseId }] = (await db.select(
+			"SELECT id FROM cases WHERE case_number = $1",
+			[caseNumber],
+		)) as { id: string }[];
 
-		const tables = await db.select(
-			"SELECT name FROM sqlite_master WHERE type='table'",
-		);
-		console.log("Tables:", tables);
+		const existingMemo = (await db.select(
+			"SELECT * FROM memos WHERE case_id = $1 AND section_type = $2",
+			[caseId, sectionType],
+		)) as Memo[];
+
+		const isUpdate = existingMemo.length > 0;
+
+		if (isUpdate) {
+			const result = await db.execute(
+				"UPDATE memos SET contents = $1, updated_at = CURRENT_TIMESTAMP WHERE case_id = $2 AND section_type = $3",
+				[JSON.stringify(contents), caseId, sectionType],
+			);
+			console.log("Memo updated:", result);
+		} else {
+			const result = await db.execute(
+				"INSERT INTO memos (case_id, section_type, contents) VALUES ($1, $2, $3)",
+				[caseId, sectionType, JSON.stringify(contents)],
+			);
+			console.log("Memo saved:", result);
+		}
+
+		// const tables = await db.select(
+		// 	"SELECT name FROM sqlite_master WHERE type='table'",
+		// );
+		// console.log("Tables:", tables);
 	} catch (error) {
 		console.log("Error saving memo:", error);
 	}

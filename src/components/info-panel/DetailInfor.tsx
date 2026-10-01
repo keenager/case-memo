@@ -16,11 +16,27 @@ export default function DetailInfo({ selectedCase }: { selectedCase: Case }) {
 				</p>
 			</div>
 
+			{/* 민사 당사자 */}
+			{selectedCase.caseType === "CIVIL" && (
+				<div className="space-y-3">
+					{/* 원고 */}
+					<div>
+						<p className="text-xs font-medium text-muted-foreground">원고</p>
+						<p>{selectedCase.plaintiff}</p>
+					</div>
+					{/* 피고 */}
+					<div>
+						<p className="text-xs font-medium text-muted-foreground">피고</p>
+						<p>{selectedCase.defendant}</p>
+					</div>
+				</div>
+			)}
+
 			{/* 형사 당사자 */}
 			{selectedCase.caseType === "CRIMINAL" && (
 				<div className="space-y-3">
 					{/* 검사 */}
-					<p>검사</p>
+					<p className="text-xs font-medium text-muted-foreground">검사</p>
 					{/* {(criminalCase?.prosecutors.length ?? 0) > 0 && ( //TODO: 형사에 한정된 경우이므로 민사와 형사 분기를 나눈 뒤에 수정 필요
 								<div className="space-y-1">
 									<p className="text-xs font-medium text-muted-foreground">
@@ -31,7 +47,7 @@ export default function DetailInfo({ selectedCase }: { selectedCase: Case }) {
 					<Separator />
 
 					{/* 피고인 */}
-					<p>피고인</p>
+					<p className="text-xs font-medium text-muted-foreground">피고인</p>
 					{/* {defendants.length > 0 && (
 								<div className="space-y-2">
 									<p className="text-xs font-medium text-muted-foreground">
@@ -75,7 +91,9 @@ export default function DetailInfo({ selectedCase }: { selectedCase: Case }) {
 					<Separator />
 
 					{/* 배상신청인 */}
-					<p>배상신청인</p>
+					<p className="text-xs font-medium text-muted-foreground">
+						배상신청인
+					</p>
 					{/* {(criminalCase?.compensationApplicants.length ?? 0) > 0 && ( //TODO: 형사에 한정된 경우이므로 민사와 형사 분기를 나눈 뒤에 수정 필요
 								<div className="space-y-1">
 									<p className="text-xs font-medium text-muted-foreground">

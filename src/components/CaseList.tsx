@@ -35,7 +35,6 @@ export default function CaseList({ cases }: { cases: Case[] }) {
 }
 
 const CaseCard = ({ caseItem }: { caseItem: Case }) => {
-	console.log("Rendering CaseCard for case:", caseItem);
 	return (
 		<Card>
 			<CardHeader>
