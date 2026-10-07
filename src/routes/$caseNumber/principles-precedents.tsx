@@ -29,7 +29,7 @@ function RouteComponent() {
 
 	return (
 		<MemoLayout {...props}>
-			<MemoEditor sectionType="principles-precedents" contents={contents} />
+			<MemoEditor sectionCategory="principles-precedents" contents={contents} />
 		</MemoLayout>
 	);
 }

@@ -27,7 +27,7 @@ function RouteComponent() {
 
 	return (
 		<MemoLayout {...props}>
-			<MemoEditor sectionType="notes" contents={contents} />
+			<MemoEditor sectionCategory="notes" contents={contents} />
 		</MemoLayout>
 	);
 }

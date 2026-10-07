@@ -6,15 +6,21 @@ import StarterKit from "@tiptap/starter-kit";
 import { useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { debounce } from "@/lib/debounce";
+import type { SectionCategory } from "@/lib/types";
 import { MenuBar } from "./MenuBar";
 import { isEmpty, saveMemo } from "./utils";
 
 export type MemoEditorProps = {
-	sectionType: string;
+	sectionCategory: SectionCategory;
+	hearingId?: string;
 	contents: string | undefined;
 };
 
-export default function MemoEditor({ sectionType, contents }: MemoEditorProps) {
+export default function MemoEditor({
+	sectionCategory,
+	hearingId,
+	contents,
+}: MemoEditorProps) {
 	const { caseNumber } = useParams({ from: "/$caseNumber" });
 
 	//TODO: 자동저장 기능 구현하기
@@ -39,7 +45,26 @@ export default function MemoEditor({ sectionType, contents }: MemoEditorProps) {
 
 	const clickHandler = () => {
 		//TODO: 기일 진행 부분 저장 관련해서 손보기.
-		saveMemo(caseNumber, sectionType, editor.getJSON());
+
+		if (sectionCategory === "hearings") {
+			if (!hearingId) {
+				console.error("Hearing ID is required for hearings section");
+				return;
+			}
+
+			saveMemo({
+				caseNumber,
+				sectionCategory,
+				hearingId,
+				contents: editor.getJSON(),
+			});
+		} else {
+			saveMemo({
+				caseNumber,
+				sectionCategory,
+				contents: editor.getJSON(),
+			});
+		}
 	};
 
 	return (

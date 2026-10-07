@@ -1,6 +1,6 @@
 import DataBase from "@tauri-apps/plugin-sql";
 import type { Editor } from "@tiptap/core";
-import type { Memo } from "@/lib/types";
+import type { ArgsForSaveMemo, Memo } from "@/lib/types";
 
 export function isEmpty(content: ReturnType<Editor["getJSON"]>) {
 	return !Object.keys(content.content[0]).includes("content");
@@ -12,38 +12,64 @@ export function isEmpty(content: ReturnType<Editor["getJSON"]>) {
 	// }
 }
 
-export async function saveMemo(
-	caseNumber: string,
-	sectionType: string,
-	contents: ReturnType<Editor["getJSON"]>,
-) {
+export async function saveMemo(args: ArgsForSaveMemo) {
 	try {
-		console.log("contents to save: ", contents);
+		console.log("contents to save: ", args.contents);
 		const db = await DataBase.load("sqlite:test.db");
 
 		const [{ id: caseId }] = (await db.select(
 			"SELECT id FROM cases WHERE case_number = $1",
-			[caseNumber],
+			[args.caseNumber],
 		)) as { id: string }[];
 
+		let queryForExistingMemo =
+			"SELECT * FROM memos WHERE case_id = $1 AND section_type = $2";
+		const bindValues: string[] = [caseId, args.sectionCategory];
+
+		if (args.sectionCategory === "hearings") {
+			queryForExistingMemo += " AND hearing_id = $3";
+			bindValues.push(args.hearingId);
+		}
+
 		const existingMemo = (await db.select(
-			"SELECT * FROM memos WHERE case_id = $1 AND section_type = $2",
-			[caseId, sectionType],
+			queryForExistingMemo,
+			bindValues,
 		)) as Memo[];
 
 		const isUpdate = existingMemo.length > 0;
 
 		if (isUpdate) {
-			const result = await db.execute(
-				"UPDATE memos SET contents = $1, updated_at = CURRENT_TIMESTAMP WHERE case_id = $2 AND section_type = $3",
-				[JSON.stringify(contents), caseId, sectionType],
-			);
+			let queryForUpdate =
+				"UPDATE memos SET contents = $1, updated_at = CURRENT_TIMESTAMP WHERE case_id = $2 AND section_type = $3";
+			const bindValuesForUpdate: string[] = [
+				JSON.stringify(args.contents),
+				caseId,
+				args.sectionCategory,
+			];
+
+			if (args.sectionCategory === "hearings") {
+				queryForUpdate += " AND hearing_id = $4";
+				bindValuesForUpdate.push(args.hearingId);
+			}
+
+			const result = await db.execute(queryForUpdate, bindValuesForUpdate);
 			console.log("Memo updated:", result);
 		} else {
-			const result = await db.execute(
-				"INSERT INTO memos (case_id, section_type, contents) VALUES ($1, $2, $3)",
-				[caseId, sectionType, JSON.stringify(contents)],
-			);
+			let queryForInsert =
+				"INSERT INTO memos (case_id, section_type, contents) VALUES ($1, $2, $3)";
+			const bindValuesForInsert: string[] = [
+				caseId,
+				args.sectionCategory,
+				JSON.stringify(args.contents),
+			];
+
+			if (args.sectionCategory === "hearings") {
+				queryForInsert =
+					"INSERT INTO memos (case_id, section_type, hearing_id, contents) VALUES ($1, $2, $3, $4)";
+				bindValuesForInsert.splice(2, 0, args.hearingId);
+				console.log("bindValuesForInsert: ", bindValuesForInsert);
+			}
+			const result = await db.execute(queryForInsert, bindValuesForInsert);
 			console.log("Memo saved:", result);
 		}
 

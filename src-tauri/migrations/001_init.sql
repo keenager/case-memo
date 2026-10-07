@@ -14,16 +14,20 @@ CREATE TABLE IF NOT EXISTS cases (
 );
 
 CREATE TABLE IF NOT EXISTS hearings (
-	id 							INTEGER PRIMARY KEY,
-	case_id						INTEGER NOT NULL REFERENCES cases(id) ON DELETE CASCADE,
-	hearing_date				TEXT NOT NULL,
-	hearing_time				TEXT NOT NULL,
-	plaintiff_attended			BOOLEAN NOT NULL,
-	defendant_attended			BOOLEAN NOT NULL,
-	plaintiff_lawyer_attended	BOOLEAN NOT NULL,
-	defendant_lawyer_attended	BOOLEAN NOT NULL,
-	created_at					TEXT DEFAULT CURRENT_TIMESTAMP,
-	updated_at					TEXT DEFAULT CURRENT_TIMESTAMP		
+	id 								INTEGER PRIMARY KEY,
+	case_id							INTEGER NOT NULL REFERENCES cases(id) ON DELETE CASCADE,
+	hearing_date					TEXT NOT NULL,
+	hearing_time					TEXT NOT NULL,
+	plaintiff_attended				BOOLEAN,
+	plaintiff_not_attended			BOOLEAN,
+	defendant_attended				BOOLEAN,
+	defendant_not_attended			BOOLEAN,
+	plaintiff_lawyer_attended		BOOLEAN,
+	plaintiff_lawyer_not_attended	BOOLEAN,
+	defendant_lawyer_attended		BOOLEAN,
+	defendant_lawyer_not_attended	BOOLEAN,
+	created_at						TEXT DEFAULT CURRENT_TIMESTAMP,
+	updated_at						TEXT DEFAULT CURRENT_TIMESTAMP		
 );
 
 CREATE TABLE IF NOT EXISTS memos (

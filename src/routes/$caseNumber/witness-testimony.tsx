@@ -28,7 +28,7 @@ function RouteComponent() {
 
 	return (
 		<MemoLayout {...props}>
-			<MemoEditor sectionType="witness-testimony" contents={contents} />
+			<MemoEditor sectionCategory="witness-testimony" contents={contents} />
 		</MemoLayout>
 	);
 }
