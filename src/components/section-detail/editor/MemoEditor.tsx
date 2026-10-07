@@ -3,7 +3,7 @@ import { useParams } from "@tanstack/react-router";
 import { EditorContent, useEditor } from "@tiptap/react";
 import { BubbleMenu, FloatingMenu } from "@tiptap/react/menus";
 import StarterKit from "@tiptap/starter-kit";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { debounce } from "@/lib/debounce";
 import type { SectionCategory } from "@/lib/types";
@@ -29,7 +29,7 @@ export default function MemoEditor({
 			console.log("업데이트!!!");
 		}, 1500),
 	).current;
-
+	console.log("MemoEditor contents:", contents);
 	const editor = useEditor({
 		extensions: [StarterKit],
 		content: contents ? JSON.parse(contents) : "",
@@ -42,6 +42,9 @@ export default function MemoEditor({
 			debouncedSave();
 		},
 	});
+	useEffect(() => {
+		console.log("MemoEditor contents changed:", contents);
+	}, [contents]);
 
 	const clickHandler = () => {
 		//TODO: 기일 진행 부분 저장 관련해서 손보기.

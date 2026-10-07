@@ -30,6 +30,7 @@ function RouteComponent() {
 	return (
 		<MemoLayout {...props}>
 			<MemoEditor
+				key={`${caseNumber}hearings${hearingId}}`}
 				sectionCategory="hearings"
 				hearingId={hearingId}
 				contents={contents}
