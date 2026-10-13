@@ -22,6 +22,7 @@ import {
 	FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { DATABASE_NAME } from "@/lib/constants";
 import { type Hearing, newHearingFormSchema } from "@/lib/types";
 
 const fieldInfo = [

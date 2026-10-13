@@ -2,6 +2,7 @@ import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 import Database from "@tauri-apps/plugin-sql";
 import { Separator } from "@/components/ui/separator";
 import { camelizeKeys } from "@/lib/camelize";
+import { DATABASE_NAME } from "@/lib/constants";
 import type { Hearing } from "@/lib/types";
 import NewHearingDialog from "./NewHearingDialog";
 

@@ -3,6 +3,7 @@ import Database from "@tauri-apps/plugin-sql";
 import CaseInfoPanel from "@/components/info-panel/InfoPanel";
 import SectionsPanel from "@/components/section-panel/SectionPanel";
 import { camelizeKeys } from "@/lib/camelize";
+import { DATABASE_NAME } from "@/lib/constants";
 import type { Case } from "@/lib/types";
 
 //TODO: $caseNumber를 $caseId로 바꾸는 것을 고려해보자. (caseNumber는 유니크하지 않을 수 있음)

@@ -5,6 +5,7 @@ import MemoEditor from "@/components/section-detail/editor/MemoEditor";
 import type { MemoLayoutProps } from "@/components/section-detail/MemoLayout";
 import MemoLayout from "@/components/section-detail/MemoLayout";
 import { camelizeKeys } from "@/lib/camelize";
+import { DATABASE_NAME } from "@/lib/constants";
 import { SECTIONS } from "@/lib/sections";
 import type { Hearing, Memo } from "@/lib/types";
 

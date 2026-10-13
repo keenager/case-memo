@@ -4,6 +4,7 @@ import MemoEditor from "@/components/section-detail/editor/MemoEditor";
 import MemoLayout, {
 	type MemoLayoutProps,
 } from "@/components/section-detail/MemoLayout";
+import { DATABASE_NAME } from "@/lib/constants";
 import { SECTIONS } from "@/lib/sections";
 import type { Memo } from "@/lib/types";
 
