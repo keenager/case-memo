@@ -5,6 +5,7 @@ import { PlusIcon } from "lucide-react";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import type z from "zod";
+import { DATABASE_NAME } from "@/lib/constants";
 import { type Case, newCaseFormSchema } from "@/lib/types";
 import { Button } from "./button";
 import {
@@ -60,7 +61,7 @@ export default function NewCaseDialog() {
 		console.log("Form submitted:", data);
 		// Here you can handle the form submission, e.g., save to database or state
 		try {
-			const db = await Database.load("sqlite:test.db");
+			const db = await Database.load(DATABASE_NAME);
 
 			// 법원명과 사건번호를 통해 같은 사건이 이미 존재한다면 경고를 띄우기.
 			const existingCase: Case[] = await db.select(

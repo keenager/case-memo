@@ -7,7 +7,7 @@ import NewHearingDialog from "./NewHearingDialog";
 
 export const Route = createFileRoute("/$caseNumber/hearings")({
 	loader: async ({ params }) => {
-		const db = await Database.load("sqlite:test.db");
+		const db = await Database.load(DATABASE_NAME);
 		const loadedHearings: Hearing[] = await db.select(
 			"SELECT * FROM hearings WHERE case_id = (SELECT id FROM cases WHERE case_number = $1) ORDER BY hearing_date ASC, hearing_time ASC",
 			[params.caseNumber],

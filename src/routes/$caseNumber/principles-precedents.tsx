@@ -4,11 +4,12 @@ import MemoEditor from "@/components/section-detail/editor/MemoEditor";
 import MemoLayout, {
 	type MemoLayoutProps,
 } from "@/components/section-detail/MemoLayout";
+import { SECTIONS } from "@/lib/sections";
 import type { Memo } from "@/lib/types";
 
 export const Route = createFileRoute("/$caseNumber/principles-precedents")({
 	loader: async ({ params }) => {
-		const db = await Database.load("sqlite:test.db");
+		const db = await Database.load(DATABASE_NAME);
 		const [loadedMemo] = (await db.select(
 			"SELECT * FROM memos WHERE case_id = (SELECT id FROM cases WHERE case_number = $1) AND section_type = 'principles-precedents'",
 			[params.caseNumber],
@@ -21,7 +22,7 @@ export const Route = createFileRoute("/$caseNumber/principles-precedents")({
 function RouteComponent() {
 	const props: MemoLayoutProps = {
 		caseNumber: Route.useParams().caseNumber,
-		sectionName: "관련 법리 및 판례",
+		sectionName: SECTIONS["principles-precedents"].title,
 	};
 
 	const contents: string | undefined =

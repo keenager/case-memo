@@ -1,6 +1,6 @@
 import type { Editor } from "@tiptap/core";
 import z from "zod";
-import type { SECTION_CATEGORIES } from "./constants";
+import type { SectionCategory } from "./sections";
 
 export const newCaseFormSchema = z.object({
 	caseNumber: z.string().min(1, { message: "Case number is required" }),
@@ -22,12 +22,6 @@ export const newCaseFormSchema = z.object({
 
 export type Case = z.infer<typeof newCaseFormSchema> & { id: string };
 
-export type Section = {
-	title: string;
-	route: string;
-	order: number;
-};
-
 // (
 // caseNumber: string,
 // sectionType: SectionType,
@@ -35,7 +29,6 @@ export type Section = {
 // hearingId?: string,
 // )
 
-export type SectionCategory = (typeof SECTION_CATEGORIES)[number];
 type BaseArgsForSaveMemo = {
 	caseNumber: string;
 	// sectionCategory: SectionCategory;
@@ -68,7 +61,10 @@ export const newHearingFormSchema = z.object({
 
 export type Hearing = z.infer<typeof newHearingFormSchema> & {
 	id: string;
-	case_id: string;
+	caseId: string;
+} & AttendanceStatus;
+
+export type AttendanceStatus = {
 	plaintiffAttended: boolean;
 	plaintiffNotAttended: boolean;
 	defendantAttended: boolean;

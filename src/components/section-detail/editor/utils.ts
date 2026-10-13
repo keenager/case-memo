@@ -1,5 +1,6 @@
 import DataBase from "@tauri-apps/plugin-sql";
 import type { Editor } from "@tiptap/core";
+import { DATABASE_NAME } from "@/lib/constants";
 import type { ArgsForSaveMemo, Memo } from "@/lib/types";
 
 export function isEmpty(content: ReturnType<Editor["getJSON"]>) {
@@ -15,7 +16,7 @@ export function isEmpty(content: ReturnType<Editor["getJSON"]>) {
 export async function saveMemo(args: ArgsForSaveMemo) {
 	try {
 		console.log("contents to save: ", args.contents);
-		const db = await DataBase.load("sqlite:test.db");
+		const db = await DataBase.load(DATABASE_NAME);
 
 		const [{ id: caseId }] = (await db.select(
 			"SELECT id FROM cases WHERE case_number = $1",

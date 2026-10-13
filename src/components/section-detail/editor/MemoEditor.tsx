@@ -6,7 +6,7 @@ import StarterKit from "@tiptap/starter-kit";
 import { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { debounce } from "@/lib/debounce";
-import type { SectionCategory } from "@/lib/types";
+import type { SectionCategory } from "@/lib/sections";
 import { MenuBar } from "./MenuBar";
 import { isEmpty, saveMemo } from "./utils";
 

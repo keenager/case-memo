@@ -1,5 +1,5 @@
 import { PlusIcon } from "lucide-react";
-import { DEFAULT_SECTIONS } from "@/lib/constants";
+import { SECTION_CATEGORIES, SECTIONS } from "@/lib/sections";
 import { Button } from "../ui/button";
 import SectionItem from "./SectionItem";
 
@@ -10,8 +10,8 @@ export default function SectionsPanel() {
 				메모 섹션
 			</p>
 			<div className="flex-1 mr-2">
-				{DEFAULT_SECTIONS.map((section) => (
-					<SectionItem key={section.order} section={section} />
+				{SECTION_CATEGORIES.map((section) => (
+					<SectionItem key={section} section={SECTIONS[section]} />
 				))}
 			</div>
 

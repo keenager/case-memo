@@ -5,9 +5,10 @@ import SectionsPanel from "@/components/section-panel/SectionPanel";
 import { camelizeKeys } from "@/lib/camelize";
 import type { Case } from "@/lib/types";
 
+//TODO: $caseNumber를 $caseId로 바꾸는 것을 고려해보자. (caseNumber는 유니크하지 않을 수 있음)
 export const Route = createFileRoute("/$caseNumber")({
 	loader: async ({ params }) => {
-		const db = await Database.load("sqlite:test.db");
+		const db = await Database.load(DATABASE_NAME);
 
 		const [loadedCases] = (await db.select(
 			"SELECT * FROM cases WHERE case_number = $1",

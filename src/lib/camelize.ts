@@ -14,3 +14,6 @@ export function camelizeKeys<Row extends object>(row: Row): CamelCase<Row> {
 		Object.entries(row).map(([key, value]) => [toCamel(key), value]),
 	) as CamelCase<Row>;
 }
+
+export const toSnake = (s: string) =>
+	s.replace(/([A-Z])/g, (_, c: string) => `_${c.toLowerCase()}`);
