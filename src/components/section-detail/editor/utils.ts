@@ -1,7 +1,7 @@
 import DataBase from "@tauri-apps/plugin-sql";
 import type { Editor } from "@tiptap/core";
 import { DATABASE_NAME } from "@/lib/constants";
-import type { ArgsForSaveMemo, Memo } from "@/lib/types";
+import type { ArgsForSaveMemo, Memo } from "@/lib/hearing";
 
 export function isEmpty(content: ReturnType<Editor["getJSON"]>) {
 	return !Object.keys(content.content[0]).includes("content");

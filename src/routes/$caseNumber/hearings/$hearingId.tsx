@@ -6,8 +6,9 @@ import type { MemoLayoutProps } from "@/components/section-detail/MemoLayout";
 import MemoLayout from "@/components/section-detail/MemoLayout";
 import { camelizeKeys } from "@/lib/camelize";
 import { DATABASE_NAME } from "@/lib/constants";
+import type { Hearing } from "@/lib/hearing";
+import type { Memo } from "@/lib/memo";
 import { SECTIONS } from "@/lib/sections";
-import type { Hearing, Memo } from "@/lib/types";
 
 export const Route = createFileRoute("/$caseNumber/hearings/$hearingId")({
 	loader: async ({ params }) => {

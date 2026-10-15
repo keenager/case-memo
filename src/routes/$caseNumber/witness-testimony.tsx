@@ -5,8 +5,8 @@ import MemoLayout, {
 	type MemoLayoutProps,
 } from "@/components/section-detail/MemoLayout";
 import { DATABASE_NAME } from "@/lib/constants";
+import type { Memo } from "@/lib/hearing";
 import { SECTIONS } from "@/lib/sections";
-import type { Memo } from "@/lib/types";
 
 export const Route = createFileRoute("/$caseNumber/witness-testimony")({
 	loader: async ({ params }) => {

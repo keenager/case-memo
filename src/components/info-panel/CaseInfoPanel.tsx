@@ -1,19 +1,17 @@
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
-import { useState } from "react";
-import type { Case } from "@/lib/types";
+import React, { useState } from "react";
 import {
 	Collapsible,
 	CollapsibleContent,
 	CollapsibleTrigger,
 } from "../ui/collapsible";
-import CoreInfo from "./CoreInfo";
-import DetailInfo from "./DetailInfor";
 
 export default function CaseInfoPanel({
-	selectedCase,
+	children,
 }: {
-	selectedCase: Case;
+	children: React.ReactNode;
 }) {
+	const childrenArray = React.Children.toArray(children);
 	const [isOpen, setIsOpen] = useState(false);
 	// const { criminalCase } = caseDetail;
 
@@ -30,8 +28,7 @@ export default function CaseInfoPanel({
 	return (
 		<Collapsible open={isOpen} onOpenChange={setIsOpen}>
 			{/* 항상 보이는 핵심 정보 */}
-			<CoreInfo selectedCase={selectedCase} />
-
+			{childrenArray[0]}
 			{/* 상세보기 토글 */}
 			<CollapsibleTrigger className="w-full flex items-center justify-center gap-1 py-1.5 text-xs text-muted-foreground hover:bg-muted transition-colors border-t">
 				{isOpen ? (
@@ -46,9 +43,7 @@ export default function CaseInfoPanel({
 			</CollapsibleTrigger>
 
 			{/* 펼쳐지는 상세 정보 */}
-			<CollapsibleContent>
-				<DetailInfo selectedCase={selectedCase} />
-			</CollapsibleContent>
+			<CollapsibleContent>{childrenArray[1]}</CollapsibleContent>
 		</Collapsible>
 	);
 }

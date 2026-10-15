@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/field";
 import { toSnake } from "@/lib/camelize";
 import { DATABASE_NAME } from "@/lib/constants";
-import type { Hearing } from "@/lib/types";
+import type { Hearing } from "@/lib/hearing";
 
 const CHECK_LIST = [
 	{ title: "원고", name: "plaintiff" },
@@ -27,6 +27,7 @@ export default function AttendanceCheck({ hearingId, loadedHearing }: ACProps) {
 		<div className="flex flex-col gap-2">
 			<h2>출석 여부 체크</h2>
 			<div className="flex flex-wrap gap-1 mx-2">
+				{/* //TODO: 선임된 변호사들 이름 띄운 다움에 표시할 수 있게 */}
 				{CHECK_LIST.map((item) => {
 					const savedAttended = !!loadedHearing[`${item.name}Attended`];
 					const savedNotAttended = !!loadedHearing[`${item.name}NotAttended`];
@@ -70,9 +71,9 @@ function CheckList({
 		const snakeName = toSnake(name);
 		const snakeName2 = getOppositeName(snakeName);
 
-		console.log(
-			`저장할 내용: 기일 ID ${hearingId} ${snakeName} = ${status} ${snakeName2} = ${!status} 출석 = ${attended}, 불출석 = ${notAttended}`,
-		);
+		// console.log(
+		// 	`저장할 내용: 기일 ID ${hearingId} ${snakeName} = ${status} ${snakeName2} = ${!status} 출석 = ${attended}, 불출석 = ${notAttended}`,
+		// );
 		try {
 			const db = await Database.load(DATABASE_NAME);
 			await db.execute(

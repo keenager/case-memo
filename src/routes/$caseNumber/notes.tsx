@@ -4,8 +4,8 @@ import MemoEditor from "@/components/section-detail/editor/MemoEditor";
 import type { MemoLayoutProps } from "@/components/section-detail/MemoLayout";
 import MemoLayout from "@/components/section-detail/MemoLayout";
 import { DATABASE_NAME } from "@/lib/constants";
+import type { Memo } from "@/lib/hearing";
 import { SECTIONS } from "@/lib/sections";
-import type { Memo } from "@/lib/types";
 
 export const Route = createFileRoute("/$caseNumber/notes")({
 	loader: async ({ params }) => {

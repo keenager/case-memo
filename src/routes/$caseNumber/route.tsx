@@ -1,34 +1,44 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import Database from "@tauri-apps/plugin-sql";
-import CaseInfoPanel from "@/components/info-panel/InfoPanel";
+import CaseInfoPanel from "@/components/info-panel/CaseInfoPanel";
+import CoreInfo from "@/components/info-panel/CoreInfo";
+import DetailInfo from "@/components/info-panel/DetailInfo";
 import SectionsPanel from "@/components/section-panel/SectionPanel";
-import { camelizeKeys } from "@/lib/camelize";
+import { camelizeKeys, type SnakeCase } from "@/lib/camelize";
+import type { Case } from "@/lib/case";
 import { DATABASE_NAME } from "@/lib/constants";
-import type { Case } from "@/lib/types";
 
-//TODO: $caseNumber를 $caseId로 바꾸는 것을 고려해보자. (caseNumber는 유니크하지 않을 수 있음)
 export const Route = createFileRoute("/$caseNumber")({
 	loader: async ({ params }) => {
 		const db = await Database.load(DATABASE_NAME);
 
-		const [loadedCases] = (await db.select(
-			"SELECT * FROM cases WHERE case_number = $1",
+		const [loadedCase] = (await db.select(
+			`SELECT cases.*, courts.name AS court_name
+			FROM cases 
+			JOIN courts 
+			ON cases.court_id = courts.id 
+			WHERE cases.case_number = $1`,
 			[params.caseNumber],
-		)) as Case[];
-		return loadedCases;
+		)) as SnakeCase<Case>[];
+
+		return { loadedCase };
 	},
 	component: MemoLayout,
 });
 
 function MemoLayout() {
-	const selectedCase = camelizeKeys(Route.useLoaderData());
+	const { loadedCase } = Route.useLoaderData();
+	const selectedCase = camelizeKeys(loadedCase);
 
 	return (
 		<div className="flex-1 overflow-y-auto flex">
 			{/* 좌측 패널 */}
 			<div className="w-48 border-r flex flex-col shrink-0 overflow-hidden">
 				{/* 핵심 정보 + 상세보기 */}
-				<CaseInfoPanel selectedCase={selectedCase} />
+				<CaseInfoPanel>
+					<CoreInfo selectedCase={selectedCase} />
+					<DetailInfo selectedCase={selectedCase} />
+				</CaseInfoPanel>
 				{/* 섹션 목록 */}
 				<SectionsPanel />
 			</div>

@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import CaseInfoPanel from "@/components/info-panel/InfoPanel";
+import CaseInfoPanel from "@/components/info-panel/CaseInfoPanel";
 import SectionsPanel from "@/components/section-panel/SectionPanel";
-import type { Case } from "@/lib/types";
+import type { Case } from "@/lib/hearing";
 import { cases } from "./index";
 
 export const Route = createFileRoute("/111caseNumber")({

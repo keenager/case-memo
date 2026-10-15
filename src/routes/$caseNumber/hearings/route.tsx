@@ -1,15 +1,15 @@
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 import Database from "@tauri-apps/plugin-sql";
 import { Separator } from "@/components/ui/separator";
-import { camelizeKeys } from "@/lib/camelize";
+import { camelizeKeys, type SnakeCase } from "@/lib/camelize";
 import { DATABASE_NAME } from "@/lib/constants";
-import type { Hearing } from "@/lib/types";
+import type { Hearing } from "@/lib/hearing";
 import NewHearingDialog from "./NewHearingDialog";
 
 export const Route = createFileRoute("/$caseNumber/hearings")({
 	loader: async ({ params }) => {
 		const db = await Database.load(DATABASE_NAME);
-		const loadedHearings: Hearing[] = await db.select(
+		const loadedHearings: SnakeCase<Hearing>[] = await db.select(
 			"SELECT * FROM hearings WHERE case_id = (SELECT id FROM cases WHERE case_number = $1) ORDER BY hearing_date ASC, hearing_time ASC",
 			[params.caseNumber],
 		);
@@ -34,7 +34,7 @@ function RouteComponent() {
 						params={{ caseNumber, hearingId: hearing.id }}
 					>
 						<p>
-							{idx + 1}차 {hearing.hearingDate} {hearing.hearingTime}
+							{idx + 1}차 {String(hearing.hearingDate)} {hearing.hearingTime}
 						</p>
 						<Separator className="my-2" />
 					</Link>

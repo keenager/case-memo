@@ -17,3 +17,19 @@ export function camelizeKeys<Row extends object>(row: Row): CamelCase<Row> {
 
 export const toSnake = (s: string) =>
 	s.replace(/([A-Z])/g, (_, c: string) => `_${c.toLowerCase()}`);
+
+type CamelToSnake<S extends string> = S extends `${infer Head}${infer Tail}`
+	? Head extends Lowercase<Head>
+		? `${Head}${CamelToSnake<Tail>}`
+		: `_${Lowercase<Head>}${CamelToSnake<Tail>}`
+	: S;
+
+export type SnakeCase<T> = {
+	[K in keyof T as K extends string ? CamelToSnake<K> : K]: T[K];
+};
+
+export function snakeifyKeys<Row extends object>(row: Row) {
+	return Object.fromEntries(
+		Object.entries(row).map(([key, value]) => [toSnake(key), value]),
+	) as SnakeCase<Row>;
+}

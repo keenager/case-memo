@@ -1,4 +1,5 @@
-import type { Case } from "@/lib/types";
+import { formattedDate } from "@/lib/date";
+import type { Case } from "@/lib/hearing";
 import { Separator } from "../ui/separator";
 
 export default function DetailInfo({ selectedCase }: { selectedCase: Case }) {
@@ -9,15 +10,12 @@ export default function DetailInfo({ selectedCase }: { selectedCase: Case }) {
 				<p className="text-xs font-medium text-muted-foreground">기본 정보</p>
 				<p>{selectedCase.courtName}</p>
 				<p className="text-muted-foreground">
-					{/* {format(new Date(selectedCase.filedAt), "yyyy. MM. dd.", {
-								locale: ko,
-							})}{" "} */}
-					{selectedCase.filedAt} 접수
+					{formattedDate(selectedCase.filedAt)} 접수
 				</p>
 			</div>
 
 			{/* 민사 당사자 */}
-			{selectedCase.caseType === "CIVIL" && (
+			{selectedCase.caseType === "civil" && (
 				<div className="space-y-3">
 					{/* 원고 */}
 					<div>
@@ -33,7 +31,7 @@ export default function DetailInfo({ selectedCase }: { selectedCase: Case }) {
 			)}
 
 			{/* 형사 당사자 */}
-			{selectedCase.caseType === "CRIMINAL" && (
+			{selectedCase.caseType === "criminal" && (
 				<div className="space-y-3">
 					{/* 검사 */}
 					<p className="text-xs font-medium text-muted-foreground">검사</p>

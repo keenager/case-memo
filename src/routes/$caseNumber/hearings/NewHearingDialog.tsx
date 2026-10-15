@@ -5,6 +5,7 @@ import { PlusIcon } from "lucide-react";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import type z from "zod";
+import { DatePicker } from "@/components/new-case/DatePicker";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -23,11 +24,12 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { DATABASE_NAME } from "@/lib/constants";
-import { type Hearing, newHearingFormSchema } from "@/lib/types";
+import { formattedDate } from "@/lib/date";
+import { type Hearing, newHearingFormSchema } from "@/lib/hearing";
 
 const fieldInfo = [
-	{ id: "hearingDate", name: "hearingDate", label: "Hearing Date" },
-	{ id: "hearingTime", name: "hearingTime", label: "Hearing Time" },
+	{ name: "hearingDate", label: "날짜" },
+	{ name: "hearingTime", label: "시각" },
 ] as const;
 
 type Props = {
@@ -41,8 +43,8 @@ export default function NewHearingDialog({ caseNumber }: Props) {
 	const form = useForm<z.infer<typeof newHearingFormSchema>>({
 		resolver: zodResolver(newHearingFormSchema),
 		defaultValues: {
-			hearingDate: "",
-			hearingTime: "",
+			hearingDate: undefined,
+			hearingTime: "10:00",
 		},
 		mode: "onChange",
 	});
@@ -70,10 +72,10 @@ export default function NewHearingDialog({ caseNumber }: Props) {
 
 			const result = await db.execute(
 				`
-                        INSERT INTO hearings (case_id, hearing_date, hearing_time)
-                        VALUES ($1, $2, $3)
-                `,
-				[caseId, data.hearingDate, data.hearingTime],
+			            INSERT INTO hearings (case_id, hearing_date, hearing_time)
+			            VALUES ($1, $2, $3)
+			    `,
+				[caseId, formattedDate(data.hearingDate), data.hearingTime],
 			);
 			console.log("Hearing saved:", result);
 			setOpen(false);
@@ -108,23 +110,34 @@ export default function NewHearingDialog({ caseNumber }: Props) {
 						<FieldGroup>
 							{fieldInfo.map((fi) => (
 								<Controller
-									key={fi.id}
+									key={fi.name}
 									name={fi.name}
 									control={form.control}
-									render={({ field, fieldState }) => (
-										<Field data-invalid={fieldState.invalid}>
-											<FieldLabel htmlFor={field.name}>{fi.label}</FieldLabel>
-											<Input
-												{...field}
-												id={field.name}
-												type="text"
-												aria-invalid={fieldState.invalid}
+									render={({ field, fieldState }) =>
+										fi.name === "hearingDate" ? (
+											<DatePicker
+												fieldInfo={fi}
+												fieldState={fieldState}
+												value={field.value as Date}
+												onChange={field.onChange}
 											/>
-											{fieldState.invalid && (
-												<FieldError errors={[fieldState.error]} />
-											)}
-										</Field>
-									)}
+										) : (
+											<Field data-invalid={fieldState.invalid}>
+												<FieldLabel htmlFor={field.name}>{fi.label}</FieldLabel>
+												<Input
+													type="time"
+													step="300"
+													id={field.name}
+													aria-invalid={fieldState.invalid}
+													value={field.value as string}
+													onChange={field.onChange}
+												/>
+												{fieldState.invalid && (
+													<FieldError errors={[fieldState.error]} />
+												)}
+											</Field>
+										)
+									}
 								/>
 							))}
 						</FieldGroup>

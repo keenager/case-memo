@@ -1,4 +1,4 @@
-import type { Case } from "@/lib/types";
+import type { Case } from "@/lib/case";
 import BadgeCaseType from "../ui/BadgeCaseType";
 import CaseName from "./CaseName";
 

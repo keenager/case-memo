@@ -1,4 +1,4 @@
-import type { Case } from "@/lib/types";
+import type { Case } from "@/lib/hearing";
 
 export default function CaseName({ selectedCase }: { selectedCase: Case }) {
 	return (

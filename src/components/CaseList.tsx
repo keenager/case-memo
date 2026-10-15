@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { FileTextIcon, TrashIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { Case } from "@/lib/types";
+import type { Case } from "@/lib/case";
 import BadgeCaseType from "./ui/BadgeCaseType";
 import {
 	Card,
@@ -38,7 +38,7 @@ const CaseCard = ({ caseItem }: { caseItem: Case }) => {
 	return (
 		<Card>
 			<CardHeader>
-				<CardTitle>{caseItem.caseNumber}</CardTitle>
+				<CardTitle>{`${caseItem.courtName} ${caseItem.caseNumber}`}</CardTitle>
 				<CardDescription>
 					<div className="flex items-center gap-2">
 						<BadgeCaseType caseType={caseItem.caseType} />
