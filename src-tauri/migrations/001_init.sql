@@ -1,6 +1,12 @@
+CREATE TABLE IF NOT EXISTS courts (
+	id			INTEGER PRIMARY KEY,
+	parent_id	INTEGER REFERENCES courts(id),
+	name		TEXT NOT NULL UNIQUE
+);
+
 CREATE TABLE IF NOT EXISTS cases (
 	id 					INTEGER PRIMARY KEY,
-	court_name			TEXT NOT NULL,
+	court_id			INTEGER NOT NULL REFERENCES courts(id),
 	case_type			TEXT NOT NULL,
 	case_number			TEXT NOT NULL,
 	case_name			TEXT NOT NULL,

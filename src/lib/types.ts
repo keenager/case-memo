@@ -3,12 +3,13 @@ import z from "zod";
 import type { SectionCategory } from "./sections";
 
 export const newCaseFormSchema = z.object({
-	caseNumber: z.string().min(1, { message: "Case number is required" }),
+	//TODO: court_id를 반영하도록 수정해야 함.
+	courtName: z.string().min(1, { message: "Court name is required" }),
 	caseType: z.literal(["CIVIL", "CRIMINAL"], {
 		message: "Case type must be one of CIVIL, CRIMINAL, or ADMINISTRATIVE",
 	}),
+	caseNumber: z.string().min(1, { message: "Case number is required" }),
 	caseName: z.string().min(1, { message: "Case name is required" }),
-	courtName: z.string().min(1, { message: "Court name is required" }),
 	filedAt: z.string().min(1, { message: "Filed at is required" }),
 	plaintiff: z.string().min(2, { message: "Plaintiff is required" }),
 	plaintiffLawyer: z
@@ -21,13 +22,6 @@ export const newCaseFormSchema = z.object({
 });
 
 export type Case = z.infer<typeof newCaseFormSchema> & { id: string };
-
-// (
-// caseNumber: string,
-// sectionType: SectionType,
-// contents: ReturnType<Editor["getJSON"]>,
-// hearingId?: string,
-// )
 
 type BaseArgsForSaveMemo = {
 	caseNumber: string;
@@ -51,6 +45,7 @@ export type Memo = {
 };
 
 export const newHearingFormSchema = z.object({
+	//TODO: Date 형식으로
 	hearingDate: z.string().min(1, { message: "Hearing date is required" }),
 	hearingTime: z.string().min(1, { message: "Hearing time is required" }),
 	// plaintiffAttended: z.boolean(),

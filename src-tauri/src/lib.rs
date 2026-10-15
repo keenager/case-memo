@@ -10,6 +10,12 @@ pub fn run() {
             sql: include_str!("../migrations/001_init.sql"),
             kind: MigrationKind::Up,
         },
+         Migration {
+            version: 2,
+            description: "create courts rows",
+            sql: include_str!("../migrations/002_court_rows.sql"),
+            kind: MigrationKind::Up,
+        },
     ];
 
     tauri::Builder::default()
