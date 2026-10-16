@@ -2,7 +2,7 @@ import type { Editor } from "@tiptap/core";
 import type { SectionCategory } from "./sections";
 
 type BaseArgsForSaveMemo = {
-	caseNumber: string;
+	caseId: string;
 	// sectionCategory: SectionCategory;
 	contents: ReturnType<Editor["getJSON"]>;
 };
@@ -14,10 +14,10 @@ export type ArgsForSaveMemo =
 
 export type Memo = {
 	id: number;
-	case_id: number;
-	section_type: SectionCategory;
-	hearing_id?: number;
+	caseId: number;
+	sectionType: SectionCategory;
+	hearingId?: number;
 	contents: string;
-	created_at: string;
-	updated_at: string;
+	createdAt: string;
+	updatedAt: string;
 };

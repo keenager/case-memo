@@ -1,9 +1,9 @@
-import { Route as HearingsRouteRoute } from "@/routes/$caseNumber/hearings/route";
-import { Route as NotesRoute } from "@/routes/$caseNumber/notes";
-import { Route as PrinciplesPrecedentsRoute } from "@/routes/$caseNumber/principles-precedents";
+import { Route as HearingsRouteRoute } from "@/routes/$caseId/hearings/route";
+import { Route as NotesRoute } from "@/routes/$caseId/notes";
+import { Route as PrinciplesPrecedentsRoute } from "@/routes/$caseId/principles-precedents";
 // import { Route as TriralsTrialsIdRoute } from "./routes/$caseNumber/trirals/$trialsId";
 // import { Route as TriralsRouteRoute } from "./routes/$caseNumber/trirals/route";
-import { Route as WitnessTestimonyRoute } from "@/routes/$caseNumber/witness-testimony";
+import { Route as WitnessTestimonyRoute } from "@/routes/$caseId/witness-testimony";
 
 export const SECTION_CATEGORIES = [
 	"hearings",

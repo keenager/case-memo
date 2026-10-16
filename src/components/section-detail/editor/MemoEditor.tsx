@@ -1,5 +1,4 @@
 import "@/components/section-detail/editor/styles.css";
-import { useParams } from "@tanstack/react-router";
 import { EditorContent, useEditor } from "@tiptap/react";
 import { BubbleMenu, FloatingMenu } from "@tiptap/react/menus";
 import StarterKit from "@tiptap/starter-kit";
@@ -11,25 +10,25 @@ import { MenuBar } from "./MenuBar";
 import { isEmpty, saveMemo } from "./utils";
 
 export type MemoEditorProps = {
+	caseId: string;
 	sectionCategory: SectionCategory;
 	hearingId?: string;
 	contents: string | undefined;
 };
 
 export default function MemoEditor({
+	caseId,
 	sectionCategory,
 	hearingId,
 	contents,
 }: MemoEditorProps) {
-	const { caseNumber } = useParams({ from: "/$caseNumber" });
-
 	//TODO: 자동저장 기능 구현하기
 	const debouncedSave = useRef(
 		debounce(() => {
 			console.log("업데이트!!!");
 		}, 1500),
 	).current;
-	console.log("MemoEditor contents:", contents);
+	// console.log("MemoEditor contents:", contents);
 	const editor = useEditor({
 		extensions: [StarterKit],
 		content: contents ? JSON.parse(contents) : "",
@@ -56,14 +55,14 @@ export default function MemoEditor({
 			}
 
 			saveMemo({
-				caseNumber,
+				caseId,
 				sectionCategory,
 				hearingId,
 				contents: editor.getJSON(),
 			});
 		} else {
 			saveMemo({
-				caseNumber,
+				caseId,
 				sectionCategory,
 				contents: editor.getJSON(),
 			});

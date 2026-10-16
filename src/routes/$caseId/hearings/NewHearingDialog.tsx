@@ -33,10 +33,10 @@ const fieldInfo = [
 ] as const;
 
 type Props = {
-	caseNumber: string;
+	caseId: string;
 };
 
-export default function NewHearingDialog({ caseNumber }: Props) {
+export default function NewHearingDialog({ caseId }: Props) {
 	const [open, setOpen] = useState(false);
 	const navi = useNavigate();
 
@@ -54,11 +54,11 @@ export default function NewHearingDialog({ caseNumber }: Props) {
 		// Here you can handle the form submission, e.g., save to database or state
 		try {
 			const db = await Database.load(DATABASE_NAME);
-			const [{ id: caseId }] = await db.select<{ id: number }[]>(
-				"SELECT id FROM cases WHERE case_number = $1",
-				[caseNumber],
-			);
-			console.log("caseId:", caseId);
+			// const [{ id: caseId }] = await db.select<{ id: number }[]>(
+			// 	"SELECT id FROM cases WHERE case_number = $1",
+			// 	[caseNumber],
+			// );
+			// console.log("caseId:", caseId);
 
 			// 같은 기일이 이미 존재한다면 경고를 띄우기.
 			const existingHearing: Hearing[] = await db.select(
@@ -81,8 +81,8 @@ export default function NewHearingDialog({ caseNumber }: Props) {
 			setOpen(false);
 			form.reset();
 			navi({
-				to: "/$caseNumber/hearings/$hearingId",
-				params: { caseNumber, hearingId: `${result.lastInsertId}` },
+				to: "/$caseId/hearings/$hearingId",
+				params: { caseId, hearingId: `${result.lastInsertId}` },
 			});
 		} catch (error) {
 			// TODO: 토스트 메시지 띄우기

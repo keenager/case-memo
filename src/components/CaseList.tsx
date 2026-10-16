@@ -22,11 +22,7 @@ export default function CaseList({ cases }: { cases: Case[] }) {
 	return (
 		<div className="grid gap-2">
 			{cases.map((c) => (
-				<Link
-					to="/$caseNumber"
-					params={{ caseNumber: c.caseNumber }}
-					key={c.id}
-				>
+				<Link to="/$caseId" params={{ caseId: c.id }} key={c.id}>
 					<CaseCard caseItem={c} />
 				</Link>
 			))}

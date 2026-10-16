@@ -10,28 +10,37 @@ import type { Hearing } from "@/lib/hearing";
 import type { Memo } from "@/lib/memo";
 import { SECTIONS } from "@/lib/sections";
 
-export const Route = createFileRoute("/$caseNumber/hearings/$hearingId")({
+//TODO: 여기부터 수정!!!
+export const Route = createFileRoute("/$caseId/hearings/$hearingId")({
 	loader: async ({ params }) => {
 		const db = await Database.load(DATABASE_NAME);
-		const [loadedHearing] = (await db.select(
-			`SELECT * FROM hearings WHERE id=$1`,
-			[params.hearingId],
+		const [{ case_number: caseNumber }] = (await db.select(
+			"SELECT case_number FROM cases WHERE id = $1",
+			[params.caseId],
+		)) as { case_number: string }[];
+
+		const [loadedHearingData] = (await db.select(
+			`SELECT * FROM hearings WHERE id=$1 AND case_id = $2`,
+			[params.hearingId, params.caseId],
 		)) as Hearing[];
-		const camelHearing = camelizeKeys(loadedHearing);
+		const loadedHearing = camelizeKeys(loadedHearingData);
 
-		const [loadedMemo] = (await db.select(
-			"SELECT * FROM memos WHERE case_id = (SELECT id FROM cases WHERE case_number = $1) AND section_type = 'hearings' AND hearing_id = $2",
-			[params.caseNumber, params.hearingId],
-		)) as Memo[];
+		const loadedMemoData = (await db.select(
+			"SELECT * FROM memos WHERE case_id = $1 AND section_type = 'hearings' AND hearing_id = $2",
+			[params.caseId, params.hearingId],
+		)) as Memo[] | undefined;
+		const loadedMemo = loadedMemoData
+			? camelizeKeys(loadedMemoData)[0]
+			: loadedMemoData;
 
-		return { camelHearing, loadedMemo };
+		return { caseNumber, loadedHearing, loadedMemo };
 	},
 	component: RouteComponent,
 });
 
 function RouteComponent() {
-	const { caseNumber, hearingId } = Route.useParams();
-	const { camelHearing, loadedMemo } = Route.useLoaderData();
+	const { caseId, hearingId } = Route.useParams();
+	const { caseNumber, loadedHearing, loadedMemo } = Route.useLoaderData();
 	const props: MemoLayoutProps = {
 		caseNumber,
 		sectionName: SECTIONS.hearings.title,
@@ -44,10 +53,11 @@ function RouteComponent() {
 			<AttendanceCheck
 				key={hearingId}
 				hearingId={hearingId}
-				loadedHearing={camelHearing}
+				loadedHearing={loadedHearing}
 			/>
 			<MemoEditor
 				key={`${caseNumber}hearings${hearingId}}`}
+				caseId={caseId}
 				sectionCategory="hearings"
 				hearingId={hearingId}
 				contents={contents}

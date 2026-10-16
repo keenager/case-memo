@@ -1,7 +1,8 @@
 import DataBase from "@tauri-apps/plugin-sql";
 import type { Editor } from "@tiptap/core";
+import type { SnakeCase } from "@/lib/camelize";
 import { DATABASE_NAME } from "@/lib/constants";
-import type { ArgsForSaveMemo, Memo } from "@/lib/hearing";
+import type { ArgsForSaveMemo, Memo } from "@/lib/memo";
 
 export function isEmpty(content: ReturnType<Editor["getJSON"]>) {
 	return !Object.keys(content.content[0]).includes("content");
@@ -14,20 +15,17 @@ export function isEmpty(content: ReturnType<Editor["getJSON"]>) {
 }
 
 export async function saveMemo(args: ArgsForSaveMemo) {
-	try {
-		console.log("contents to save: ", args.contents);
-		const db = await DataBase.load(DATABASE_NAME);
+	const { caseId, sectionCategory, contents } = args;
 
-		const [{ id: caseId }] = (await db.select(
-			"SELECT id FROM cases WHERE case_number = $1",
-			[args.caseNumber],
-		)) as { id: string }[];
+	try {
+		console.log("contents to save: ", contents);
+		const db = await DataBase.load(DATABASE_NAME);
 
 		let queryForExistingMemo =
 			"SELECT * FROM memos WHERE case_id = $1 AND section_type = $2";
-		const bindValues: string[] = [caseId, args.sectionCategory];
+		const bindValues: string[] = [caseId, sectionCategory];
 
-		if (args.sectionCategory === "hearings") {
+		if (sectionCategory === "hearings") {
 			queryForExistingMemo += " AND hearing_id = $3";
 			bindValues.push(args.hearingId);
 		}
@@ -35,7 +33,7 @@ export async function saveMemo(args: ArgsForSaveMemo) {
 		const existingMemo = (await db.select(
 			queryForExistingMemo,
 			bindValues,
-		)) as Memo[];
+		)) as SnakeCase<Memo>[];
 
 		const isUpdate = existingMemo.length > 0;
 
@@ -43,12 +41,12 @@ export async function saveMemo(args: ArgsForSaveMemo) {
 			let queryForUpdate =
 				"UPDATE memos SET contents = $1, updated_at = CURRENT_TIMESTAMP WHERE case_id = $2 AND section_type = $3";
 			const bindValuesForUpdate: string[] = [
-				JSON.stringify(args.contents),
+				JSON.stringify(contents),
 				caseId,
-				args.sectionCategory,
+				sectionCategory,
 			];
 
-			if (args.sectionCategory === "hearings") {
+			if (sectionCategory === "hearings") {
 				queryForUpdate += " AND hearing_id = $4";
 				bindValuesForUpdate.push(args.hearingId);
 			}
@@ -60,8 +58,8 @@ export async function saveMemo(args: ArgsForSaveMemo) {
 				"INSERT INTO memos (case_id, section_type, contents) VALUES ($1, $2, $3)";
 			const bindValuesForInsert: string[] = [
 				caseId,
-				args.sectionCategory,
-				JSON.stringify(args.contents),
+				sectionCategory,
+				JSON.stringify(contents),
 			];
 
 			if (args.sectionCategory === "hearings") {

@@ -8,7 +8,7 @@ import { camelizeKeys, type SnakeCase } from "@/lib/camelize";
 import type { Case } from "@/lib/case";
 import { DATABASE_NAME } from "@/lib/constants";
 
-export const Route = createFileRoute("/$caseNumber")({
+export const Route = createFileRoute("/$caseId")({
 	loader: async ({ params }) => {
 		const db = await Database.load(DATABASE_NAME);
 
@@ -17,8 +17,8 @@ export const Route = createFileRoute("/$caseNumber")({
 			FROM cases 
 			JOIN courts 
 			ON cases.court_id = courts.id 
-			WHERE cases.case_number = $1`,
-			[params.caseNumber],
+			WHERE cases.id = $1`,
+			[params.caseId],
 		)) as SnakeCase<Case>[];
 
 		return { loadedCase };

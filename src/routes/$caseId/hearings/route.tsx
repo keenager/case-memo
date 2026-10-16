@@ -6,12 +6,12 @@ import { DATABASE_NAME } from "@/lib/constants";
 import type { Hearing } from "@/lib/hearing";
 import NewHearingDialog from "./NewHearingDialog";
 
-export const Route = createFileRoute("/$caseNumber/hearings")({
+export const Route = createFileRoute("/$caseId/hearings")({
 	loader: async ({ params }) => {
 		const db = await Database.load(DATABASE_NAME);
 		const loadedHearings: SnakeCase<Hearing>[] = await db.select(
-			"SELECT * FROM hearings WHERE case_id = (SELECT id FROM cases WHERE case_number = $1) ORDER BY hearing_date ASC, hearing_time ASC",
-			[params.caseNumber],
+			"SELECT * FROM hearings WHERE case_id = $1 ORDER BY hearing_date ASC, hearing_time ASC",
+			[params.caseId],
 		);
 		return loadedHearings;
 	},
@@ -19,7 +19,7 @@ export const Route = createFileRoute("/$caseNumber/hearings")({
 });
 
 function RouteComponent() {
-	const { caseNumber } = Route.useParams();
+	const { caseId } = Route.useParams();
 	const loadedHearings = Route.useLoaderData().map((row) => camelizeKeys(row));
 	console.log("loadedHearings:", loadedHearings);
 	return (
@@ -30,8 +30,8 @@ function RouteComponent() {
 				{loadedHearings.map((hearing, idx) => (
 					<Link
 						key={hearing.id}
-						to="/$caseNumber/hearings/$hearingId"
-						params={{ caseNumber, hearingId: hearing.id }}
+						to="/$caseId/hearings/$hearingId"
+						params={{ caseId, hearingId: hearing.id }}
 					>
 						<p>
 							{idx + 1}차 {String(hearing.hearingDate)} {hearing.hearingTime}
@@ -40,7 +40,7 @@ function RouteComponent() {
 					</Link>
 				))}
 				<Separator className="mb-2" />
-				<NewHearingDialog caseNumber={caseNumber} />
+				<NewHearingDialog caseId={caseId} />
 			</div>
 			{/* <div>Hello "/$caseNumber/hearings"!</div> */}
 			<Outlet />
