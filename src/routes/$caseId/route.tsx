@@ -21,14 +21,13 @@ export const Route = createFileRoute("/$caseId")({
 			[params.caseId],
 		)) as SnakeCase<Case>[];
 
-		return { loadedCase };
+		return { loadedCase: camelizeKeys(loadedCase) };
 	},
 	component: MemoLayout,
 });
 
 function MemoLayout() {
 	const { loadedCase } = Route.useLoaderData();
-	const selectedCase = camelizeKeys(loadedCase);
 
 	return (
 		<div className="flex-1 overflow-y-auto flex">
@@ -36,8 +35,8 @@ function MemoLayout() {
 			<div className="w-48 border-r flex flex-col shrink-0 overflow-hidden">
 				{/* 핵심 정보 + 상세보기 */}
 				<CaseInfoPanel>
-					<CoreInfo selectedCase={selectedCase} />
-					<DetailInfo selectedCase={selectedCase} />
+					<CoreInfo selectedCase={loadedCase} />
+					<DetailInfo selectedCase={loadedCase} />
 				</CaseInfoPanel>
 				{/* 섹션 목록 */}
 				<SectionsPanel />

@@ -1,8 +1,8 @@
-import DataBase from "@tauri-apps/plugin-sql";
+import Database from "@tauri-apps/plugin-sql";
 import type { Editor } from "@tiptap/core";
-import type { SnakeCase } from "@/lib/camelize";
 import { DATABASE_NAME } from "@/lib/constants";
-import type { ArgsForSaveMemo, Memo } from "@/lib/memo";
+import { getMemo } from "@/lib/getFromDB";
+import type { ArgsForSaveMemo } from "@/lib/memo";
 
 export function isEmpty(content: ReturnType<Editor["getJSON"]>) {
 	return !Object.keys(content.content[0]).includes("content");
@@ -19,23 +19,13 @@ export async function saveMemo(args: ArgsForSaveMemo) {
 
 	try {
 		console.log("contents to save: ", contents);
-		const db = await DataBase.load(DATABASE_NAME);
+		const db = await Database.load(DATABASE_NAME);
 
-		let queryForExistingMemo =
-			"SELECT * FROM memos WHERE case_id = $1 AND section_type = $2";
-		const bindValues: string[] = [caseId, sectionCategory];
-
-		if (sectionCategory === "hearings") {
-			queryForExistingMemo += " AND hearing_id = $3";
-			bindValues.push(args.hearingId);
-		}
-
-		const existingMemo = (await db.select(
-			queryForExistingMemo,
-			bindValues,
-		)) as SnakeCase<Memo>[];
-
-		const isUpdate = existingMemo.length > 0;
+		const isUpdate = !!(await getMemo({
+			caseId,
+			sectionCategory,
+			hearingId: sectionCategory === "hearings" ? args.hearingId : undefined,
+		}));
 
 		if (isUpdate) {
 			let queryForUpdate =
@@ -62,7 +52,7 @@ export async function saveMemo(args: ArgsForSaveMemo) {
 				JSON.stringify(contents),
 			];
 
-			if (args.sectionCategory === "hearings") {
+			if (sectionCategory === "hearings") {
 				queryForInsert =
 					"INSERT INTO memos (case_id, section_type, hearing_id, contents) VALUES ($1, $2, $3, $4)";
 				bindValuesForInsert.splice(2, 0, args.hearingId);

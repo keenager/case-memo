@@ -1,27 +1,16 @@
 import "@/components/section-detail/editor/styles.css";
-import { EditorContent, useEditor } from "@tiptap/react";
+import { Editor, EditorContent, useEditor } from "@tiptap/react";
 import { BubbleMenu, FloatingMenu } from "@tiptap/react/menus";
 import StarterKit from "@tiptap/starter-kit";
 import { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { debounce } from "@/lib/debounce";
-import type { SectionCategory } from "@/lib/sections";
+import type { ArgsForEditor } from "@/lib/memo";
 import { MenuBar } from "./MenuBar";
 import { isEmpty, saveMemo } from "./utils";
 
-export type MemoEditorProps = {
-	caseId: string;
-	sectionCategory: SectionCategory;
-	hearingId?: string;
-	contents: string | undefined;
-};
-
-export default function MemoEditor({
-	caseId,
-	sectionCategory,
-	hearingId,
-	contents,
-}: MemoEditorProps) {
+export default function MemoEditor(props: ArgsForEditor) {
+	const { caseId, sectionCategory, contents } = props;
 	//TODO: 자동저장 기능 구현하기
 	const debouncedSave = useRef(
 		debounce(() => {
@@ -49,15 +38,14 @@ export default function MemoEditor({
 		//TODO: 기일 진행 부분 저장 관련해서 손보기.
 
 		if (sectionCategory === "hearings") {
-			if (!hearingId) {
+			if (!props.hearingId) {
 				console.error("Hearing ID is required for hearings section");
 				return;
 			}
-
 			saveMemo({
 				caseId,
 				sectionCategory,
-				hearingId,
+				hearingId: props.hearingId,
 				contents: editor.getJSON(),
 			});
 		} else {
@@ -85,34 +73,3 @@ export default function MemoEditor({
 		</>
 	);
 }
-
-// const content = "Hello!";
-// `<h2>
-//   Hi there,
-// </h2>
-// <p>
-//   this is a <em>basic</em> example of <strong>Tiptap</strong>. Sure, there are all kind of basic text styles you'd probably expect from a text editor. But wait until you see the lists:
-// </p>
-// <ul>
-//   <li>
-//     That's a bullet list with one …
-//   </li>
-//   <li>
-//     … or two list items.
-//   </li>
-// </ul>
-// <p>
-//   Isn't that great? And all of that is editable. But wait, there's more. Let's try a code block:
-// </p>
-// <pre><code class="language-css">body {
-//   display: none;
-// }</code></pre>
-// <p>
-//   I know, I know, this is impressive. It's only the tip of the iceberg though. Give it a try and click a little bit around. Don't forget to check the other examples too.
-// </p>
-// <blockquote>
-//   Wow, that's amazing. Good work, boy! 👏
-//   <br />
-//   — Mom
-// </blockquote>
-// `;

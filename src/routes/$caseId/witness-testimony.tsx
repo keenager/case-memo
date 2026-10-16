@@ -1,36 +1,39 @@
 import { createFileRoute } from "@tanstack/react-router";
-import Database from "@tauri-apps/plugin-sql";
 import MemoEditor from "@/components/section-detail/editor/MemoEditor";
 import MemoLayout, {
 	type MemoLayoutProps,
 } from "@/components/section-detail/MemoLayout";
-import { DATABASE_NAME } from "@/lib/constants";
-import type { Memo } from "@/lib/hearing";
+import { getCaseNumber, getMemo } from "@/lib/getFromDB";
 import { SECTIONS } from "@/lib/sections";
 
 export const Route = createFileRoute("/$caseId/witness-testimony")({
 	loader: async ({ params }) => {
-		const db = await Database.load(DATABASE_NAME);
-		const [loadedMemo] = (await db.select(
-			"SELECT * FROM memos WHERE case_id = (SELECT id FROM cases WHERE case_number = $1) AND section_type = 'witness-testimony'",
-			[params.caseNumber],
-		)) as Memo[];
-		return { loadedMemo };
+		const caseNumber = await getCaseNumber(params.caseId);
+
+		const loadedMemo = await getMemo({
+			caseId: params.caseId,
+			sectionCategory: "witness-testimony",
+		});
+		const contents = loadedMemo?.contents;
+
+		return { caseNumber, contents };
 	},
 	component: RouteComponent,
 });
 
 function RouteComponent() {
 	const props: MemoLayoutProps = {
-		caseNumber: Route.useParams().caseNumber,
+		caseNumber: Route.useLoaderData().caseNumber,
 		sectionName: SECTIONS["witness-testimony"].title,
 	};
-	const contents: string | undefined =
-		Route.useLoaderData().loadedMemo?.contents;
 
 	return (
 		<MemoLayout {...props}>
-			<MemoEditor sectionCategory="witness-testimony" contents={contents} />
+			<MemoEditor
+				caseId={Route.useParams().caseId}
+				sectionCategory="witness-testimony"
+				contents={Route.useLoaderData().contents}
+			/>
 		</MemoLayout>
 	);
 }

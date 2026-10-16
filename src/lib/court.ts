@@ -1,3 +1,5 @@
+import type { SnakeCase } from "./camelize";
+
 export type Court = { id: number; parentId: number | null; name: string };
 
 export type CourtForSelect = {
@@ -7,11 +9,11 @@ export type CourtForSelect = {
 	isBranch: boolean;
 };
 
-export const getCourtList = (courts: Court[]): CourtForSelect[] => {
+export const getCourtList = (courts: SnakeCase<Court>[]): CourtForSelect[] => {
 	return courts.map((court) => ({
 		label: court.name,
 		value: court.id,
-		isBranch: !!court.parentId,
+		isBranch: !!court.parent_id,
 	}));
 };
 
