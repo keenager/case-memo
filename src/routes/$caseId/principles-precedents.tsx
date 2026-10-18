@@ -3,7 +3,7 @@ import MemoEditor from "@/components/section-detail/editor/MemoEditor";
 import MemoLayout, {
 	type MemoLayoutProps,
 } from "@/components/section-detail/MemoLayout";
-import { getCaseNumber, getMemo } from "@/lib/getFromDB";
+import { getCaseNumber, getMemo } from "@/lib/db/read";
 import { SECTIONS } from "@/lib/sections";
 
 export const Route = createFileRoute("/$caseId/principles-precedents")({

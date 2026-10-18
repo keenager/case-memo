@@ -35,8 +35,6 @@ export default function MemoEditor(props: ArgsForEditor) {
 	}, [contents]);
 
 	const clickHandler = () => {
-		//TODO: 기일 진행 부분 저장 관련해서 손보기.
-
 		if (sectionCategory === "hearings") {
 			if (!props.hearingId) {
 				console.error("Hearing ID is required for hearings section");

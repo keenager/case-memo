@@ -6,7 +6,7 @@ export const CASE_TYPE = [
 ] as const;
 
 export const newCaseFormSchema = z.object({
-	courtId: z.int({ message: "Court name is required" }),
+	courtId: z.string({ message: "법원을 선택하세요." }),
 	caseType: z.literal(
 		CASE_TYPE.map((t) => t.value),
 		{

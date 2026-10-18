@@ -4,11 +4,12 @@ import MemoEditor from "@/components/section-detail/editor/MemoEditor";
 import type { MemoLayoutProps } from "@/components/section-detail/MemoLayout";
 import MemoLayout from "@/components/section-detail/MemoLayout";
 import type { CamelCase } from "@/lib/camelize";
-import { getCaseNumber, getHearingData, getMemo } from "@/lib/getFromDB";
+import { getCaseNumber, getHearingData, getMemo } from "@/lib/db/read";
 import type { Hearing } from "@/lib/hearing";
 import { SECTIONS } from "@/lib/sections";
 
 export const Route = createFileRoute("/$caseId/hearings/$hearingId")({
+	// beforeLoad:
 	loader: async ({ params: { caseId, hearingId } }) => {
 		const caseNumber = await getCaseNumber(caseId);
 
@@ -30,11 +31,12 @@ export const Route = createFileRoute("/$caseId/hearings/$hearingId")({
 
 function RouteComponent() {
 	const { caseId, hearingId } = Route.useParams();
+	const hearingOrder = Route.useSearch().hearingOrder?.toString();
 	const { caseNumber, loadedHearingData, loadedMemo } = Route.useLoaderData();
 	const props: MemoLayoutProps = {
 		caseNumber,
 		sectionName: SECTIONS.hearings.title,
-		hearingId,
+		hearingOrder,
 	};
 	const contents: string | undefined = loadedMemo?.contents;
 

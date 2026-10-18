@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import Database from "@tauri-apps/plugin-sql";
 import CaseList from "@/components/CaseList";
-import NewCaseDialog from "@/components/new-case/NewCaseDialog";
+import NewCaseDialog from "@/components/dialog/NewCaseDialog";
 import { camelizeKeys, type SnakeCase } from "@/lib/camelize";
 import type { Case } from "@/lib/case";
 import { DATABASE_NAME } from "@/lib/constants";

@@ -2,8 +2,8 @@ import Database from "@tauri-apps/plugin-sql";
 import { camelizeKeys, type SnakeCase } from "@/lib/camelize";
 import { DATABASE_NAME } from "@/lib/constants";
 import type { Memo } from "@/lib/memo";
-import type { Hearing } from "./hearing";
-import type { SectionCategory } from "./sections";
+import type { Hearing } from "../hearing";
+import type { SectionCategory } from "../sections";
 
 export const getMemo = async ({
 	caseId,

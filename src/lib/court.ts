@@ -1,3 +1,4 @@
+import type { SelectItemList } from "@/components/dialog/SelectField";
 import type { SnakeCase } from "./camelize";
 
 export type Court = { id: number; parentId: number | null; name: string };
@@ -9,10 +10,10 @@ export type CourtForSelect = {
 	isBranch: boolean;
 };
 
-export const getCourtList = (courts: SnakeCase<Court>[]): CourtForSelect[] => {
+export const getCourtList = (courts: SnakeCase<Court>[]): SelectItemList => {
 	return courts.map((court) => ({
 		label: court.name,
-		value: court.id,
+		value: court.id.toString(),
 		isBranch: !!court.parent_id,
 	}));
 };

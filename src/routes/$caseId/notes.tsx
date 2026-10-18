@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import MemoEditor from "@/components/section-detail/editor/MemoEditor";
 import type { MemoLayoutProps } from "@/components/section-detail/MemoLayout";
 import MemoLayout from "@/components/section-detail/MemoLayout";
-import { getCaseNumber, getMemo } from "@/lib/getFromDB";
+import { getCaseNumber, getMemo } from "@/lib/db/read";
 import { SECTIONS } from "@/lib/sections";
 
 export const Route = createFileRoute("/$caseId/notes")({

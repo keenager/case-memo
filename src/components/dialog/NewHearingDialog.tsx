@@ -3,34 +3,15 @@ import { useNavigate } from "@tanstack/react-router";
 import Database from "@tauri-apps/plugin-sql";
 import { PlusIcon } from "lucide-react";
 import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import type z from "zod";
-import { DatePicker } from "@/components/new-case/DatePicker";
+import { DatePickField } from "@/components/dialog/DatePickField";
+import MakeDialog from "@/components/dialog/MakeDialog";
+import TimePickField from "@/components/dialog/TimePickField";
 import { Button } from "@/components/ui/button";
-import {
-	Dialog,
-	DialogClose,
-	DialogContent,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-	DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-	Field,
-	FieldError,
-	FieldGroup,
-	FieldLabel,
-} from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
 import { DATABASE_NAME } from "@/lib/constants";
 import { formattedDate } from "@/lib/date";
 import { type Hearing, newHearingFormSchema } from "@/lib/hearing";
-
-const fieldInfo = [
-	{ name: "hearingDate", label: "날짜" },
-	{ name: "hearingTime", label: "시각" },
-] as const;
 
 type Props = {
 	caseId: string;
@@ -89,65 +70,21 @@ export default function NewHearingDialog({ caseId }: Props) {
 			console.error("Error saving case:", error);
 		}
 	}
+	const aaa = { form, onSubmit, open, setOpen };
 
 	return (
-		<Dialog open={open} onOpenChange={setOpen}>
-			<div className="flex justify-end mb-4">
-				<DialogTrigger
-					render={
-						<Button>
-							<PlusIcon className="w-4 h-4 mr-2" />새 기일
-						</Button>
-					}
-				/>
-			</div>
-			<DialogContent className="sm:max-w-sm">
-				<form onSubmit={form.handleSubmit(onSubmit)}>
-					<DialogHeader>
-						<DialogTitle>새 기일 만들기</DialogTitle>
-					</DialogHeader>
-					<div className="my-5 -mx-4 max-h-[50vh] overflow-y-auto px-4">
-						<FieldGroup>
-							{fieldInfo.map((fi) => (
-								<Controller
-									key={fi.name}
-									name={fi.name}
-									control={form.control}
-									render={({ field, fieldState }) =>
-										fi.name === "hearingDate" ? (
-											<DatePicker
-												fieldInfo={fi}
-												fieldState={fieldState}
-												value={field.value as Date}
-												onChange={field.onChange}
-											/>
-										) : (
-											<Field data-invalid={fieldState.invalid}>
-												<FieldLabel htmlFor={field.name}>{fi.label}</FieldLabel>
-												<Input
-													type="time"
-													step="300"
-													id={field.name}
-													aria-invalid={fieldState.invalid}
-													value={field.value as string}
-													onChange={field.onChange}
-												/>
-												{fieldState.invalid && (
-													<FieldError errors={[fieldState.error]} />
-												)}
-											</Field>
-										)
-									}
-								/>
-							))}
-						</FieldGroup>
-					</div>
-					<DialogFooter>
-						<DialogClose render={<Button variant="outline">취소</Button>} />
-						<Button type="submit">저장</Button>
-					</DialogFooter>
-				</form>
-			</DialogContent>
-		</Dialog>
+		<MakeDialog title="새 기일 만들기" useDialogFormReturn={aaa}>
+			<Button>
+				<PlusIcon className="w-4 h-4 mr-2" />새 기일
+			</Button>
+			<DatePickField
+				fieldInfo={{ name: "hearingDate", label: "날짜" }}
+				form={form}
+			/>
+			<TimePickField
+				fieldInfo={{ name: "hearingTime", label: "시각" }}
+				form={form}
+			/>
+		</MakeDialog>
 	);
 }
