@@ -5,9 +5,9 @@ import { PlusIcon } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import type z from "zod";
-import { DatePickField } from "@/components/dialog/DatePickField";
+import { DatePickField } from "@/components/dialog/fields/DatePickField";
+import TimePickField from "@/components/dialog/fields/TimePickField";
 import MakeDialog from "@/components/dialog/MakeDialog";
-import TimePickField from "@/components/dialog/TimePickField";
 import { Button } from "@/components/ui/button";
 import { DATABASE_NAME } from "@/lib/constants";
 import { formattedDate } from "@/lib/date";
@@ -70,10 +70,10 @@ export default function NewHearingDialog({ caseId }: Props) {
 			console.error("Error saving case:", error);
 		}
 	}
-	const aaa = { form, onSubmit, open, setOpen };
+	const args = { open, setOpen, onSubmit: form.handleSubmit(onSubmit) };
 
 	return (
-		<MakeDialog title="새 기일 만들기" useDialogFormReturn={aaa}>
+		<MakeDialog title="새 기일 만들기" {...args}>
 			<Button>
 				<PlusIcon className="w-4 h-4 mr-2" />새 기일
 			</Button>

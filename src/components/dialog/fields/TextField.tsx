@@ -1,6 +1,6 @@
 import { Controller, type UseFormReturn } from "react-hook-form";
-import { Field, FieldError, FieldLabel } from "../ui/field";
-import { Input } from "../ui/input";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 
 type Props = {
 	fieldInfo: { name: string; label: string };

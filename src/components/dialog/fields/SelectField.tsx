@@ -1,5 +1,5 @@
 import { Controller, type UseFormReturn } from "react-hook-form";
-import { Field, FieldError, FieldLabel } from "../ui/field";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import {
 	Select,
 	SelectContent,
@@ -7,8 +7,8 @@ import {
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from "../ui/select";
-import type { FieldInfo } from "./MakeDialog";
+} from "@/components/ui/select";
+import type { FieldInfo } from "../MakeDialog";
 
 export type SelectItemList = { label: string; value: string | null }[];
 
