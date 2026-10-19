@@ -9,7 +9,7 @@ import type { object } from "zod";
 type Props = {
 	schema: ReturnType<typeof object>;
 	defaultValues: Record<string, unknown>;
-	fnToDB: () => Promise<QueryResult>;
+	fnToDB: (data: Record<string, any>) => Promise<QueryResult>;
 	naviOptions?: NavigateOptions;
 };
 
@@ -32,7 +32,7 @@ export default function useDialogForm({
 		console.log("Form submitted:", data);
 		// Here you can handle the form submission, e.g., save to database or state
 		try {
-			const result = await fnToDB();
+			const result = await fnToDB(data);
 			console.log("Hearing saved:", result);
 		} catch (error) {
 			// TODO: 토스트 메시지 띄우기

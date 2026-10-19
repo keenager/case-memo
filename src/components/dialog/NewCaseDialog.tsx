@@ -9,10 +9,10 @@ import { CASE_TYPE, type Case, newCaseFormSchema } from "@/lib/case";
 import { DATABASE_NAME } from "@/lib/constants";
 import { formattedDate } from "@/lib/date";
 import { Button } from "../ui/button";
-import { DatePickField } from "./DatePickField";
+import { DatePickField } from "./fields/DatePickField";
+import SelectField, { type SelectItemList } from "./fields/SelectField";
+import TextField from "./fields/TextField";
 import MakeDialog from "./MakeDialog";
-import SelectField, { type SelectItemList } from "./SelectField";
-import TextField from "./TextField";
 
 export default function NewCaseDialog({ courts }: { courts: SelectItemList }) {
 	const [open, setOpen] = useState(false);
@@ -77,10 +77,10 @@ export default function NewCaseDialog({ courts }: { courts: SelectItemList }) {
 		navi({ to: "/" });
 	}
 
-	const aaa = { form, onSubmit, open, setOpen };
+	const args = { open, setOpen, onSubmit: form.handleSubmit(onSubmit) };
 
 	return (
-		<MakeDialog title="새 사건" useDialogFormReturn={aaa}>
+		<MakeDialog title="새 사건" {...args}>
 			<Button>
 				<PlusIcon className="w-4 h-4 mr-2" />새 사건
 			</Button>

@@ -1,5 +1,4 @@
 import React from "react";
-import type { UseFormReturn } from "react-hook-form";
 import { Button } from "../ui/button";
 import {
 	Dialog,
@@ -19,18 +18,20 @@ export type FieldInfo = {
 
 type Props = {
 	title: string;
-	useDialogFormReturn: {
-		form: UseFormReturn<any>;
-		onSubmit: (data: any) => Promise<void>;
-		open: boolean;
-		setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-	};
+	open: boolean;
+	setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+	onSubmit: (
+		e?: React.BaseSyntheticEvent<object, any, any> | undefined,
+	) => Promise<void | undefined>;
+
 	children: React.ReactNode;
 };
 
 export default function MakeDialog({
 	title,
-	useDialogFormReturn: { form, onSubmit, open, setOpen },
+	onSubmit,
+	open,
+	setOpen,
 	children,
 }: Props) {
 	const [triggerButton, ...fields] = React.Children.toArray(children);
@@ -40,7 +41,7 @@ export default function MakeDialog({
 				<DialogTrigger render={triggerButton as React.ReactElement} />
 			</div>
 			<DialogContent className="sm:max-w-sm">
-				<form onSubmit={form.handleSubmit(onSubmit)}>
+				<form onSubmit={onSubmit}>
 					<DialogHeader>
 						<DialogTitle>{title}</DialogTitle>
 					</DialogHeader>

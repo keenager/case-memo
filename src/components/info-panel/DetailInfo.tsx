@@ -3,7 +3,6 @@ import { formattedDate } from "@/lib/date";
 import { Separator } from "../ui/separator";
 
 export default function DetailInfo({ selectedCase }: { selectedCase: Case }) {
-	console.log("selectedCase: ", selectedCase);
 	return (
 		<div className="px-4 pb-4 space-y-3 text-sm border-t pt-3">
 			{/* 기본 정보 */}
