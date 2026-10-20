@@ -1,6 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "@tanstack/react-router";
-import Database from "@tauri-apps/plugin-sql";
 import { PlusIcon } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -9,9 +8,8 @@ import { DatePickField } from "@/components/dialog/fields/DatePickField";
 import TimePickField from "@/components/dialog/fields/TimePickField";
 import MakeDialog from "@/components/dialog/MakeDialog";
 import { Button } from "@/components/ui/button";
-import { DATABASE_NAME } from "@/lib/constants";
-import { formattedDate } from "@/lib/date";
-import { type Hearing, newHearingFormSchema } from "@/lib/hearing";
+import { getDB } from "@/lib/db/db";
+import { type HearingInDB, newHearingFormSchema } from "@/lib/hearing";
 
 type Props = {
 	caseId: string;
@@ -34,15 +32,10 @@ export default function NewHearingDialog({ caseId }: Props) {
 		console.log("Form submitted:", data);
 		// Here you can handle the form submission, e.g., save to database or state
 		try {
-			const db = await Database.load(DATABASE_NAME);
-			// const [{ id: caseId }] = await db.select<{ id: number }[]>(
-			// 	"SELECT id FROM cases WHERE case_number = $1",
-			// 	[caseNumber],
-			// );
-			// console.log("caseId:", caseId);
+			const db = await getDB();
 
 			// 같은 기일이 이미 존재한다면 경고를 띄우기.
-			const existingHearing: Hearing[] = await db.select(
+			const existingHearing: HearingInDB[] = await db.select(
 				"SELECT * FROM hearings WHERE case_id = $1 AND hearing_date = $2 AND hearing_time = $3",
 				[caseId, data.hearingDate, data.hearingTime],
 			);
@@ -56,14 +49,15 @@ export default function NewHearingDialog({ caseId }: Props) {
 			            INSERT INTO hearings (case_id, hearing_date, hearing_time)
 			            VALUES ($1, $2, $3)
 			    `,
-				[caseId, formattedDate(data.hearingDate), data.hearingTime],
+				[caseId, data.hearingDate, data.hearingTime],
 			);
-			console.log("Hearing saved:", result);
+			// console.log("Hearing saved:", result);
 			setOpen(false);
 			form.reset();
 			navi({
 				to: "/$caseId/hearings/$hearingId",
 				params: { caseId, hearingId: `${result.lastInsertId}` },
+				reloadDocument: true,
 			});
 		} catch (error) {
 			// TODO: 토스트 메시지 띄우기
@@ -74,7 +68,7 @@ export default function NewHearingDialog({ caseId }: Props) {
 
 	return (
 		<MakeDialog title="새 기일 만들기" {...args}>
-			<Button>
+			<Button className="cursor-pointer">
 				<PlusIcon className="w-4 h-4 mr-2" />새 기일
 			</Button>
 			<DatePickField

@@ -1,9 +1,8 @@
-import Database from "@tauri-apps/plugin-sql";
 import { camelizeKeys, type SnakeCase } from "@/lib/camelize";
-import { DATABASE_NAME } from "@/lib/constants";
 import type { Memo } from "@/lib/memo";
-import type { Hearing } from "../hearing";
+import type { HearingInDB } from "../hearing";
 import type { SectionCategory } from "../sections";
+import { getDB } from "./db";
 
 export const getMemo = async ({
 	caseId,
@@ -14,7 +13,7 @@ export const getMemo = async ({
 	sectionCategory: SectionCategory;
 	hearingId?: string;
 }) => {
-	const db = await Database.load(DATABASE_NAME);
+	const db = await getDB();
 	let query = `SELECT * FROM memos WHERE case_id = $1 AND section_type = $2`;
 	const values = [caseId, sectionCategory];
 	if (sectionCategory === "hearings" && hearingId) {
@@ -28,7 +27,7 @@ export const getMemo = async ({
 };
 
 export const getCaseNumber = async (caseId: string) => {
-	const db = await Database.load(DATABASE_NAME);
+	const db = await getDB();
 	const { case_number } = (await db.select(
 		`SELECT case_number FROM cases WHERE id = $1`,
 		[caseId],
@@ -37,15 +36,15 @@ export const getCaseNumber = async (caseId: string) => {
 };
 
 export const getHearingData = async (caseId: string, hearingId?: string) => {
-	const db = await Database.load(DATABASE_NAME);
+	const db = await getDB();
 	if (hearingId) {
 		const [loadedHearingData] = (await db.select(
-			`SELECT * FROM hearings WHERE case_id=$1 AND id = $2`,
+			`SELECT * FROM hearings WHERE case_id = $1 AND id = $2`,
 			[caseId, hearingId],
-		)) as SnakeCase<Hearing>[];
+		)) as HearingInDB[];
 		return camelizeKeys(loadedHearingData);
 	} else {
-		const loadedHearingDataList: SnakeCase<Hearing>[] = await db.select(
+		const loadedHearingDataList: HearingInDB[] = await db.select(
 			"SELECT * FROM hearings WHERE case_id = $1 ORDER BY hearing_date ASC, hearing_time ASC",
 			[caseId],
 		);

@@ -1,16 +1,15 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
-import Database from "@tauri-apps/plugin-sql";
 import CaseInfoPanel from "@/components/info-panel/CaseInfoPanel";
 import CoreInfo from "@/components/info-panel/CoreInfo";
 import DetailInfo from "@/components/info-panel/DetailInfo";
 import SectionsPanel from "@/components/section-panel/SectionPanel";
 import { camelizeKeys, type SnakeCase } from "@/lib/camelize";
-import type { Case } from "@/lib/case";
-import { DATABASE_NAME } from "@/lib/constants";
+import type { CaseInDB } from "@/lib/case";
+import { getDB } from "@/lib/db/db";
 
 export const Route = createFileRoute("/$caseId")({
 	loader: async ({ params }) => {
-		const db = await Database.load(DATABASE_NAME);
+		const db = await getDB();
 
 		const [loadedCase] = (await db.select(
 			`SELECT cases.*, courts.name AS court_name
@@ -19,7 +18,7 @@ export const Route = createFileRoute("/$caseId")({
 			ON cases.court_id = courts.id 
 			WHERE cases.id = $1`,
 			[params.caseId],
-		)) as SnakeCase<Case>[];
+		)) as SnakeCase<CaseInDB>[];
 
 		return { loadedCase: camelizeKeys(loadedCase) };
 	},

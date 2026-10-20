@@ -1,4 +1,5 @@
 import z from "zod";
+import type { SnakeCase } from "./camelize";
 
 export const newHearingFormSchema = z.object({
 	hearingDate: z.date({
@@ -12,11 +13,6 @@ export const newHearingFormSchema = z.object({
 	// defendantLawyerAttended: z.boolean(),
 });
 
-export type Hearing = z.infer<typeof newHearingFormSchema> & {
-	id: string;
-	caseId: string;
-} & AttendanceStatus;
-
 export type AttendanceStatus = {
 	plaintiffAttended: boolean;
 	plaintiffNotAttended: boolean;
@@ -27,3 +23,14 @@ export type AttendanceStatus = {
 	defendantLawyerAttended: boolean;
 	defendantLawyerNotAttended: boolean;
 };
+
+export type HearingInForm = z.infer<typeof newHearingFormSchema> & {
+	id: string;
+	caseId: string;
+} & AttendanceStatus;
+
+export type HearingInDB = SnakeCase<
+	Omit<HearingInForm, "hearingDate"> & {
+		hearingDate: string;
+	}
+>;

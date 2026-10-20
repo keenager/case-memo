@@ -1,4 +1,4 @@
-import type { SelectItemList } from "@/components/dialog/SelectField";
+import type { SelectItemList } from "@/components/dialog/fields/SelectField";
 import type { SnakeCase } from "./camelize";
 
 export type Court = { id: number; parentId: number | null; name: string };

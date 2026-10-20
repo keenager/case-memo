@@ -1,8 +1,13 @@
-import type { Case } from "@/lib/case";
+import type { CamelCase } from "@/lib/camelize";
+import type { CaseInDB } from "@/lib/case";
 import { formattedDate } from "@/lib/date";
 import { Separator } from "../ui/separator";
 
-export default function DetailInfo({ selectedCase }: { selectedCase: Case }) {
+export default function DetailInfo({
+	selectedCase,
+}: {
+	selectedCase: CamelCase<CaseInDB>;
+}) {
 	return (
 		<div className="px-4 pb-4 space-y-3 text-sm border-t pt-3">
 			{/* 기본 정보 */}

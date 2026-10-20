@@ -1,13 +1,12 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "@tanstack/react-router";
-import Database from "@tauri-apps/plugin-sql";
 import { PlusIcon } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import type z from "zod";
-import { CASE_TYPE, type Case, newCaseFormSchema } from "@/lib/case";
-import { DATABASE_NAME } from "@/lib/constants";
-import { formattedDate } from "@/lib/date";
+import type { SnakeCase } from "@/lib/camelize";
+import { CASE_TYPE, type CaseInDB, newCaseFormSchema } from "@/lib/case";
+import { getDB } from "@/lib/db/db";
 import { Button } from "../ui/button";
 import { DatePickField } from "./fields/DatePickField";
 import SelectField, { type SelectItemList } from "./fields/SelectField";
@@ -38,10 +37,10 @@ export default function NewCaseDialog({ courts }: { courts: SelectItemList }) {
 		console.log("Form submitted:", data);
 		// Here you can handle the form submission, e.g., save to database or state
 		try {
-			const db = await Database.load(DATABASE_NAME);
+			const db = await getDB();
 
 			// 법원명과 사건번호를 통해 같은 사건이 이미 존재한다면 경고를 띄우기.
-			const existingCase: Case[] = await db.select(
+			const existingCase: SnakeCase<CaseInDB>[] = await db.select(
 				"SELECT * FROM cases WHERE court_id = $1 AND case_number = $2",
 				[data.courtId, data.caseNumber],
 			);
@@ -60,7 +59,7 @@ export default function NewCaseDialog({ courts }: { courts: SelectItemList }) {
 					data.caseType,
 					data.caseNumber,
 					data.caseName,
-					formattedDate(data.filedAt),
+					data.filedAt,
 					data.plaintiff,
 					data.plaintiffLawyer,
 					data.defendant,

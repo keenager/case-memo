@@ -1,7 +1,9 @@
 import { Link } from "@tanstack/react-router";
-import { FileTextIcon, TrashIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import type { Case } from "@/lib/case";
+import type { CamelCase } from "@/lib/camelize";
+import type { CaseInDB } from "@/lib/case";
+import DeleteCaseDialog from "./dialog/DeleteCaseDialog";
+import type { SelectItemList } from "./dialog/fields/SelectField";
+import UpdateCaseDialog from "./dialog/UpdateCaseDialog";
 import BadgeCaseType from "./ui/BadgeCaseType";
 import {
 	Card,
@@ -11,7 +13,13 @@ import {
 	CardTitle,
 } from "./ui/card";
 
-export default function CaseList({ cases }: { cases: Case[] }) {
+export default function CaseList({
+	cases,
+	courts,
+}: {
+	cases: CamelCase<CaseInDB>[];
+	courts: SelectItemList;
+}) {
 	if (cases.length === 0) {
 		return (
 			<div className="text-center py-16 text-muted-foreground">
@@ -22,47 +30,25 @@ export default function CaseList({ cases }: { cases: Case[] }) {
 	return (
 		<div className="grid gap-2">
 			{cases.map((c) => (
-				<Link to="/$caseId" params={{ caseId: c.id }} key={c.id}>
-					<CaseCard caseItem={c} />
-				</Link>
+				<Card key={c.id}>
+					<CardHeader>
+						<Link to="/$caseId" params={{ caseId: c.id }} className="grow mr-4">
+							<CardTitle>{`${c.courtName} ${c.caseNumber}`}</CardTitle>
+							<CardDescription>
+								<div className="flex items-center gap-2">
+									<BadgeCaseType caseType={c.caseType} />
+									<span className="font-medium">{c.caseNumber}</span>
+									<span className="text-muted-foreground">{c.caseName}</span>
+								</div>
+							</CardDescription>
+						</Link>
+						<CardAction className="flex">
+							<UpdateCaseDialog courts={courts} selectedCase={c} />
+							<DeleteCaseDialog selectedCase={c} />
+						</CardAction>
+					</CardHeader>
+				</Card>
 			))}
 		</div>
 	);
 }
-
-const CaseCard = ({ caseItem }: { caseItem: Case }) => {
-	return (
-		<Card>
-			<CardHeader>
-				<CardTitle>{`${caseItem.courtName} ${caseItem.caseNumber}`}</CardTitle>
-				<CardDescription>
-					<div className="flex items-center gap-2">
-						<BadgeCaseType caseType={caseItem.caseType} />
-						<span className="font-medium">{caseItem.caseNumber}</span>
-						<span className="text-muted-foreground">{caseItem.caseName}</span>
-					</div>
-				</CardDescription>
-				<CardAction>
-					<div className="flex items-center gap-2">
-						<Button
-							variant="ghost"
-							size="sm"
-							className="has-[>svg]:px-1"
-							onClick={() => {}}
-						>
-							<FileTextIcon className="w-4 h-4" />
-						</Button>
-						<Button
-							variant="ghost"
-							size="sm"
-							className="has-[>svg]:px-1"
-							onClick={() => {}}
-						>
-							<TrashIcon className="w-4 h-4 text-red-500" />
-						</Button>
-					</div>
-				</CardAction>
-			</CardHeader>
-		</Card>
-	);
-};

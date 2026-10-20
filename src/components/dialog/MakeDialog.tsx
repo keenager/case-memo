@@ -37,13 +37,13 @@ export default function MakeDialog({
 	const [triggerButton, ...fields] = React.Children.toArray(children);
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
-			<div className="flex justify-end mb-4">
+			<div>
 				<DialogTrigger render={triggerButton as React.ReactElement} />
 			</div>
 			<DialogContent className="sm:max-w-sm">
 				<form onSubmit={onSubmit}>
 					<DialogHeader>
-						<DialogTitle>{title}</DialogTitle>
+						<DialogTitle className="text-center">{title}</DialogTitle>
 					</DialogHeader>
 					<div className="my-5 -mx-4 max-h-[50vh] overflow-y-auto px-4">
 						<FieldGroup>{...fields}</FieldGroup>

@@ -1,4 +1,3 @@
-import Database from "@tauri-apps/plugin-sql";
 import { useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -10,7 +9,7 @@ import {
 	FieldSet,
 } from "@/components/ui/field";
 import { toSnake } from "@/lib/camelize";
-import { DATABASE_NAME } from "@/lib/constants";
+import { getDB } from "@/lib/db/db";
 import type { Hearing } from "@/lib/hearing";
 
 const CHECK_LIST = [
@@ -75,7 +74,7 @@ function CheckList({
 		// 	`저장할 내용: 기일 ID ${hearingId} ${snakeName} = ${status} ${snakeName2} = ${!status} 출석 = ${attended}, 불출석 = ${notAttended}`,
 		// );
 		try {
-			const db = await Database.load(DATABASE_NAME);
+			const db = await getDB();
 			await db.execute(
 				`UPDATE hearings SET ${snakeName}=$1, ${snakeName2}=$2, updated_at=CURRENT_TIMESTAMP WHERE id=$3`,
 				[status ? 1 : 0, status ? 0 : 1, hearingId],
@@ -96,7 +95,7 @@ function CheckList({
 						id={`${name}Attended`}
 						name={`${name}Attended`}
 						checked={attended}
-						onCheckedChange={(checked) => {
+						onCheckedChange={(checked: boolean) => {
 							setAttended(checked);
 							setNotAttended(!checked);
 							saveAttendanceStatus(`${name}Attended`, checked);
@@ -111,7 +110,7 @@ function CheckList({
 						id={`${name}NotAttended`}
 						name={`${name}NotAttended`}
 						checked={notAttended}
-						onCheckedChange={(checked) => {
+						onCheckedChange={(checked: boolean) => {
 							setNotAttended(checked);
 							setAttended(!checked);
 							saveAttendanceStatus(`${name}NotAttended`, checked);

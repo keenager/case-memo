@@ -1,6 +1,5 @@
-import Database from "@tauri-apps/plugin-sql";
 import type { Editor } from "@tiptap/core";
-import { DATABASE_NAME } from "@/lib/constants";
+import { getDB } from "@/lib/db/db";
 import { getMemo } from "@/lib/db/read";
 import type { ArgsForSaveMemo } from "@/lib/memo";
 
@@ -19,7 +18,7 @@ export async function saveMemo(args: ArgsForSaveMemo) {
 
 	try {
 		console.log("contents to save: ", contents);
-		const db = await Database.load(DATABASE_NAME);
+		const db = await getDB();
 
 		const isUpdate = !!(await getMemo({
 			caseId,

@@ -1,8 +1,13 @@
-import type { Case } from "@/lib/case";
+import type { CamelCase } from "@/lib/camelize";
+import type { CaseInDB } from "@/lib/case";
 import BadgeCaseType from "../ui/BadgeCaseType";
 import CaseName from "./CaseName";
 
-export default function CoreInfo({ selectedCase }: { selectedCase: Case }) {
+export default function CoreInfo({
+	selectedCase,
+}: {
+	selectedCase: CamelCase<CaseInDB>;
+}) {
 	return (
 		<div className="p-4 space-y-1.5">
 			<div className="flex items-center gap-2">
