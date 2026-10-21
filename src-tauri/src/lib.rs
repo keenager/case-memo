@@ -1,5 +1,4 @@
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
-
 use tauri_plugin_sql::{Migration, MigrationKind};
 
 pub fn run() {
@@ -10,7 +9,7 @@ pub fn run() {
             sql: include_str!("../migrations/001_init.sql"),
             kind: MigrationKind::Up,
         },
-         Migration {
+        Migration {
             version: 2,
             description: "create courts rows",
             sql: include_str!("../migrations/002_court_rows.sql"),
@@ -19,7 +18,12 @@ pub fn run() {
     ];
 
     tauri::Builder::default()
-        .plugin(tauri_plugin_sql::Builder::default().add_migrations("sqlite:test.db", migrations).build())
+        .plugin(tauri_plugin_store::Builder::new().build())
+        .plugin(
+            tauri_plugin_sql::Builder::default()
+                .add_migrations("sqlite:test.db", migrations)
+                .build(),
+        )
         .setup(|app| {
             if cfg!(debug_assertions) {
                 app.handle().plugin(

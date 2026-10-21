@@ -1,16 +1,17 @@
 import { Link } from "@tanstack/react-router";
 import type { CaseInFront } from "@/lib/case";
-import DeleteCaseDialog from "./dialog/DeleteCaseDialog";
-import type { SelectItemList } from "./dialog/fields/SelectField";
-import UpdateCaseDialog from "./dialog/UpdateCaseDialog";
-import BadgeCaseType from "./ui/BadgeCaseType";
+import { useDefaultCourt } from "@/store/settings";
+import DeleteCaseDialog from "../dialog/DeleteCaseDialog";
+import type { SelectItemList } from "../dialog/fields/SelectField";
+import UpdateCaseDialog from "../dialog/UpdateCaseDialog";
+import BadgeCaseType from "../ui/BadgeCaseType";
 import {
 	Card,
 	CardAction,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from "./ui/card";
+} from "../ui/card";
 
 export default function CaseList({
 	cases,
@@ -19,6 +20,8 @@ export default function CaseList({
 	cases: CaseInFront[];
 	courts: SelectItemList;
 }) {
+	const selectedCourtId = useDefaultCourt((state) => state.courtId);
+
 	if (cases.length === 0) {
 		return (
 			<div className="text-center py-16 text-muted-foreground">
@@ -26,9 +29,14 @@ export default function CaseList({
 			</div>
 		);
 	}
+	const filteredCases =
+		selectedCourtId === "all"
+			? cases
+			: cases.filter((c) => c.courtId === selectedCourtId);
+
 	return (
 		<div className="grid gap-2">
-			{cases.map((c) => (
+			{filteredCases.map((c) => (
 				<Card key={c.id}>
 					<CardHeader>
 						<Link to="/$caseId" params={{ caseId: c.id }} className="grow mr-4">

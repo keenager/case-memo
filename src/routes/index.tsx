@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import CaseList from "@/components/CaseList";
 import NewCaseDialog from "@/components/dialog/NewCaseDialog";
+import CaseList from "@/components/home_screen/CaseList";
+import CourtSelect from "@/components/home_screen/CourtSelect";
 import { camelizeKeys, type SnakeCase } from "@/lib/camelize";
 import type { CaseInDB } from "@/lib/case";
 import { type Court, getCourtList } from "@/lib/court";
@@ -10,7 +11,7 @@ import { getDB } from "@/lib/db/db";
 export const Route = createFileRoute("/")({
 	loader: async () => {
 		const db = await getDB();
-		//TODO: 법원 선택해서 해당 법원 사건만 보여주기
+
 		const cases: CaseInDB[] = await db.select(`
 			SELECT cases.*, courts.name AS court_name 
 			FROM cases
@@ -37,13 +38,13 @@ export const Route = createFileRoute("/")({
 
 function Index() {
 	const { cases, courts } = Route.useLoaderData();
-
 	// console.log("Loaded cases:", cases);
-	// console.log("Loaded courts:", filteredCourts);
+
 	return (
 		<div className="p-2">
 			<h1 className="text-center text-2xl">사건 메모</h1>
-			<div className="my-2 flex justify-end">
+			<div className="my-2 flex justify-between">
+				<CourtSelect courts={courts} />
 				<NewCaseDialog courts={courts} />
 			</div>
 			<CaseList cases={cases} courts={courts} />
