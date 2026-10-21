@@ -29,6 +29,7 @@ export default function CourtSelect({ courts }: Props) {
 	return (
 		<Select
 			items={courts}
+			value={selectedCourtId}
 			onValueChange={setSelectedCourtId}
 			defaultValue={selectedCourtId}
 		>

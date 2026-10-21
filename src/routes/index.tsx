@@ -1,12 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
 import NewCaseDialog from "@/components/dialog/NewCaseDialog";
 import CaseList from "@/components/home_screen/CaseList";
 import CourtSelect from "@/components/home_screen/CourtSelect";
+import SearchByCaseName from "@/components/home_screen/SearchByCaseName";
+import SearchByCaseNumber from "@/components/home_screen/SearchByCaseNumber";
+import { Button } from "@/components/ui/button";
 import { camelizeKeys, type SnakeCase } from "@/lib/camelize";
 import type { CaseInDB } from "@/lib/case";
 import { type Court, getCourtList } from "@/lib/court";
 import { strToDate } from "@/lib/date";
 import { getDB } from "@/lib/db/db";
+import { useDefaultCourt } from "@/store/settings";
 
 export const Route = createFileRoute("/")({
 	loader: async () => {
@@ -39,15 +44,40 @@ export const Route = createFileRoute("/")({
 function Index() {
 	const { cases, courts } = Route.useLoaderData();
 	// console.log("Loaded cases:", cases);
+	const setSelectedCourtId = useDefaultCourt((state) => state.updateCourtId);
+	const [searchNumber, setSearchNumber] = useState<string | undefined>(
+		undefined,
+	);
+	const [searchName, setSearchName] = useState<string | undefined>(undefined);
 
 	return (
 		<div className="p-2">
 			<h1 className="text-center text-2xl">사건 메모</h1>
 			<div className="my-2 flex justify-between">
-				<CourtSelect courts={courts} />
+				<div className="flex gap-1">
+					<CourtSelect courts={courts} />
+					<SearchByCaseNumber
+						search={searchNumber}
+						setSearch={setSearchNumber}
+					/>
+					<SearchByCaseName search={searchName} setSearch={setSearchName} />
+					<Button
+						onClick={() => {
+							setSelectedCourtId("all");
+							setSearchNumber(undefined);
+							setSearchName(undefined);
+						}}
+					>
+						초기화
+					</Button>
+				</div>
 				<NewCaseDialog courts={courts} />
 			</div>
-			<CaseList cases={cases} courts={courts} />
+			<CaseList
+				cases={cases}
+				courts={courts}
+				search={{ byNumber: searchNumber, byName: searchName }}
+			/>
 		</div>
 	);
 }

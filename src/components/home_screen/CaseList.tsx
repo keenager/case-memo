@@ -16,9 +16,11 @@ import {
 export default function CaseList({
 	cases,
 	courts,
+	search,
 }: {
 	cases: CaseInFront[];
 	courts: SelectItemList;
+	search: { byNumber: string | undefined; byName: string | undefined };
 }) {
 	const selectedCourtId = useDefaultCourt((state) => state.courtId);
 
@@ -29,14 +31,24 @@ export default function CaseList({
 			</div>
 		);
 	}
-	const filteredCases =
+	const filteredById =
 		selectedCourtId === "all"
 			? cases
 			: cases.filter((c) => c.courtId === selectedCourtId);
 
+	const { byNumber, byName } = search;
+
+	const filteredByNumber = byNumber
+		? filteredById.filter((c) => c.caseNumber.includes(byNumber))
+		: filteredById;
+
+	const filteredAtLast = byName
+		? filteredByNumber.filter((c) => c.caseName.includes(byName))
+		: filteredByNumber;
+
 	return (
 		<div className="grid gap-2">
-			{filteredCases.map((c) => (
+			{filteredAtLast.map((c) => (
 				<Card key={c.id}>
 					<CardHeader>
 						<Link to="/$caseId" params={{ caseId: c.id }} className="grow mr-4">
