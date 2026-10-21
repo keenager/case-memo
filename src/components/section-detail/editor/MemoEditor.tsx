@@ -1,23 +1,33 @@
 import "@/components/section-detail/editor/styles.css";
-import { Editor, EditorContent, useEditor } from "@tiptap/react";
+import { EditorContent, useEditor } from "@tiptap/react";
 import { BubbleMenu, FloatingMenu } from "@tiptap/react/menus";
 import StarterKit from "@tiptap/starter-kit";
-import { useEffect, useRef } from "react";
-import { Button } from "@/components/ui/button";
-import { debounce } from "@/lib/debounce";
-import type { ArgsForEditor } from "@/lib/memo";
+import { Check } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { debounce } from "@/lib/memo/debounce";
+import type { ArgsForEditor } from "@/lib/memo/types";
+import { isEmpty, saveMemo } from "../../../lib/memo/save";
 import { MenuBar } from "./MenuBar";
-import { isEmpty, saveMemo } from "./utils";
 
 export default function MemoEditor(props: ArgsForEditor) {
 	const { caseId, sectionCategory, contents } = props;
-	//TODO: 자동저장 기능 구현하기
+
+	const [showNoti, setShowNoti] = useState(false);
+	const toggleNoti = () => {
+		setShowNoti(true);
+		setTimeout(() => {
+			setShowNoti(false);
+		}, 2000);
+	};
+
 	const debouncedSave = useRef(
-		debounce(() => {
+		debounce(async () => {
+			await saveHandler();
 			console.log("업데이트!!!");
 		}, 1500),
 	).current;
 	// console.log("MemoEditor contents:", contents);
+
 	const editor = useEditor({
 		extensions: [StarterKit],
 		content: contents ? JSON.parse(contents) : "",
@@ -34,32 +44,44 @@ export default function MemoEditor(props: ArgsForEditor) {
 		console.log("MemoEditor contents changed:", contents);
 	}, [contents]);
 
-	const clickHandler = () => {
-		if (sectionCategory === "hearings") {
-			if (!props.hearingId) {
-				console.error("Hearing ID is required for hearings section");
-				return;
+	const saveHandler = async () => {
+		try {
+			if (sectionCategory === "hearings") {
+				if (!props.hearingId) {
+					console.error("Hearing ID is required for hearings section");
+					return;
+				}
+				await saveMemo({
+					caseId,
+					sectionCategory,
+					hearingId: props.hearingId,
+					contents: editor.getJSON(),
+				});
+				toggleNoti();
+			} else {
+				await saveMemo({
+					caseId,
+					sectionCategory,
+					contents: editor.getJSON(),
+				});
+				toggleNoti();
 			}
-			saveMemo({
-				caseId,
-				sectionCategory,
-				hearingId: props.hearingId,
-				contents: editor.getJSON(),
-			});
-		} else {
-			saveMemo({
-				caseId,
-				sectionCategory,
-				contents: editor.getJSON(),
-			});
+		} catch (error) {
+			console.error(error);
 		}
 	};
 
 	return (
 		<>
 			<MenuBar editor={editor} />
-			<div>
-				<Button onClick={clickHandler}>저장</Button>
+			<div className="flex gap-3">
+				{showNoti && (
+					<div className="flex items-center gap-2">
+						<Check color="green" size={15} />
+						<span className="text-sm">저장 완료</span>
+					</div>
+				)}
+				{/* <Button onClick={saveHandler}>저장</Button> */}
 			</div>
 			<EditorContent editor={editor} className="flex-1 border rounded-md p-1" />
 			<FloatingMenu editor={editor} className="border">

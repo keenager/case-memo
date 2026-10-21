@@ -4,13 +4,14 @@ import NewCaseDialog from "@/components/dialog/NewCaseDialog";
 import { camelizeKeys, type SnakeCase } from "@/lib/camelize";
 import type { CaseInDB } from "@/lib/case";
 import { type Court, getCourtList } from "@/lib/court";
+import { strToDate } from "@/lib/date";
 import { getDB } from "@/lib/db/db";
 
 export const Route = createFileRoute("/")({
 	loader: async () => {
 		const db = await getDB();
 		//TODO: 법원 선택해서 해당 법원 사건만 보여주기
-		const cases: SnakeCase<CaseInDB>[] = await db.select(`
+		const cases: CaseInDB[] = await db.select(`
 			SELECT cases.*, courts.name AS court_name 
 			FROM cases
 			JOIN courts
@@ -18,13 +19,16 @@ export const Route = createFileRoute("/")({
 		cases.forEach((c) => {
 			c.court_id = c.court_id.toString();
 		});
-		console.log("cases: ", cases);
+		// console.log("cases: ", cases);
 
 		const courts: SnakeCase<Court>[] = await db.select("SELECT * FROM courts");
 		const filteredCourts = getCourtList(courts);
 
 		return {
-			cases: cases.map((row) => camelizeKeys(row)),
+			cases: cases.map((row) => {
+				const newRow = { ...row, filed_at: strToDate(row.filed_at) };
+				return camelizeKeys(newRow);
+			}),
 			courts: filteredCourts,
 		};
 	},

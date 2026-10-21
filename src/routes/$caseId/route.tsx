@@ -3,7 +3,7 @@ import CaseInfoPanel from "@/components/info-panel/CaseInfoPanel";
 import CoreInfo from "@/components/info-panel/CoreInfo";
 import DetailInfo from "@/components/info-panel/DetailInfo";
 import SectionsPanel from "@/components/section-panel/SectionPanel";
-import { camelizeKeys, type SnakeCase } from "@/lib/camelize";
+import { camelizeKeys } from "@/lib/camelize";
 import type { CaseInDB } from "@/lib/case";
 import { getDB } from "@/lib/db/db";
 
@@ -18,7 +18,7 @@ export const Route = createFileRoute("/$caseId")({
 			ON cases.court_id = courts.id 
 			WHERE cases.id = $1`,
 			[params.caseId],
-		)) as SnakeCase<CaseInDB>[];
+		)) as CaseInDB[];
 
 		return { loadedCase: camelizeKeys(loadedCase) };
 	},

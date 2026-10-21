@@ -1,4 +1,5 @@
 import z from "zod";
+import type { SnakeCase } from "./camelize";
 
 export const CASE_TYPE = [
 	{ label: "민사", value: "civil" },
@@ -29,11 +30,17 @@ export const newCaseFormSchema = z.object({
 		.min(2, { message: "이름을 두 자 이상 입력하세요." }),
 });
 
-export type CaseInForm = z.infer<typeof newCaseFormSchema> & {
+type CaseBasic = z.infer<typeof newCaseFormSchema>;
+
+export type CaseInFront = CaseBasic & {
 	id: string;
 	courtName?: string;
 };
 
-export type CaseInDB = Omit<CaseInForm, "filedAt"> & {
-	filedAt: string;
-};
+export type CaseInDB = SnakeCase<
+	Omit<CaseBasic, "filedAt"> & {
+		id: string;
+		court_name?: string;
+		filed_at: string;
+	}
+>;

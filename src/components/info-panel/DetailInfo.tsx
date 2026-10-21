@@ -18,6 +18,7 @@ export default function DetailInfo({
 					{formattedDate(selectedCase.filedAt)} 접수
 				</p>
 			</div>
+			<Separator />
 
 			{/* 민사 당사자 */}
 			{selectedCase.caseType === "civil" && (
@@ -27,10 +28,23 @@ export default function DetailInfo({
 						<p className="text-xs font-medium text-muted-foreground">원고</p>
 						<p>{selectedCase.plaintiff}</p>
 					</div>
+					<div>
+						<p className="text-xs font-medium text-muted-foreground">
+							원고 대리인
+						</p>
+						<p>{selectedCase.plaintiffLawyer}</p>
+					</div>
+					<Separator />
 					{/* 피고 */}
 					<div>
 						<p className="text-xs font-medium text-muted-foreground">피고</p>
 						<p>{selectedCase.defendant}</p>
+					</div>
+					<div>
+						<p className="text-xs font-medium text-muted-foreground">
+							피고 대리인
+						</p>
+						<p>{selectedCase.defendantLawyer}</p>
 					</div>
 				</div>
 			)}

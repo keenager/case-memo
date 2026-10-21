@@ -1,5 +1,5 @@
 import type { Editor } from "@tiptap/core";
-import type { SectionCategory } from "./sections";
+import type { SectionCategory } from "../sections";
 
 type BaseArgsForSaveMemo = {
 	caseId: string;

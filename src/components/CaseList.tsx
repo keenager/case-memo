@@ -1,6 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import type { CamelCase } from "@/lib/camelize";
-import type { CaseInDB } from "@/lib/case";
+import type { CaseInFront } from "@/lib/case";
 import DeleteCaseDialog from "./dialog/DeleteCaseDialog";
 import type { SelectItemList } from "./dialog/fields/SelectField";
 import UpdateCaseDialog from "./dialog/UpdateCaseDialog";
@@ -17,7 +16,7 @@ export default function CaseList({
 	cases,
 	courts,
 }: {
-	cases: CamelCase<CaseInDB>[];
+	cases: CaseInFront[];
 	courts: SelectItemList;
 }) {
 	if (cases.length === 0) {

@@ -1,13 +1,13 @@
 import { useNavigate } from "@tanstack/react-router";
 import { Trash2Icon } from "lucide-react";
 import { useState } from "react";
-import type { CaseInDB } from "@/lib/case";
+import type { CaseInFront } from "@/lib/case";
 import { deleteCase } from "@/lib/db/delete";
 import { Button } from "../ui/button";
 import { MakeAlertDialog } from "./MakeAlertDialog";
 
 type Props = {
-	selectedCase: CaseInDB;
+	selectedCase: CaseInFront;
 };
 
 export default function DeleteCaseDialog({

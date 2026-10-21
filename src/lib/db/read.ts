@@ -1,5 +1,5 @@
 import { camelizeKeys, type SnakeCase } from "@/lib/camelize";
-import type { Memo } from "@/lib/memo";
+import type { Memo } from "@/lib/memo/types";
 import type { HearingInDB } from "../hearing";
 import type { SectionCategory } from "../sections";
 import { getDB } from "./db";

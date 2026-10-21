@@ -4,14 +4,7 @@ import { PencilIcon } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import type z from "zod";
-import type { CamelCase } from "@/lib/camelize";
-import {
-	CASE_TYPE,
-	type CaseInDB,
-	type CaseInForm,
-	newCaseFormSchema,
-} from "@/lib/case";
-import { strToDate } from "@/lib/date";
+import { CASE_TYPE, type CaseInFront, newCaseFormSchema } from "@/lib/case";
 import { getDB } from "@/lib/db/db";
 import { Button } from "../ui/button";
 import { DatePickField } from "./fields/DatePickField";
@@ -24,19 +17,19 @@ export default function UpdateCaseDialog({
 	selectedCase,
 }: {
 	courts: SelectItemList;
-	selectedCase: CamelCase<CaseInDB>;
+	selectedCase: CaseInFront;
 }) {
 	const [open, setOpen] = useState(false);
 	const navi = useNavigate();
 
-	const valuesToForm: CaseInForm = {
-		...selectedCase,
-		filedAt: strToDate(selectedCase.filedAt),
-	};
+	// const valuesToForm: CaseInFront = {
+	// 	...selectedCase,
+	// 	filedAt: strToDate(selectedCase.filedAt),
+	// };
 
 	const form = useForm<z.infer<typeof newCaseFormSchema>>({
 		resolver: zodResolver(newCaseFormSchema),
-		defaultValues: valuesToForm,
+		defaultValues: selectedCase,
 		mode: "onChange",
 	});
 

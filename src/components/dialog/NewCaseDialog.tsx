@@ -4,7 +4,6 @@ import { PlusIcon } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import type z from "zod";
-import type { SnakeCase } from "@/lib/camelize";
 import { CASE_TYPE, type CaseInDB, newCaseFormSchema } from "@/lib/case";
 import { getDB } from "@/lib/db/db";
 import { Button } from "../ui/button";
@@ -40,7 +39,7 @@ export default function NewCaseDialog({ courts }: { courts: SelectItemList }) {
 			const db = await getDB();
 
 			// 법원명과 사건번호를 통해 같은 사건이 이미 존재한다면 경고를 띄우기.
-			const existingCase: SnakeCase<CaseInDB>[] = await db.select(
+			const existingCase: CaseInDB[] = await db.select(
 				"SELECT * FROM cases WHERE court_id = $1 AND case_number = $2",
 				[data.courtId, data.caseNumber],
 			);
