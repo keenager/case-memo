@@ -66,13 +66,16 @@ export default function NewCaseDialog({ courts }: { courts: SelectItemList }) {
 				],
 			);
 			console.log("Case saved:", result);
+			setOpen(false); // Close the dialog after submission
+			form.reset(); // Reset the form after submission
+			navi({
+				to: "/$caseId",
+				params: { caseId: result.lastInsertId!.toString() },
+			});
 		} catch (error) {
 			// TODO: 토스트 메시지 띄우기
 			console.error("Error saving case:", error);
 		}
-		setOpen(false); // Close the dialog after submission
-		form.reset(); // Reset the form after submission
-		navi({ to: "/" });
 	}
 
 	const args = { open, setOpen, onSubmit: form.handleSubmit(onSubmit) };

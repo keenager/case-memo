@@ -22,11 +22,6 @@ export default function UpdateCaseDialog({
 	const [open, setOpen] = useState(false);
 	const navi = useNavigate();
 
-	// const valuesToForm: CaseInFront = {
-	// 	...selectedCase,
-	// 	filedAt: strToDate(selectedCase.filedAt),
-	// };
-
 	const form = useForm<z.infer<typeof newCaseFormSchema>>({
 		resolver: zodResolver(newCaseFormSchema),
 		defaultValues: selectedCase,

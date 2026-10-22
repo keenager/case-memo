@@ -11,24 +11,19 @@ import type { SelectItemList } from "../dialog/fields/SelectField";
 
 type Props = {
 	courts: SelectItemList;
-	// setSelectedCourtId: React.Dispatch<React.SetStateAction<string | null>>;
 };
 
 export default function CourtSelect({ courts }: Props) {
 	const selectedCourtId = useDefaultCourt((state) => state.courtId);
 	const setSelectedCourtId = useDefaultCourt((state) => state.updateCourtId);
 
-	courts.unshift(
-		{ label: "법원을 선택하세요", value: null },
-		{ label: "전체", value: "all" },
-	);
-
-	// const changeHandler = (value: SelectItemList[number]["value"]) => {
-	// 	setSelectedCourtId(value);
-	// };
 	return (
 		<Select
-			items={courts}
+			items={[
+				{ label: "법원을 선택하세요", value: null },
+				{ label: "전체", value: "all" },
+				...courts,
+			]}
 			value={selectedCourtId}
 			onValueChange={setSelectedCourtId}
 			defaultValue={selectedCourtId}

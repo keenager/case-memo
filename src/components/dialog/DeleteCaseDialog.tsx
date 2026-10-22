@@ -20,10 +20,7 @@ export default function DeleteCaseDialog({
 		try {
 			await deleteCase(caseId);
 			setOpen(false);
-			navi({
-				to: "/",
-				reloadDocument: true,
-			});
+			navi({ to: "/" });
 		} catch (error) {
 			console.error(error);
 		}
