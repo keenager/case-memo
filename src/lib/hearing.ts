@@ -13,6 +13,11 @@ export const newHearingFormSchema = z.object({
 	// defendantLawyerAttended: z.boolean(),
 });
 
+export type HearingBasicInForm = z.infer<typeof newHearingFormSchema>;
+export type HearingBasicInDB = Omit<HearingBasicInForm, "hearingDate"> & {
+	hearingDate: string;
+};
+
 export type AttendanceStatus = {
 	plaintiffAttended: boolean;
 	plaintiffNotAttended: boolean;
@@ -24,13 +29,13 @@ export type AttendanceStatus = {
 	defendantLawyerNotAttended: boolean;
 };
 
-export type HearingInForm = z.infer<typeof newHearingFormSchema> & {
+type Others = {
 	id: string;
 	caseId: string;
 } & AttendanceStatus;
 
-export type HearingInDB = SnakeCase<
-	Omit<HearingInForm, "hearingDate"> & {
-		hearingDate: string;
-	}
->;
+export type HearingInForm = HearingBasicInForm & Others;
+
+export type HearingInDB = SnakeCase<HearingBasicInDB & Others>;
+
+export type HearingInList = HearingBasicInForm & { id: string };

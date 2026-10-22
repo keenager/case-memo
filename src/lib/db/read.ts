@@ -1,4 +1,4 @@
-import { camelizeKeys, type SnakeCase } from "@/lib/camelize";
+import { type CamelCase, camelizeKeys, type SnakeCase } from "@/lib/camelize";
 import type { Memo } from "@/lib/memo/types";
 import type { HearingInDB } from "../hearing";
 import type { SectionCategory } from "../sections";
@@ -35,7 +35,10 @@ export const getCaseNumber = async (caseId: string) => {
 	return case_number;
 };
 
-export const getHearingData = async (caseId: string, hearingId?: string) => {
+export const getHearingData = async (
+	caseId: string,
+	hearingId?: string,
+): Promise<CamelCase<HearingInDB> | CamelCase<HearingInDB>[]> => {
 	const db = await getDB();
 	if (hearingId) {
 		const [loadedHearingData] = (await db.select(
@@ -44,10 +47,10 @@ export const getHearingData = async (caseId: string, hearingId?: string) => {
 		)) as HearingInDB[];
 		return camelizeKeys(loadedHearingData);
 	} else {
-		const loadedHearingDataList: HearingInDB[] = await db.select(
+		const loadedHearingDataList = (await db.select(
 			"SELECT * FROM hearings WHERE case_id = $1 ORDER BY hearing_date ASC, hearing_time ASC",
 			[caseId],
-		);
+		)) as HearingInDB[];
 		return loadedHearingDataList.map((row) => camelizeKeys(row));
 	}
 };

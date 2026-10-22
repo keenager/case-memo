@@ -5,7 +5,7 @@ import type { MemoLayoutProps } from "@/components/section-detail/MemoLayout";
 import MemoLayout from "@/components/section-detail/MemoLayout";
 import type { CamelCase } from "@/lib/camelize";
 import { getCaseNumber, getHearingData, getMemo } from "@/lib/db/read";
-import type { Hearing } from "@/lib/hearing";
+import type { HearingInDB } from "@/lib/hearing";
 import { SECTIONS } from "@/lib/sections";
 
 export const Route = createFileRoute("/$caseId/hearings/$hearingId")({
@@ -16,7 +16,7 @@ export const Route = createFileRoute("/$caseId/hearings/$hearingId")({
 		const loadedHearingData = (await getHearingData(
 			caseId,
 			hearingId,
-		)) as CamelCase<Hearing>;
+		)) as CamelCase<HearingInDB>;
 
 		const loadedMemo = await getMemo({
 			caseId,
@@ -31,12 +31,11 @@ export const Route = createFileRoute("/$caseId/hearings/$hearingId")({
 
 function RouteComponent() {
 	const { caseId, hearingId } = Route.useParams();
-	const hearingOrder = Route.useSearch().hearingOrder?.toString();
 	const { caseNumber, loadedHearingData, loadedMemo } = Route.useLoaderData();
 	const props: MemoLayoutProps = {
 		caseNumber,
 		sectionName: SECTIONS.hearings.title,
-		hearingOrder,
+		hearingOrder: Route.useSearch().hearingOrder,
 	};
 	const contents: string | undefined = loadedMemo?.contents;
 

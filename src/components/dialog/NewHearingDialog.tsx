@@ -9,13 +9,23 @@ import TimePickField from "@/components/dialog/fields/TimePickField";
 import MakeDialog from "@/components/dialog/MakeDialog";
 import { Button } from "@/components/ui/button";
 import { getDB } from "@/lib/db/db";
-import { type HearingInDB, newHearingFormSchema } from "@/lib/hearing";
+import {
+	type HearingInDB,
+	type HearingInList,
+	newHearingFormSchema,
+} from "@/lib/hearing";
 
 type Props = {
 	caseId: string;
+	updateList: React.Dispatch<React.SetStateAction<HearingInList[]>>;
+	updateSelectedId: React.Dispatch<React.SetStateAction<string | undefined>>;
 };
 
-export default function NewHearingDialog({ caseId }: Props) {
+export default function NewHearingDialog({
+	caseId,
+	updateList,
+	updateSelectedId,
+}: Props) {
 	const [open, setOpen] = useState(false);
 	const navi = useNavigate();
 
@@ -52,12 +62,33 @@ export default function NewHearingDialog({ caseId }: Props) {
 				[caseId, data.hearingDate, data.hearingTime],
 			);
 			// console.log("Hearing saved:", result);
+
+			const newHearingId = result.lastInsertId!.toString();
+			let idx: number = -1;
+
+			updateList((prev) => {
+				const hearingList = [...prev, { id: newHearingId, ...data }];
+				hearingList.sort((a, b) => {
+					const dateA = a.hearingDate.getTime();
+					const dateB = b.hearingDate.getTime();
+
+					if (dateA !== dateB) {
+						return dateA - dateB;
+					}
+
+					return a.hearingTime.localeCompare(b.hearingTime);
+				});
+				idx = hearingList.findIndex((item) => item.id === newHearingId);
+				return hearingList;
+			});
+			updateSelectedId(newHearingId);
 			setOpen(false);
 			form.reset();
 			navi({
 				to: "/$caseId/hearings/$hearingId",
 				params: { caseId, hearingId: `${result.lastInsertId}` },
-				reloadDocument: true,
+				search: { hearingOrder: idx },
+				// reloadDocument: true,
 			});
 		} catch (error) {
 			// TODO: 토스트 메시지 띄우기
