@@ -9,6 +9,7 @@ import type { CamelCase } from "@/lib/camelize";
 import { formattedDate, strToDate } from "@/lib/date";
 import { getHearingData } from "@/lib/db/read";
 import type { HearingInDB, HearingInList } from "@/lib/hearing";
+import { useHearing } from "@/store/hearing";
 
 const searchParams = z.object({
 	hearingOrder: z.optional(z.int().min(0)),
@@ -35,8 +36,10 @@ function RouteComponent() {
 			hearingTime: data.hearingTime,
 		})),
 	);
-	const [selectedId, setSelectedId] = useState<string>();
 	console.log("hearings: ", hearings);
+
+	const selectedId = useHearing((state) => state.selectedId);
+	const setSelectedId = useHearing((state) => state.setSelectedId);
 
 	return (
 		<div className="flex-1 overflow-y-auto flex">
@@ -64,13 +67,12 @@ function RouteComponent() {
 							</Link>
 							<div className="flex">
 								<UpdateHearingDialog
-									caseId={caseId}
-									selectedHearing={hearing}
+									targetHearing={hearing}
 									updateList={setHearings}
 								/>
 								<DeleteHearingDialog
 									caseId={caseId}
-									selectedHearing={hearing}
+									targetHearing={hearing}
 									updateList={setHearings}
 								/>
 							</div>
@@ -78,11 +80,7 @@ function RouteComponent() {
 						<Separator />
 					</>
 				))}
-				<NewHearingDialog
-					caseId={caseId}
-					updateList={setHearings}
-					updateSelectedId={setSelectedId}
-				/>
+				<NewHearingDialog caseId={caseId} updateList={setHearings} />
 			</div>
 			<Outlet />
 		</div>

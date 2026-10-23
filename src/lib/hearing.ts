@@ -61,3 +61,17 @@ export const checkSameHearing = async (
 		);
 	}
 };
+
+export const getSortedHearingList = (newList: HearingInList[]) => {
+	newList.sort((a, b) => {
+		const dateA = a.hearingDate.getTime();
+		const dateB = b.hearingDate.getTime();
+
+		if (dateA !== dateB) {
+			return dateA - dateB;
+		}
+
+		return a.hearingTime.localeCompare(b.hearingTime);
+	});
+	return newList;
+};

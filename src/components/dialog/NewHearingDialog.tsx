@@ -11,23 +11,21 @@ import { Button } from "@/components/ui/button";
 import { getDB } from "@/lib/db/db";
 import { handleError } from "@/lib/error";
 import {
+	getSortedHearingList,
 	type HearingInDB,
 	type HearingInList,
 	newHearingFormSchema,
 } from "@/lib/hearing";
+import { useHearing } from "@/store/hearing";
 
 type Props = {
 	caseId: string;
 	updateList: React.Dispatch<React.SetStateAction<HearingInList[]>>;
-	updateSelectedId: React.Dispatch<React.SetStateAction<string | undefined>>;
 };
 
-export default function NewHearingDialog({
-	caseId,
-	updateList,
-	updateSelectedId,
-}: Props) {
+export default function NewHearingDialog({ caseId, updateList }: Props) {
 	const [open, setOpen] = useState(false);
+	const setSelectedId = useHearing((state) => state.setSelectedId);
 	const navi = useNavigate();
 
 	const form = useForm<z.infer<typeof newHearingFormSchema>>({
@@ -70,20 +68,12 @@ export default function NewHearingDialog({
 
 			updateList((prev) => {
 				const hearingList = [...prev, { id: newHearingId, ...data }];
-				hearingList.sort((a, b) => {
-					const dateA = a.hearingDate.getTime();
-					const dateB = b.hearingDate.getTime();
-
-					if (dateA !== dateB) {
-						return dateA - dateB;
-					}
-
-					return a.hearingTime.localeCompare(b.hearingTime);
-				});
-				idx = hearingList.findIndex((item) => item.id === newHearingId);
-				return hearingList;
+				const newList = getSortedHearingList(hearingList);
+				idx = newList.findIndex((item) => item.id === newHearingId);
+				return newList;
 			});
-			updateSelectedId(newHearingId);
+
+			setSelectedId(newHearingId);
 			setOpen(false);
 			form.reset();
 			navi({

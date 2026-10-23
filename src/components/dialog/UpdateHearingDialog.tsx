@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, useParams } from "@tanstack/react-router";
 import { PencilIcon } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -8,33 +8,36 @@ import { getDB } from "@/lib/db/db";
 import { handleError } from "@/lib/error";
 import {
 	checkSameHearing,
+	getSortedHearingList,
 	type HearingInList,
 	newHearingFormSchema,
 } from "@/lib/hearing";
+import { useHearing } from "@/store/hearing";
 import { Button } from "../ui/button";
 import { DatePickField } from "./fields/DatePickField";
 import TimePickField from "./fields/TimePickField";
 import MakeDialog from "./MakeDialog";
 
 type Props = {
-	caseId: string;
-	selectedHearing: HearingInList;
+	targetHearing: HearingInList;
 	updateList: React.Dispatch<React.SetStateAction<HearingInList[]>>;
 };
 
 export default function UpdateHearingDialog({
-	caseId,
-	selectedHearing,
+	targetHearing,
 	updateList,
 }: Props) {
 	const [open, setOpen] = useState(false);
+	const caseId = useParams({ strict: false }).caseId!;
+	const setSelectedId = useHearing((state) => state.setSelectedId);
+
 	const navi = useNavigate();
 
-	console.log("selectedHearing: ", selectedHearing);
+	console.log("targetHearing: ", targetHearing);
 
 	const form = useForm<z.infer<typeof newHearingFormSchema>>({
 		resolver: zodResolver(newHearingFormSchema),
-		values: selectedHearing,
+		values: targetHearing,
 		mode: "onChange",
 	});
 
@@ -56,25 +59,28 @@ export default function UpdateHearingDialog({
 			    WHERE
 					id = $3
 			`,
-				[data.hearingDate, data.hearingTime, selectedHearing.id],
+				[data.hearingDate, data.hearingTime, targetHearing.id],
 			);
-			console.log("Case saved:", result);
+			console.log("Hearing saved:", result);
 
 			let idx = -1;
 
 			updateList((prev) => {
 				const newList = [...prev];
-				idx = newList.findIndex((h) => h.id === selectedHearing.id);
-				newList.splice(idx, 1, { id: selectedHearing.id, ...data });
-				return newList;
+				const prevIdx = newList.findIndex((h) => h.id === targetHearing.id);
+				newList.splice(prevIdx, 1, { id: targetHearing.id, ...data });
+				const sortedList = getSortedHearingList(newList);
+				idx = sortedList.findIndex((h) => h.id === targetHearing.id);
+				return sortedList;
 			});
 
+			setSelectedId(targetHearing.id);
 			setOpen(false); // Close the dialog after submission
 			form.reset(); // Reset the form after submission
 			//TODO: caseId가 여기 한군데에서만 쓰이는데, prop으로 받지 않고 route 훅을 통해 여기서 불러올 수 있을 듯.
 			navi({
 				to: "/$caseId/hearings/$hearingId",
-				params: { caseId, hearingId: selectedHearing.id },
+				params: { caseId, hearingId: targetHearing.id },
 				search: { hearingOrder: idx },
 				// reloadDocument: true,
 			});

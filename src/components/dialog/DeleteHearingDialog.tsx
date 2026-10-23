@@ -9,13 +9,13 @@ import { MakeAlertDialog } from "./MakeAlertDialog";
 
 type Props = {
 	caseId: string;
-	selectedHearing: HearingInList;
+	targetHearing: HearingInList;
 	updateList: React.Dispatch<React.SetStateAction<HearingInList[]>>;
 };
 
 export default function DeleteHearingDialog({
 	caseId,
-	selectedHearing: { id: hearingId, hearingDate, hearingTime },
+	targetHearing: { id: hearingId, hearingDate, hearingTime },
 	updateList,
 }: Props) {
 	const [open, setOpen] = useState(false);
