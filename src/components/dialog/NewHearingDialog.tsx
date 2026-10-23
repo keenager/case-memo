@@ -9,6 +9,7 @@ import TimePickField from "@/components/dialog/fields/TimePickField";
 import MakeDialog from "@/components/dialog/MakeDialog";
 import { Button } from "@/components/ui/button";
 import { getDB } from "@/lib/db/db";
+import { handleError } from "@/lib/error";
 import {
 	type HearingInDB,
 	type HearingInList,
@@ -50,8 +51,9 @@ export default function NewHearingDialog({
 				[caseId, data.hearingDate, data.hearingTime],
 			);
 			if (existingHearing.length > 0) {
-				// TODO: 토스트 메시지 띄우기
-				throw new Error("이미 존재하는 기일입니다.");
+				throw new Error("이미 존재하는 기일입니다.", {
+					cause: "날짜와 시각 중복",
+				});
 			}
 
 			const result = await db.execute(
@@ -91,8 +93,7 @@ export default function NewHearingDialog({
 				// reloadDocument: true,
 			});
 		} catch (error) {
-			// TODO: 토스트 메시지 띄우기
-			console.error("Error saving case:", error);
+			handleError(error);
 		}
 	}
 	const args = { open, setOpen, onSubmit: form.handleSubmit(onSubmit) };

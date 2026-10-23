@@ -1,5 +1,6 @@
 import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
+import { Toaster } from "@/components/ui/toast";
 
 const RootLayout = () => (
 	<div className="mx-3 flex flex-col h-screen">
@@ -15,6 +16,7 @@ const RootLayout = () => (
 		<hr />
 		{/* Main Content */}
 		<Outlet />
+		<Toaster />
 		<TanStackRouterDevtools />
 	</div>
 );

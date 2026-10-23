@@ -1,5 +1,6 @@
 import z from "zod";
 import type { SnakeCase } from "./camelize";
+import { getDB } from "./db/db";
 
 export const CASE_TYPE = [
 	{ label: "민사", value: "civil" },
@@ -34,7 +35,7 @@ type CaseBasic = z.infer<typeof newCaseFormSchema>;
 
 export type CaseInFront = CaseBasic & {
 	id: string;
-	courtName?: string;
+	courtName: string;
 };
 
 export type CaseInDB = SnakeCase<
@@ -44,3 +45,25 @@ export type CaseInDB = SnakeCase<
 		filed_at: string;
 	}
 >;
+
+export const checkSameCase = async (courtId: string, caseNumber: string) => {
+	const db = await getDB();
+
+	const existingCase: {
+		case_number: string;
+		court_name: string;
+	}[] = await db.select(
+		`SELECT cases.case_number, courts.name AS court_name
+				FROM cases 
+				JOIN courts ON courts.id = $1
+				WHERE court_id = $1 AND case_number = $2`,
+		[courtId, caseNumber],
+	);
+
+	if (existingCase.length > 0) {
+		throw new Error(
+			`${existingCase[0].court_name} ${existingCase[0].case_number} 사건이 이미 있습니다.`,
+			{ cause: "사건 중복" },
+		);
+	}
+};

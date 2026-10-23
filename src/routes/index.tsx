@@ -7,7 +7,7 @@ import SearchByCaseName from "@/components/home_screen/SearchByCaseName";
 import SearchByCaseNumber from "@/components/home_screen/SearchByCaseNumber";
 import { Button } from "@/components/ui/button";
 import { camelizeKeys, type SnakeCase } from "@/lib/camelize";
-import type { CaseInDB } from "@/lib/case";
+import type { CaseInDB, CaseInFront } from "@/lib/case";
 import { type Court, getCourtList } from "@/lib/court";
 import { strToDate } from "@/lib/date";
 import { getDB } from "@/lib/db/db";
@@ -34,7 +34,7 @@ export const Route = createFileRoute("/")({
 			cases: cases.map((row) => {
 				const newRow = { ...row, filed_at: strToDate(row.filed_at) };
 				return camelizeKeys(newRow);
-			}),
+			}) as CaseInFront[],
 			courts: filteredCourts,
 		};
 	},

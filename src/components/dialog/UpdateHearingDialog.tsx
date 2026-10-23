@@ -5,8 +5,9 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import type z from "zod";
 import { getDB } from "@/lib/db/db";
+import { handleError } from "@/lib/error";
 import {
-	type HearingInDB,
+	checkSameHearing,
 	type HearingInList,
 	newHearingFormSchema,
 } from "@/lib/hearing";
@@ -44,14 +45,7 @@ export default function UpdateHearingDialog({
 			const db = await getDB();
 
 			// 같은 기일이 이미 존재한다면 경고를 띄우기.
-			const existingHearing: HearingInDB[] = await db.select(
-				"SELECT * FROM hearings WHERE case_id = $1 AND hearing_date = $2 AND hearing_time = $3",
-				[caseId, data.hearingDate, data.hearingTime],
-			);
-			if (existingHearing.length > 0) {
-				// TODO: 토스트 메시지 띄우기
-				throw new Error("이미 존재하는 기일입니다.");
-			}
+			await checkSameHearing(caseId, data.hearingDate, data.hearingTime);
 
 			const result = await db.execute(
 				`
@@ -65,29 +59,28 @@ export default function UpdateHearingDialog({
 				[data.hearingDate, data.hearingTime, selectedHearing.id],
 			);
 			console.log("Case saved:", result);
+
+			let idx = -1;
+
+			updateList((prev) => {
+				const newList = [...prev];
+				idx = newList.findIndex((h) => h.id === selectedHearing.id);
+				newList.splice(idx, 1, { id: selectedHearing.id, ...data });
+				return newList;
+			});
+
+			setOpen(false); // Close the dialog after submission
+			form.reset(); // Reset the form after submission
+			//TODO: caseId가 여기 한군데에서만 쓰이는데, prop으로 받지 않고 route 훅을 통해 여기서 불러올 수 있을 듯.
+			navi({
+				to: "/$caseId/hearings/$hearingId",
+				params: { caseId, hearingId: selectedHearing.id },
+				search: { hearingOrder: idx },
+				// reloadDocument: true,
+			});
 		} catch (error) {
-			// TODO: 토스트 메시지 띄우기
-			console.error("Error saving case:", error);
+			handleError(error);
 		}
-
-		let idx = -1;
-
-		updateList((prev) => {
-			const newList = [...prev];
-			idx = newList.findIndex((h) => h.id === selectedHearing.id);
-			newList.splice(idx, 1, { id: selectedHearing.id, ...data });
-			return newList;
-		});
-
-		setOpen(false); // Close the dialog after submission
-		form.reset(); // Reset the form after submission
-		//TODO: caseId가 여기 한군데에서만 쓰이는데, prop으로 받지 않고 route 훅을 통해 여기서 불러올 수 있을 듯.
-		navi({
-			to: "/$caseId/hearings/$hearingId",
-			params: { caseId, hearingId: selectedHearing.id },
-			search: { hearingOrder: idx },
-			// reloadDocument: true,
-		});
 	}
 
 	const args = {

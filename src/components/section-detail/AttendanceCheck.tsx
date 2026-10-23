@@ -8,9 +8,9 @@ import {
 	FieldLegend,
 	FieldSet,
 } from "@/components/ui/field";
-import { toSnake } from "@/lib/camelize";
+import { type CamelCase, toSnake } from "@/lib/camelize";
 import { getDB } from "@/lib/db/db";
-import type { Hearing } from "@/lib/hearing";
+import type { HearingInDB } from "@/lib/hearing";
 
 const CHECK_LIST = [
 	{ title: "원고", name: "plaintiff" },
@@ -19,7 +19,7 @@ const CHECK_LIST = [
 	{ title: "피고 대리인", name: "defendantLawyer" },
 ] as const;
 
-type ACProps = { hearingId: string; loadedHearing: Hearing };
+type ACProps = { hearingId: string; loadedHearing: CamelCase<HearingInDB> };
 
 export default function AttendanceCheck({ hearingId, loadedHearing }: ACProps) {
 	return (

@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import type z from "zod";
 import type { object } from "zod";
+import { handleError } from "@/lib/error";
 
 type Props = {
 	schema: ReturnType<typeof object>;
@@ -35,8 +36,7 @@ export default function useDialogForm({
 			const result = await fnToDB(data);
 			console.log("Hearing saved:", result);
 		} catch (error) {
-			// TODO: 토스트 메시지 띄우기
-			console.error("Error saving case:", error);
+			handleError(error);
 		}
 		setOpen(false);
 		form.reset();

@@ -4,8 +4,14 @@ import { PencilIcon } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import type z from "zod";
-import { CASE_TYPE, type CaseInFront, newCaseFormSchema } from "@/lib/case";
+import {
+	CASE_TYPE,
+	type CaseInFront,
+	checkSameCase,
+	newCaseFormSchema,
+} from "@/lib/case";
 import { getDB } from "@/lib/db/db";
+import { handleError } from "@/lib/error";
 import { Button } from "../ui/button";
 import { DatePickField } from "./fields/DatePickField";
 import SelectField, { type SelectItemList } from "./fields/SelectField";
@@ -24,7 +30,7 @@ export default function UpdateCaseDialog({
 
 	const form = useForm<z.infer<typeof newCaseFormSchema>>({
 		resolver: zodResolver(newCaseFormSchema),
-		defaultValues: selectedCase,
+		values: selectedCase,
 		mode: "onChange",
 	});
 
@@ -33,6 +39,15 @@ export default function UpdateCaseDialog({
 		// Here you can handle the form submission, e.g., save to database or state
 		try {
 			const db = await getDB();
+
+			// 법원과 사건번호를 통해 같은 사건이 이미 존재한다면 경고를 띄우기. 다만 법원명이나 사건번호를 바꿨을 경우에만.
+
+			if (
+				selectedCase.courtId !== data.courtId ||
+				selectedCase.caseNumber !== data.caseNumber
+			) {
+				await checkSameCase(data.courtId, data.caseNumber);
+			}
 
 			const result = await db.execute(
 				`
@@ -67,9 +82,9 @@ export default function UpdateCaseDialog({
 			);
 			console.log("Case saved:", result);
 		} catch (error) {
-			// TODO: 토스트 메시지 띄우기
-			console.error("Error saving case:", error);
+			handleError(error);
 		}
+
 		setOpen(false); // Close the dialog after submission
 		form.reset(); // Reset the form after submission
 		navi({ to: "/" });

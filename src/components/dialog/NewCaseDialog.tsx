@@ -4,8 +4,9 @@ import { PlusIcon } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import type z from "zod";
-import { CASE_TYPE, type CaseInDB, newCaseFormSchema } from "@/lib/case";
+import { CASE_TYPE, checkSameCase, newCaseFormSchema } from "@/lib/case";
 import { getDB } from "@/lib/db/db";
+import { handleError } from "@/lib/error";
 import { Button } from "../ui/button";
 import { DatePickField } from "./fields/DatePickField";
 import SelectField, { type SelectItemList } from "./fields/SelectField";
@@ -39,14 +40,7 @@ export default function NewCaseDialog({ courts }: { courts: SelectItemList }) {
 			const db = await getDB();
 
 			// 법원명과 사건번호를 통해 같은 사건이 이미 존재한다면 경고를 띄우기.
-			const existingCase: CaseInDB[] = await db.select(
-				"SELECT * FROM cases WHERE court_id = $1 AND case_number = $2",
-				[data.courtId, data.caseNumber],
-			);
-			if (existingCase.length > 0) {
-				// TODO: 토스트 메시지 띄우기
-				throw new Error("이미 존재하는 사건입니다.");
-			}
+			await checkSameCase(data.courtId, data.caseNumber);
 
 			const result = await db.execute(
 				`
@@ -73,8 +67,7 @@ export default function NewCaseDialog({ courts }: { courts: SelectItemList }) {
 				params: { caseId: result.lastInsertId!.toString() },
 			});
 		} catch (error) {
-			// TODO: 토스트 메시지 띄우기
-			console.error("Error saving case:", error);
+			handleError(error);
 		}
 	}
 
