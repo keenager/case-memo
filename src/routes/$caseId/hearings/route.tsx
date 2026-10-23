@@ -71,7 +71,6 @@ function RouteComponent() {
 									updateList={setHearings}
 								/>
 								<DeleteHearingDialog
-									caseId={caseId}
 									targetHearing={hearing}
 									updateList={setHearings}
 								/>
@@ -80,7 +79,7 @@ function RouteComponent() {
 						<Separator />
 					</>
 				))}
-				<NewHearingDialog caseId={caseId} updateList={setHearings} />
+				<NewHearingDialog updateList={setHearings} />
 			</div>
 			<Outlet />
 		</div>

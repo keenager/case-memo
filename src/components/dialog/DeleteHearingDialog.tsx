@@ -1,4 +1,4 @@
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, useParams } from "@tanstack/react-router";
 import { Trash2Icon } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -8,16 +8,15 @@ import type { HearingInList } from "@/lib/hearing";
 import { MakeAlertDialog } from "./MakeAlertDialog";
 
 type Props = {
-	caseId: string;
 	targetHearing: HearingInList;
 	updateList: React.Dispatch<React.SetStateAction<HearingInList[]>>;
 };
 
 export default function DeleteHearingDialog({
-	caseId,
 	targetHearing: { id: hearingId, hearingDate, hearingTime },
 	updateList,
 }: Props) {
+	const caseId = useParams({ strict: false }).caseId!;
 	const [open, setOpen] = useState(false);
 	const navi = useNavigate();
 

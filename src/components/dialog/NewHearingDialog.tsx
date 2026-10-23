@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, useParams } from "@tanstack/react-router";
 import { PlusIcon } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -11,19 +11,19 @@ import { Button } from "@/components/ui/button";
 import { getDB } from "@/lib/db/db";
 import { handleError } from "@/lib/error";
 import {
+	checkSameHearing,
 	getSortedHearingList,
-	type HearingInDB,
 	type HearingInList,
 	newHearingFormSchema,
 } from "@/lib/hearing";
 import { useHearing } from "@/store/hearing";
 
 type Props = {
-	caseId: string;
 	updateList: React.Dispatch<React.SetStateAction<HearingInList[]>>;
 };
 
-export default function NewHearingDialog({ caseId, updateList }: Props) {
+export default function NewHearingDialog({ updateList }: Props) {
+	const caseId = useParams({ strict: false }).caseId!;
 	const [open, setOpen] = useState(false);
 	const setSelectedId = useHearing((state) => state.setSelectedId);
 	const navi = useNavigate();
@@ -44,15 +44,7 @@ export default function NewHearingDialog({ caseId, updateList }: Props) {
 			const db = await getDB();
 
 			// 같은 기일이 이미 존재한다면 경고를 띄우기.
-			const existingHearing: HearingInDB[] = await db.select(
-				"SELECT * FROM hearings WHERE case_id = $1 AND hearing_date = $2 AND hearing_time = $3",
-				[caseId, data.hearingDate, data.hearingTime],
-			);
-			if (existingHearing.length > 0) {
-				throw new Error("이미 존재하는 기일입니다.", {
-					cause: "날짜와 시각 중복",
-				});
-			}
+			await checkSameHearing(caseId, data.hearingDate, data.hearingTime);
 
 			const result = await db.execute(
 				`

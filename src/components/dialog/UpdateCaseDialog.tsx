@@ -41,7 +41,6 @@ export default function UpdateCaseDialog({
 			const db = await getDB();
 
 			// 법원과 사건번호를 통해 같은 사건이 이미 존재한다면 경고를 띄우기. 다만 법원명이나 사건번호를 바꿨을 경우에만.
-
 			if (
 				selectedCase.courtId !== data.courtId ||
 				selectedCase.caseNumber !== data.caseNumber
