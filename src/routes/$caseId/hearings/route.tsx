@@ -1,5 +1,4 @@
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
-import { useState } from "react";
 import z from "zod";
 import DeleteHearingDialog from "@/components/dialog/DeleteHearingDialog";
 import NewHearingDialog from "@/components/dialog/NewHearingDialog";
@@ -8,7 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import type { CamelCase } from "@/lib/camelize";
 import { formattedDate, strToDate } from "@/lib/date";
 import { getHearingData } from "@/lib/db/read";
-import type { HearingInDB, HearingInList } from "@/lib/hearing";
+import type { HearingInDB } from "@/lib/hearing";
 import { useHearing } from "@/store/hearing";
 
 const searchParams = z.object({
@@ -18,25 +17,24 @@ const searchParams = z.object({
 export const Route = createFileRoute("/$caseId/hearings")({
 	validateSearch: searchParams,
 	loader: async ({ params }) => {
-		const hearingDataList = await getHearingData(params.caseId);
-		return hearingDataList;
+		const hearingDataList = (await getHearingData(
+			params.caseId,
+		)) as CamelCase<HearingInDB>[];
+		const simpleList = hearingDataList.map((data) => ({
+			id: data.id,
+			hearingDate: strToDate(data.hearingDate),
+			hearingTime: data.hearingTime,
+		}));
+		useHearing.setState({ hearingList: simpleList });
 	},
 	component: RouteComponent,
 });
 
 function RouteComponent() {
-	const loadedHearingDataList =
-		Route.useLoaderData() as CamelCase<HearingInDB>[];
 	const { caseId } = Route.useParams();
 
-	const [hearings, setHearings] = useState<HearingInList[]>(
-		loadedHearingDataList.map((data) => ({
-			id: data.id,
-			hearingDate: strToDate(data.hearingDate),
-			hearingTime: data.hearingTime,
-		})),
-	);
-	console.log("hearings: ", hearings);
+	const hearingList = useHearing((state) => state.hearingList);
+	// console.log("hearings: ", hearingList);
 
 	const selectedId = useHearing((state) => state.selectedId);
 	const setSelectedId = useHearing((state) => state.setSelectedId);
@@ -46,7 +44,7 @@ function RouteComponent() {
 			<div className="w-64 border-r text-center flex flex-col">
 				<p className="p-2">기일</p>
 				<Separator />
-				{hearings.map((hearing, idx) => (
+				{hearingList.map((hearing, idx) => (
 					<>
 						<div
 							className={`p-2 flex justify-around items-center ${selectedId === hearing.id && "bg-accent"}`}
@@ -66,20 +64,14 @@ function RouteComponent() {
 								</p>
 							</Link>
 							<div className="flex">
-								<UpdateHearingDialog
-									targetHearing={hearing}
-									updateList={setHearings}
-								/>
-								<DeleteHearingDialog
-									targetHearing={hearing}
-									updateList={setHearings}
-								/>
+								<UpdateHearingDialog targetHearing={hearing} />
+								<DeleteHearingDialog targetHearing={hearing} />
 							</div>
 						</div>
 						<Separator />
 					</>
 				))}
-				<NewHearingDialog updateList={setHearings} />
+				<NewHearingDialog />
 			</div>
 			<Outlet />
 		</div>

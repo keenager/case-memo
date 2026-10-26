@@ -13,18 +13,14 @@ import { handleError } from "@/lib/error";
 import {
 	checkSameHearing,
 	getSortedHearingList,
-	type HearingInList,
 	newHearingFormSchema,
 } from "@/lib/hearing";
 import { useHearing } from "@/store/hearing";
 
-type Props = {
-	updateList: React.Dispatch<React.SetStateAction<HearingInList[]>>;
-};
-
-export default function NewHearingDialog({ updateList }: Props) {
+export default function NewHearingDialog() {
 	const caseId = useParams({ strict: false }).caseId!;
 	const [open, setOpen] = useState(false);
+	const setHearingList = useHearing((state) => state.setHearingList);
 	const setSelectedId = useHearing((state) => state.setSelectedId);
 	const navi = useNavigate();
 
@@ -43,7 +39,7 @@ export default function NewHearingDialog({ updateList }: Props) {
 		try {
 			const db = await getDB();
 
-			// 같은 기일이 이미 존재한다면 경고를 띄우기.
+			// 같은 기일이 이미 존재한다면 경고.
 			await checkSameHearing(caseId, data.hearingDate, data.hearingTime);
 
 			const result = await db.execute(
@@ -58,13 +54,14 @@ export default function NewHearingDialog({ updateList }: Props) {
 			const newHearingId = result.lastInsertId!.toString();
 			let idx: number = -1;
 
-			updateList((prev) => {
-				const hearingList = [...prev, { id: newHearingId, ...data }];
-				const newList = getSortedHearingList(hearingList);
-				idx = newList.findIndex((item) => item.id === newHearingId);
-				return newList;
-			});
+			const tempList = [
+				...useHearing.getState().hearingList,
+				{ id: newHearingId, ...data },
+			];
+			const newList = getSortedHearingList(tempList);
+			idx = newList.findIndex((item) => item.id === newHearingId);
 
+			setHearingList(newList);
 			setSelectedId(newHearingId);
 			setOpen(false);
 			form.reset();

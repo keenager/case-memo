@@ -20,15 +20,12 @@ import MakeDialog from "./MakeDialog";
 
 type Props = {
 	targetHearing: HearingInList;
-	updateList: React.Dispatch<React.SetStateAction<HearingInList[]>>;
 };
 
-export default function UpdateHearingDialog({
-	targetHearing,
-	updateList,
-}: Props) {
-	const [open, setOpen] = useState(false);
+export default function UpdateHearingDialog({ targetHearing }: Props) {
 	const caseId = useParams({ strict: false }).caseId!;
+	const [open, setOpen] = useState(false);
+	const setHearingList = useHearing((state) => state.setHearingList);
 	const setSelectedId = useHearing((state) => state.setSelectedId);
 
 	const navi = useNavigate();
@@ -65,15 +62,13 @@ export default function UpdateHearingDialog({
 
 			let idx = -1;
 
-			updateList((prev) => {
-				const newList = [...prev];
-				const prevIdx = newList.findIndex((h) => h.id === targetHearing.id);
-				newList.splice(prevIdx, 1, { id: targetHearing.id, ...data });
-				const sortedList = getSortedHearingList(newList);
-				idx = sortedList.findIndex((h) => h.id === targetHearing.id);
-				return sortedList;
-			});
+			const newList = [...useHearing.getState().hearingList];
+			const prevIdx = newList.findIndex((h) => h.id === targetHearing.id);
+			newList.splice(prevIdx, 1, { id: targetHearing.id, ...data });
+			const sortedList = getSortedHearingList(newList);
+			idx = sortedList.findIndex((h) => h.id === targetHearing.id);
 
+			setHearingList(sortedList);
 			setSelectedId(targetHearing.id);
 			setOpen(false); // Close the dialog after submission
 			form.reset(); // Reset the form after submission

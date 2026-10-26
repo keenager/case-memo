@@ -5,25 +5,27 @@ import { Button } from "@/components/ui/button";
 import { formattedDate } from "@/lib/date";
 import { deleteHearing } from "@/lib/db/delete";
 import type { HearingInList } from "@/lib/hearing";
+import { useHearing } from "@/store/hearing";
 import { MakeAlertDialog } from "./MakeAlertDialog";
 
 type Props = {
 	targetHearing: HearingInList;
-	updateList: React.Dispatch<React.SetStateAction<HearingInList[]>>;
 };
 
 export default function DeleteHearingDialog({
 	targetHearing: { id: hearingId, hearingDate, hearingTime },
-	updateList,
 }: Props) {
 	const caseId = useParams({ strict: false }).caseId!;
 	const [open, setOpen] = useState(false);
+	const setHearingList = useHearing((state) => state.setHearingList);
 	const navi = useNavigate();
 
 	const deleteHandler = async (hearingId: string) => {
 		try {
 			await deleteHearing(hearingId);
-			updateList((prev) => prev.filter((h) => h.id !== hearingId));
+			setHearingList(
+				useHearing.getState().hearingList.filter((h) => h.id !== hearingId),
+			);
 			setOpen(false);
 			navi({
 				to: "/$caseId/hearings",
