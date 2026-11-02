@@ -31,5 +31,5 @@ export const initStoreFromSettingsFile = async () => {
 				error,
 			),
 		);
-	useDefaultCourt.getState().initialize(loadedCourtId ?? null);
+	useDefaultCourt.getState().initialize(loadedCourtId ?? "all");
 };

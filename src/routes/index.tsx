@@ -25,7 +25,6 @@ export const Route = createFileRoute("/")({
 		cases.forEach((c) => {
 			c.court_id = c.court_id.toString();
 		});
-		// console.log("cases: ", cases);
 
 		const courts: SnakeCase<Court>[] = await db.select("SELECT * FROM courts");
 		const filteredCourts = getCourtList(courts);

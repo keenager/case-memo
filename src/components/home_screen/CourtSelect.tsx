@@ -15,25 +15,28 @@ type Props = {
 
 export default function CourtSelect({ courts }: Props) {
 	const selectedCourtId = useDefaultCourt((state) => state.courtId);
+	// console.log("selectedCourtId: ", selectedCourtId);
 	const setSelectedCourtId = useDefaultCourt((state) => state.updateCourtId);
+
+	const itemList = [
+		// { label: "법원을 선택하세요", value: null },
+		{ label: "전체", value: "all" },
+		...courts,
+	];
 
 	return (
 		<Select
-			items={[
-				{ label: "법원을 선택하세요", value: null },
-				{ label: "전체", value: "all" },
-				...courts,
-			]}
+			items={itemList}
 			value={selectedCourtId}
 			onValueChange={setSelectedCourtId}
-			defaultValue={selectedCourtId}
+			// defaultValue={selectedCourtId}
 		>
 			<SelectTrigger className="w-45">
 				<SelectValue />
 			</SelectTrigger>
 			<SelectContent alignItemWithTrigger={true}>
 				<SelectGroup>
-					{courts.map((item) => (
+					{itemList.map((item) => (
 						<SelectItem key={item.value} value={item.value}>
 							{item.label}
 						</SelectItem>

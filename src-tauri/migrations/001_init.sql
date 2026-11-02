@@ -45,3 +45,20 @@ CREATE TABLE IF NOT EXISTS memos (
 	created_at			TEXT DEFAULT CURRENT_TIMESTAMP,
 	updated_at			TEXT DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS flow_nodes (
+    id          INTEGER PRIMARY KEY,
+    memo_id     INTEGER NOT NULL REFERENCES memos(id) ON DELETE CASCADE,
+    para_id     TEXT UNIQUE,
+    party       TEXT NOT NULL,
+    category    TEXT NOT NULL,
+	parent		INTEGER REFERENCES flow_nodes(id)
+);
+
+CREATE TABLE IF NOT EXISTS flow_edges (
+    id				INTEGER PRIMARY KEY,
+	memo_id			INTEGER NOT NULL REFERENCES memos(id) ON DELETE CASCADE,
+    source_id       TEXT NOT NULL REFERENCES flow_nodes(id),
+    target_id       TEXT NOT NULL REFERENCES flow_nodes(id),
+	label			TEXT
+);

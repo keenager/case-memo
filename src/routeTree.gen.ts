@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CaseIdRouteRouteImport } from './routes/$caseId/route'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as CaseIdArgumentsSummaryRouteImport } from './routes/$caseId/arguments-summary'
 import { Route as CaseIdHearingsRouteRouteImport } from './routes/$caseId/hearings/route'
 import { Route as CaseIdNotesRouteImport } from './routes/$caseId/notes'
 import { Route as CaseIdPrinciplesPrecedentsRouteImport } from './routes/$caseId/principles-precedents'
@@ -34,6 +35,11 @@ const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
   getParentRoute: () => rootRouteImport,
+} as any)
+const CaseIdArgumentsSummaryRoute = CaseIdArgumentsSummaryRouteImport.update({
+  id: '/arguments-summary',
+  path: '/arguments-summary',
+  getParentRoute: () => CaseIdRouteRoute,
 } as any)
 const CaseIdHearingsRouteRoute = CaseIdHearingsRouteRouteImport.update({
   id: '/hearings',
@@ -78,6 +84,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/$caseId/hearings': typeof CaseIdHearingsRouteRouteWithChildren
   '/$caseId/trirals': typeof CaseIdTriralsRouteRouteWithChildren
+  '/$caseId/arguments-summary': typeof CaseIdArgumentsSummaryRoute
   '/$caseId/notes': typeof CaseIdNotesRoute
   '/$caseId/principles-precedents': typeof CaseIdPrinciplesPrecedentsRoute
   '/$caseId/witness-testimony': typeof CaseIdWitnessTestimonyRoute
@@ -90,6 +97,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/$caseId/hearings': typeof CaseIdHearingsRouteRouteWithChildren
   '/$caseId/trirals': typeof CaseIdTriralsRouteRouteWithChildren
+  '/$caseId/arguments-summary': typeof CaseIdArgumentsSummaryRoute
   '/$caseId/notes': typeof CaseIdNotesRoute
   '/$caseId/principles-precedents': typeof CaseIdPrinciplesPrecedentsRoute
   '/$caseId/witness-testimony': typeof CaseIdWitnessTestimonyRoute
@@ -103,6 +111,7 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/$caseId/hearings': typeof CaseIdHearingsRouteRouteWithChildren
   '/$caseId/trirals': typeof CaseIdTriralsRouteRouteWithChildren
+  '/$caseId/arguments-summary': typeof CaseIdArgumentsSummaryRoute
   '/$caseId/notes': typeof CaseIdNotesRoute
   '/$caseId/principles-precedents': typeof CaseIdPrinciplesPrecedentsRoute
   '/$caseId/witness-testimony': typeof CaseIdWitnessTestimonyRoute
@@ -117,6 +126,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/$caseId/hearings'
     | '/$caseId/trirals'
+    | '/$caseId/arguments-summary'
     | '/$caseId/notes'
     | '/$caseId/principles-precedents'
     | '/$caseId/witness-testimony'
@@ -129,6 +139,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/$caseId/hearings'
     | '/$caseId/trirals'
+    | '/$caseId/arguments-summary'
     | '/$caseId/notes'
     | '/$caseId/principles-precedents'
     | '/$caseId/witness-testimony'
@@ -141,6 +152,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/$caseId/hearings'
     | '/$caseId/trirals'
+    | '/$caseId/arguments-summary'
     | '/$caseId/notes'
     | '/$caseId/principles-precedents'
     | '/$caseId/witness-testimony'
@@ -176,6 +188,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/about'
       preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/$caseId/arguments-summary': {
+      id: '/$caseId/arguments-summary'
+      path: '/arguments-summary'
+      fullPath: '/$caseId/arguments-summary'
+      preLoaderRoute: typeof CaseIdArgumentsSummaryRouteImport
+      parentRoute: typeof CaseIdRouteRoute
     }
     '/$caseId/hearings': {
       id: '/$caseId/hearings'
@@ -254,6 +273,7 @@ const CaseIdTriralsRouteRouteWithChildren =
 interface CaseIdRouteRouteChildren {
   CaseIdHearingsRouteRoute: typeof CaseIdHearingsRouteRouteWithChildren
   CaseIdTriralsRouteRoute: typeof CaseIdTriralsRouteRouteWithChildren
+  CaseIdArgumentsSummaryRoute: typeof CaseIdArgumentsSummaryRoute
   CaseIdNotesRoute: typeof CaseIdNotesRoute
   CaseIdPrinciplesPrecedentsRoute: typeof CaseIdPrinciplesPrecedentsRoute
   CaseIdWitnessTestimonyRoute: typeof CaseIdWitnessTestimonyRoute
@@ -262,6 +282,7 @@ interface CaseIdRouteRouteChildren {
 const CaseIdRouteRouteChildren: CaseIdRouteRouteChildren = {
   CaseIdHearingsRouteRoute: CaseIdHearingsRouteRouteWithChildren,
   CaseIdTriralsRouteRoute: CaseIdTriralsRouteRouteWithChildren,
+  CaseIdArgumentsSummaryRoute: CaseIdArgumentsSummaryRoute,
   CaseIdNotesRoute: CaseIdNotesRoute,
   CaseIdPrinciplesPrecedentsRoute: CaseIdPrinciplesPrecedentsRoute,
   CaseIdWitnessTestimonyRoute: CaseIdWitnessTestimonyRoute,

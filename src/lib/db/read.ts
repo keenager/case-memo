@@ -1,5 +1,6 @@
 import { type CamelCase, camelizeKeys, type SnakeCase } from "@/lib/camelize";
 import type { Memo } from "@/lib/memo/types";
+import type { FlowEdge, FlowNode } from "../diagram/types";
 import type { HearingInDB } from "../hearing";
 import type { SectionCategory } from "../sections";
 import { getDB } from "./db";
@@ -26,12 +27,12 @@ export const getMemo = async ({
 	return result.length > 0 ? camelizeKeys(result[0]) : undefined;
 };
 
-export const getCaseNumber = async (caseId: string) => {
+export const getCaseNumber = async (caseId: number) => {
 	const db = await getDB();
-	const { case_number } = (await db.select(
+	const [{ case_number }] = (await db.select(
 		`SELECT case_number FROM cases WHERE id = $1`,
 		[caseId],
-	)) as { case_number: string };
+	)) as [{ case_number: string }];
 	return case_number;
 };
 
@@ -53,4 +54,28 @@ export const getHearingData = async (
 		)) as HearingInDB[];
 		return loadedHearingDataList.map((row) => camelizeKeys(row));
 	}
+};
+
+export const getFlowNodes = async (memoId: number | undefined) => {
+	if (memoId === undefined) {
+		return [];
+	}
+	const db = await getDB();
+	const result: SnakeCase<FlowNode>[] = await db.select(
+		`SELECT * FROM flow_nodes WHERE memo_id = $1`,
+		[memoId],
+	);
+	return result.length > 0 ? result.map((row) => camelizeKeys(row)) : [];
+};
+
+export const getFlowEdges = async (memoId: number | undefined) => {
+	if (memoId === undefined) {
+		return [];
+	}
+	const db = await getDB();
+	const result: FlowEdge[] = await db.select(
+		`SELECT * FROM flow_edges WHERE memo_id = $1`,
+		[memoId],
+	);
+	return result.length > 0 ? result.map((row) => camelizeKeys(row)) : [];
 };

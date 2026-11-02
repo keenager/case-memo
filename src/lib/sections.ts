@@ -1,3 +1,4 @@
+import { Route as ArgumentsSummaryRoute } from "@/routes/$caseId/arguments-summary";
 import { Route as HearingsRouteRoute } from "@/routes/$caseId/hearings/route";
 import { Route as NotesRoute } from "@/routes/$caseId/notes";
 import { Route as PrinciplesPrecedentsRoute } from "@/routes/$caseId/principles-precedents";
@@ -7,6 +8,7 @@ import { Route as WitnessTestimonyRoute } from "@/routes/$caseId/witness-testimo
 
 export const SECTION_CATEGORIES = [
 	"hearings",
+	"arguments-summary",
 	"principles-precedents",
 	"witness-testimony",
 	"notes",
@@ -21,6 +23,10 @@ export const SECTIONS: Record<
 	hearings: {
 		title: "기일 진행",
 		route: HearingsRouteRoute.fullPath,
+	},
+	"arguments-summary": {
+		title: "당사자 주장 정리",
+		route: ArgumentsSummaryRoute.fullPath,
 	},
 	"principles-precedents": {
 		title: "관련 법리 및 판례",

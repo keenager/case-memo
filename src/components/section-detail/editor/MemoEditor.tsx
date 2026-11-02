@@ -1,12 +1,14 @@
 import "@/components/section-detail/editor/styles.css";
+import UniqueID from "@tiptap/extension-unique-id";
 import { EditorContent, useEditor } from "@tiptap/react";
-import { BubbleMenu, FloatingMenu } from "@tiptap/react/menus";
+import { FloatingMenu } from "@tiptap/react/menus";
 import StarterKit from "@tiptap/starter-kit";
 import { Check } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { debounce } from "@/lib/memo/debounce";
 import type { ArgsForEditor } from "@/lib/memo/types";
 import { isEmpty, saveMemo } from "../../../lib/memo/save";
+import BubbleMenuBar from "./BubbleMenuBar";
 import { MenuBar } from "./MenuBar";
 
 export default function MemoEditor(props: ArgsForEditor) {
@@ -29,7 +31,10 @@ export default function MemoEditor(props: ArgsForEditor) {
 	// console.log("MemoEditor contents:", contents);
 
 	const editor = useEditor({
-		extensions: [StarterKit],
+		extensions: [
+			StarterKit,
+			UniqueID.configure({ types: ["heading", "paragraph"] }),
+		],
 		content: contents ? JSON.parse(contents) : "",
 		editorProps: {
 			attributes: { class: "prose prose-sm max-w-none focus:outline-none" },
@@ -87,9 +92,9 @@ export default function MemoEditor(props: ArgsForEditor) {
 			<FloatingMenu editor={editor} className="border">
 				This is the floating menu
 			</FloatingMenu>
-			<BubbleMenu editor={editor} className="border">
-				This is the bubble menu
-			</BubbleMenu>
+			{sectionCategory === "arguments-summary" && (
+				<BubbleMenuBar editor={editor} />
+			)}
 		</>
 	);
 }
