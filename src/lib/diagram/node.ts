@@ -1,5 +1,5 @@
-import type { Edge } from "@xyflow/react";
-import type { ClaimCategory, FlowNode, FlowNodeWithContent } from "./types";
+import type { CustomNodeType } from "@/components/diagram/CustomNodes";
+import type { FlowNode, FlowNodeWithContent } from "./types";
 
 export const getFlowNodesWithContents = (
 	diagrams: FlowNode[],
@@ -16,52 +16,95 @@ export const getFlowNodesWithContents = (
 	return result;
 };
 
-export const makeCustomNodeFn =
-	(edges: Edge[]) =>
-	(n: FlowNodeWithContent, idx: number, nodes: FlowNodeWithContent[]) => {
-		return {
-			id: n.id.toString(),
-			type: n.party,
-			position: getPosition(n, idx, nodes, edges),
-			data: { label: n.content },
-		};
+export const classifyNodes = (flowNodesWithContents: FlowNodeWithContent[]) => {
+	// {부모 id: 자식 노드[]}
+	const parentsChildren = flowNodesWithContents.reduce<
+		Record<number, FlowNodeWithContent[]>
+	>((acc, val, _) => {
+		if (val.parentId) {
+			const curChildren = acc[val.parentId];
+			acc[val.parentId] = curChildren ? [...curChildren, val] : [val];
+			return acc;
+		} else {
+			return acc;
+		}
+	}, {});
+	console.log("parentsChildren: ", parentsChildren);
+
+	const nodesClassified: CustomNodeType[] = [];
+	//  const nodesUnclassified = [];
+	let depthX = 0,
+		depthY = 0;
+
+	const place = (node: FlowNodeWithContent, depthX: number, depthY: number) => {
+		nodesClassified.push({
+			id: node.id.toString(),
+			type: node.party,
+			position: { x: depthX * 30, y: depthY * 70 },
+			data: { label: node.category, content: node.content },
+		} as CustomNodeType);
 	};
 
-type Coordinate = { x: number; y: number };
-// type Position = Record<ClaimCategory, Coordinate>;
+	const reliefList = flowNodesWithContents.filter(
+		(n) => n.category === "relief",
+	);
+	reliefList.forEach((relief) => {
+		depthY++;
+		place(relief, depthX, depthY);
+		const grounds: FlowNodeWithContent[] | undefined =
+			parentsChildren[relief.id];
+		if (!grounds) return;
+		depthX++;
+		grounds.forEach((ground) => {
+			depthY++;
+			place(ground, depthX, depthY);
+			const elementsAndRedefenses = parentsChildren[ground.id];
+			if (!elementsAndRedefenses) return;
+			const sortedList = [
+				...elementsAndRedefenses.filter((n) => n.category === "element"),
+				...elementsAndRedefenses.filter((n) => n.category === "defense"),
+			];
+			depthX++;
+			sortedList.forEach((el) => {
+				depthY++;
+				place(el, depthX, depthY);
+				if (el.category === "defense") {
+					const elementsForRedefense = parentsChildren[el.id];
+					if (!elementsForRedefense) return;
+					depthX++;
+					elementsForRedefense.forEach((el) => {
+						depthY++;
+						place(el, depthX, depthY);
+					});
+					depthX--;
+				}
+			});
+			depthX--;
+		});
 
-// const position: Position = { relief: { x: 0, y: 0 }, ground: { x: 20, y: 50 }, defense: {x: } };
+		depthX--;
+	});
+	console.log("nodesClassified: ", nodesClassified);
 
-const getPosition = (
-	n: FlowNodeWithContent,
-	idx: number,
-	nodes: FlowNodeWithContent[],
-	edges: Edge[],
-): Coordinate => {
-	const position = { x: 0, y: 0 };
-	if (n.party === "plaintiff") {
-		if (n.category === "ground") position.x += 20;
-		else if (n.category === "element") {
-			position.x += 40;
-		}
+	depthX = 10;
+	depthY = 0;
+	const defenseList = flowNodesWithContents.filter(
+		(n) => n.category === "defense",
+	);
+	defenseList.forEach((defense) => {
+		//원고의 재항변은 건너뛰기
+		if (defense.party === "plaintiff") return;
 
-		if (n.category === "defense") position.y += 300;
-		position.y += idx * 50;
-
-		return position;
-		//  {
-		// 	x:
-		// 		n.category === "relief"
-		// 			? 0
-		// 			: n.category === "ground"
-		// 				? 20
-		// 				: n.category === "element"
-		// 					? 40
-		// 					: 300,
-		// 	y: 0 + idx * 50,
-		// };
-	} else {
-		position.x += 300;
-		return position;
-	}
+		depthY++;
+		place(defense, depthX, depthY);
+		const elements = parentsChildren[defense.id];
+		if (!elements) return;
+		depthX++;
+		elements.forEach((el) => {
+			depthY++;
+			place(el, depthX, depthY);
+		});
+		depthX--;
+	});
+	return nodesClassified;
 };

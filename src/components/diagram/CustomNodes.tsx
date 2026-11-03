@@ -1,37 +1,57 @@
 import {
-	type BuiltInNode,
-	Handle,
-	type Node,
-	type NodeProps,
-	Position,
+  type BuiltInNode,
+  Handle,
+  type Node,
+  type NodeProps,
+  Position,
 } from "@xyflow/react";
-import { Item, ItemContent, ItemDescription } from "../ui/item";
+import { CLAIM_CATEGORIES, type ClaimCategory } from "@/lib/diagram/types";
+import { Badge } from "../ui/badge";
+import { Item, ItemContent, ItemDescription, ItemHeader } from "../ui/item";
 
-type CustomNode = Node<{ label: string }, "aaa">;
+type CustomNode = Node<{ label: ClaimCategory; content: string }, "aaa">;
 export type CustomNodeType = BuiltInNode | CustomNode;
 
 export function PlaintiffNode({ data }: NodeProps<CustomNode>) {
-	return (
-		<div>
-			<Item variant="outline" size="sm">
-				<ItemContent>
-					<ItemDescription>{data.label}</ItemDescription>
-				</ItemContent>
-			</Item>
-			<Handle type="target" position={Position.Right} />
-		</div>
-	);
+  return (
+    <div>
+      <Item
+        variant="outline"
+        size="default"
+        className="flex flex-col gap-1 px-2 py-1"
+      >
+        <ItemHeader className="w-full">
+          <Badge className="bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300">
+            {CLAIM_CATEGORIES[data.label]}
+          </Badge>
+        </ItemHeader>
+        <ItemContent>
+          <ItemDescription className="text-lg">{data.content}</ItemDescription>
+        </ItemContent>
+      </Item>
+      <Handle type="target" position={Position.Right} />
+    </div>
+  );
 }
 
 export function DefendantNode({ data }: NodeProps<CustomNode>) {
-	return (
-		<div>
-			<Item variant="outline" size="sm">
-				<ItemContent>
-					<ItemDescription>{data.label}</ItemDescription>
-				</ItemContent>
-			</Item>
-			<Handle type="source" position={Position.Left} />
-		</div>
-	);
+  return (
+    <div>
+      <Item
+        variant="outline"
+        size="sm"
+        className="flex flex-col gap-1 px-2 py-1"
+      >
+        <ItemHeader className="w-full">
+          <Badge className="bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300">
+            {CLAIM_CATEGORIES[data.label]}
+          </Badge>
+        </ItemHeader>
+        <ItemContent>
+          <ItemDescription className="text-lg">{data.content}</ItemDescription>
+        </ItemContent>
+      </Item>
+      <Handle type="source" position={Position.Left} />
+    </div>
+  );
 }

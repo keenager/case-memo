@@ -52,13 +52,13 @@ CREATE TABLE IF NOT EXISTS flow_nodes (
     para_id     TEXT UNIQUE,
     party       TEXT NOT NULL,
     category    TEXT NOT NULL,
-	parent		INTEGER REFERENCES flow_nodes(id)
+	parent_id		INTEGER REFERENCES flow_nodes(id)
 );
 
 CREATE TABLE IF NOT EXISTS flow_edges (
     id				INTEGER PRIMARY KEY,
 	memo_id			INTEGER NOT NULL REFERENCES memos(id) ON DELETE CASCADE,
-    source_id       TEXT NOT NULL REFERENCES flow_nodes(id),
-    target_id       TEXT NOT NULL REFERENCES flow_nodes(id),
+    source_id       INTEGER NOT NULL REFERENCES flow_nodes(id),
+    target_id       INTEGER NOT NULL REFERENCES flow_nodes(id),
 	label			TEXT
 );

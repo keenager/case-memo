@@ -12,7 +12,7 @@ import "@xyflow/react/dist/style.css";
 import type { CustomNodeType } from "@/components/diagram/CustomNodes";
 import { getDB } from "@/lib/db/db";
 import { makeCustomEdgeFn } from "@/lib/diagram/edge";
-import { getFlowNodesWithContents, makeCustomNodeFn } from "@/lib/diagram/node";
+import { classifyNodes, getFlowNodesWithContents } from "@/lib/diagram/node";
 import type { FlowEdge, FlowNodeWithContent } from "@/lib/diagram/types";
 import { handleError } from "@/lib/error";
 import { useFlow } from "@/store/diagram";
@@ -68,19 +68,20 @@ export const useDiagrams = () => {
 		console.log("loadedNodes: ", loadedNodes);
 		console.log("loadedEdges: ", loadedEdges);
 
-		if (!loadedNodes) return;
+		if (loadedNodes.length === 0) return;
 		const targetTags = document
 			.querySelector(".tiptap")
 			?.querySelectorAll("[data-id]");
 		if (!targetTags) return;
+
+		// 위에서 return 처리를 했기 때문에 flowNodesWithContents에는 뭔가가 있음이 보장됨.
 		const flowNodesWithContents: FlowNodeWithContent[] =
 			getFlowNodesWithContents(loadedNodes, targetTags);
-		console.log("flowNodesWithContents: ", flowNodesWithContents);
+		// console.log("flowNodesWithContents: ", flowNodesWithContents);
 
+		const nodes = classifyNodes(flowNodesWithContents);
 		const edges = loadedEdges?.map<Edge>(makeCustomEdgeFn) ?? [];
-		const nodes = flowNodesWithContents.map<CustomNodeType>(
-			makeCustomNodeFn(edges),
-		);
+
 		setNodes(nodes);
 		setCurrentFlowNodesWithContents(flowNodesWithContents);
 		setEdges(edges);
@@ -90,6 +91,8 @@ export const useDiagrams = () => {
 		console.log("nodes: ", nodes);
 		console.log("edges: ", edges);
 		if (!currentMemoId) return;
+		console.log(edges[edges.length - 1].source);
+		console.log(+edges[edges.length - 1].source);
 		const flowEdges = edges.map<FlowEdge>((e) => ({
 			memoId: currentMemoId,
 			sourceId: +e.source,

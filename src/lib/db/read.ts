@@ -77,5 +77,7 @@ export const getFlowEdges = async (memoId: number | undefined) => {
 		`SELECT * FROM flow_edges WHERE memo_id = $1`,
 		[memoId],
 	);
+	console.log("flowEdges from db: ", result);
+
 	return result.length > 0 ? result.map((row) => camelizeKeys(row)) : [];
 };

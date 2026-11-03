@@ -18,7 +18,7 @@
     "@tailwindcss/vite": "^4.3.3",
     "@tanstack/react-router": "^1.170.31",
     "@tanstack/react-router-devtools": "^1.167.1",
-    "@tauri-apps/plugin-sql": "~2.4.0",
+    "@tauri-apps/plugin-sql": "~2.6.0",
     "@tauri-apps/plugin-store": "~2.5.0",
     "@tiptap/core": "^3.30.3",
     "@tiptap/extension-unique-id": "^3.32.0",
