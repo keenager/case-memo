@@ -9,6 +9,7 @@ import {
 } from "@xyflow/react";
 import { useCallback, useEffect, useState } from "react";
 import "@xyflow/react/dist/style.css";
+import type { QueryResult } from "@tauri-apps/plugin-sql";
 import type { CustomNodeType } from "@/components/diagram/CustomNodes";
 import { getDB } from "@/lib/db/db";
 import { makeCustomEdgeFn } from "@/lib/diagram/edge";
@@ -65,8 +66,8 @@ export const useDiagrams = () => {
 	);
 
 	useEffect(() => {
-		console.log("loadedNodes: ", loadedNodes);
-		console.log("loadedEdges: ", loadedEdges);
+		// console.log("loadedNodes: ", loadedNodes);
+		// console.log("loadedEdges: ", loadedEdges);
 
 		if (loadedNodes.length === 0) return;
 		const targetTags = document
@@ -77,10 +78,11 @@ export const useDiagrams = () => {
 		// 위에서 return 처리를 했기 때문에 flowNodesWithContents에는 뭔가가 있음이 보장됨.
 		const flowNodesWithContents: FlowNodeWithContent[] =
 			getFlowNodesWithContents(loadedNodes, targetTags);
-		// console.log("flowNodesWithContents: ", flowNodesWithContents);
+		console.log("flowNodesWithContents: ", flowNodesWithContents);
 
 		const nodes = classifyNodes(flowNodesWithContents);
 		const edges = loadedEdges?.map<Edge>(makeCustomEdgeFn) ?? [];
+		console.log(edges);
 
 		setNodes(nodes);
 		setCurrentFlowNodesWithContents(flowNodesWithContents);
@@ -91,8 +93,7 @@ export const useDiagrams = () => {
 		console.log("nodes: ", nodes);
 		console.log("edges: ", edges);
 		if (!currentMemoId) return;
-		console.log(edges[edges.length - 1].source);
-		console.log(+edges[edges.length - 1].source);
+
 		const flowEdges = edges.map<FlowEdge>((e) => ({
 			memoId: currentMemoId,
 			sourceId: +e.source,
@@ -101,18 +102,31 @@ export const useDiagrams = () => {
 		}));
 		try {
 			const db = await getDB();
-			const placeholder = flowEdges.map((_) => "(?, ?, ?, ?)").join(", ");
-			const values = flowEdges.flatMap((e) => [
-				e.memoId,
-				e.sourceId,
-				e.targetId,
-				e.label,
-			]);
-			const result = await db.execute(
-				`INSERT INTO flow_edges (memo_id, source_id, target_id, label) VALUES ${placeholder}`,
-				values,
-			);
-			console.log("edges saved: ", result);
+			for (let i = 0; i < flowEdges.length; i++) {
+				const values = Object.values(flowEdges[i]);
+				const exist = await db.select<FlowEdge[]>(
+					`SELECT * FROM flow_edges WHERE memo_id = $1 AND source_id = $2 AND target_id = $3`,
+					[...values.slice(0, -1)],
+				);
+				if (exist.length > 0) continue;
+
+				await db.execute(
+					`INSERT INTO flow_edges (memo_id, source_id, target_id, label) VALUES ($1, $2, $3, $4)`,
+					[...values],
+				);
+			}
+			// const placeholder = flowEdges.map((_) => "(?, ?, ?, ?)").join(", ");
+			// const values = flowEdges.flatMap((e) => [
+			// 	e.memoId,
+			// 	e.sourceId,
+			// 	e.targetId,
+			// 	e.label,
+			// ]);
+			// const result = await db.execute(
+			// 	`INSERT INTO flow_edges (memo_id, source_id, target_id, label) VALUES ${placeholder}`,
+			// 	values,
+			// );
+			// console.log("edges saved: ", result);
 		} catch (error) {
 			handleError(error);
 		}
