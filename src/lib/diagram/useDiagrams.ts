@@ -9,7 +9,6 @@ import {
 } from "@xyflow/react";
 import { useCallback, useEffect, useState } from "react";
 import "@xyflow/react/dist/style.css";
-import type { QueryResult } from "@tauri-apps/plugin-sql";
 import type { CustomNodeType } from "@/components/diagram/CustomNodes";
 import { getDB } from "@/lib/db/db";
 import { makeCustomEdgeFn } from "@/lib/diagram/edge";
@@ -82,7 +81,23 @@ export const useDiagrams = () => {
 
 		const nodes = classifyNodes(flowNodesWithContents);
 		const edges = loadedEdges?.map<Edge>(makeCustomEdgeFn) ?? [];
-		console.log(edges);
+		// console.log(edges);
+
+		// 피고 항변의 위치 조정
+		edges.forEach((edge) => {
+			const sourceNodeToAdj = nodes.find(
+				(n) => n.id === edge.source && n.type === "defendant",
+			);
+			const targetNode = nodes.find((n) => n.id === edge.target);
+			if (!sourceNodeToAdj || !targetNode) return;
+
+			const parent = nodes.find((n) => n.id === targetNode.parentId);
+			if (targetNode.parentId && parent) {
+				sourceNodeToAdj.position.y = parent.position.y + targetNode.position.y;
+			} else {
+				sourceNodeToAdj.position.y = targetNode.position.y;
+			}
+		});
 
 		setNodes(nodes);
 		setCurrentFlowNodesWithContents(flowNodesWithContents);
@@ -115,18 +130,6 @@ export const useDiagrams = () => {
 					[...values],
 				);
 			}
-			// const placeholder = flowEdges.map((_) => "(?, ?, ?, ?)").join(", ");
-			// const values = flowEdges.flatMap((e) => [
-			// 	e.memoId,
-			// 	e.sourceId,
-			// 	e.targetId,
-			// 	e.label,
-			// ]);
-			// const result = await db.execute(
-			// 	`INSERT INTO flow_edges (memo_id, source_id, target_id, label) VALUES ${placeholder}`,
-			// 	values,
-			// );
-			// console.log("edges saved: ", result);
 		} catch (error) {
 			handleError(error);
 		}
