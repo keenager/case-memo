@@ -11,7 +11,7 @@ import { useCallback, useEffect, useState } from "react";
 import "@xyflow/react/dist/style.css";
 import type { CustomNodeType } from "@/components/diagram/CustomNodes";
 import { getDB } from "@/lib/db/db";
-import { makeCustomEdgeFn } from "@/lib/diagram/edge";
+import { adjustDefencesHeight, makeCustomEdgeFn } from "@/lib/diagram/edge";
 import { classifyNodes, getFlowNodesWithContents } from "@/lib/diagram/node";
 import type { FlowEdge, FlowNodeWithContent } from "@/lib/diagram/types";
 import { handleError } from "@/lib/error";
@@ -65,42 +65,26 @@ export const useDiagrams = () => {
 	);
 
 	useEffect(() => {
-		// console.log("loadedNodes: ", loadedNodes);
-		// console.log("loadedEdges: ", loadedEdges);
-
 		if (loadedNodes.length === 0) return;
 		const targetTags = document
 			.querySelector(".tiptap")
 			?.querySelectorAll("[data-id]");
 		if (!targetTags) return;
-
 		// 위에서 return 처리를 했기 때문에 flowNodesWithContents에는 뭔가가 있음이 보장됨.
+
+		// node 처리
 		const flowNodesWithContents: FlowNodeWithContent[] =
 			getFlowNodesWithContents(loadedNodes, targetTags);
-		console.log("flowNodesWithContents: ", flowNodesWithContents);
-
 		const nodes = classifyNodes(flowNodesWithContents);
+
+		// edge 처리
 		const edges = loadedEdges?.map<Edge>(makeCustomEdgeFn) ?? [];
-		// console.log(edges);
 
-		// 피고 항변의 위치 조정
-		edges.forEach((edge) => {
-			const sourceNodeToAdj = nodes.find(
-				(n) => n.id === edge.source && n.type === "defendant",
-			);
-			const targetNode = nodes.find((n) => n.id === edge.target);
-			if (!sourceNodeToAdj || !targetNode) return;
+		// 피고 항변 node의 위치 조정
+		adjustDefencesHeight(edges, nodes);
 
-			const parent = nodes.find((n) => n.id === targetNode.parentId);
-			if (targetNode.parentId && parent) {
-				sourceNodeToAdj.position.y = parent.position.y + targetNode.position.y;
-			} else {
-				sourceNodeToAdj.position.y = targetNode.position.y;
-			}
-		});
-
-		setNodes(nodes);
 		setCurrentFlowNodesWithContents(flowNodesWithContents);
+		setNodes(nodes);
 		setEdges(edges);
 	}, [loadedNodes, setCurrentFlowNodesWithContents, loadedEdges]);
 

@@ -4,36 +4,16 @@ import { EditorContent, useEditor } from "@tiptap/react";
 import { FloatingMenu } from "@tiptap/react/menus";
 import StarterKit from "@tiptap/starter-kit";
 import { Check } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import { debounce } from "@/lib/memo/debounce";
+import { isEmpty } from "@/lib/memo/save";
 import type { ArgsForEditor } from "@/lib/memo/types";
-import { useFlow } from "@/store/diagram";
-import { isEmpty, saveMemo } from "../../../lib/memo/save";
 import BubbleMenuBar from "./BubbleMenuBar";
 import { MenuBar } from "./MenuBar";
 import "./editor.css"
 import Highlight from "@tiptap/extension-highlight"
+import { useMemoEditor } from "@/lib/memo/useMemoEditor";
 
 export default function MemoEditor(props: ArgsForEditor) {
-  const { caseId, sectionCategory, contents } = props;
-  const flowNodes = useFlow(state => state.currentFlowNodes);
-
-  const [showNoti, setShowNoti] = useState(false);
-  const toggleNoti = () => {
-    setShowNoti(true);
-    setTimeout(() => {
-      setShowNoti(false);
-    }, 2000);
-  };
-
-  const debouncedSave = useRef(
-    debounce(async () => {
-      await saveHandler();
-      console.log("업데이트!!!");
-    }, 1500),
-  ).current;
-  // console.log("MemoEditor contents:", contents);
-
+  const { sectionCategory, contents } = props;
 
   const editor = useEditor({
     extensions: [
@@ -52,53 +32,8 @@ export default function MemoEditor(props: ArgsForEditor) {
     },
   });
   
-  useEffect(() => {
-    if(!editor) return;
+const {showNoti, debouncedSave} = useMemoEditor({editor, props});
 
-    flowNodes.forEach((fn)=>{
-      let startPos = 0,endPos = 0;
-
-      editor.state.doc.descendants((node, pos) => {
-        if(node.attrs.id === fn.paraId){
-            startPos = pos + 1;
-            endPos = pos + node.nodeSize -1;
-            editor.chain().setTextSelection({from: startPos, to: endPos}).setHighlight({ color: '#fff3bf' }).blur().run();
-            return false;
-        }
-        return true;
-      })
-    })
-    // editor.commands.focus("start");
-
-    // console.log("MemoEditor contents changed:", contents);
-  }, [editor, flowNodes]);
-
-  const saveHandler = async () => {
-    try {
-      if (sectionCategory === "hearings") {
-        if (!props.hearingId) {
-          console.error("Hearing ID is required for hearings section");
-          return;
-        }
-        await saveMemo({
-          caseId,
-          sectionCategory,
-          hearingId: props.hearingId,
-          contents: editor.getJSON(),
-        });
-        toggleNoti();
-      } else {
-        await saveMemo({
-          caseId,
-          sectionCategory,
-          contents: editor.getJSON(),
-        });
-        toggleNoti();
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   return (
     <>

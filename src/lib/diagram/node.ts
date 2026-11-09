@@ -1,4 +1,7 @@
-import type { CustomNodeType } from "@/components/diagram/CustomNodes";
+import type {
+	CustomNode,
+	CustomNodeType,
+} from "@/components/diagram/CustomNodes";
 import type { ClaimCategory, FlowNode, FlowNodeWithContent } from "./types";
 
 export const getFlowNodesWithContents = (
@@ -28,14 +31,14 @@ const getFamilies = (nodeList: FlowNodeWithContent[]) =>
 		}
 	}, {});
 
-const nodeWidthOffset = 30;
+export const NODE_OFFSET_X = 30;
 const nodeWidth: Record<ClaimCategory, number> = {
 	relief: 340,
 	get ground() {
-		return this.relief - nodeWidthOffset * 2;
+		return this.relief - NODE_OFFSET_X * 2;
 	},
 	get element() {
-		return this.ground - nodeWidthOffset * 2;
+		return this.ground - NODE_OFFSET_X * 2;
 	},
 	get defense() {
 		return this.ground;
@@ -44,6 +47,7 @@ const nodeWidth: Record<ClaimCategory, number> = {
 		return this.ground;
 	},
 };
+export const NODE_OFFSET_Y = 70;
 
 type PlaceProps = {
 	node: FlowNodeWithContent;
@@ -59,18 +63,18 @@ const placeNode = ({ node, depthX, depthY, style }: PlaceProps) => {
 	const existIdx = nodesClassified.findIndex(
 		(prev) => prev.id === node.id.toString(),
 	);
-	const newNode = {
+	const newNode: CustomNode = {
 		id: node.id.toString(),
 		type: node.party,
 		position: {
-			x: depthX * 30,
-			y: depthY * 70,
+			x: depthX * NODE_OFFSET_X,
+			y: depthY * NODE_OFFSET_Y,
 		},
 		style: style,
 		parentId: node.parentId?.toString(),
-		extent: node.parentId && "parent",
+		extent: typeof node.parentId && "parent",
 		data: { category: node.category, content: node.content },
-	} as CustomNodeType;
+	};
 	// console.log("newNode: ", newNode);
 	if (existIdx < 0) {
 		nodesClassified.push(newNode);
@@ -97,7 +101,7 @@ const circulate = (
 		// const categoryIdx = Object.keys(CLAIM_CATEGORIES).indexOf(node.category);
 		const style: PlaceProps["style"] = children && {
 			width: nodeWidth[node.category],
-			height: (children.length + 1) * 70,
+			height: (children.length + 1) * NODE_OFFSET_Y,
 			border: "solid",
 			borderWidth: 1,
 			borderRadius: 10,
@@ -116,10 +120,10 @@ const circulate = (
 			style,
 		};
 		placeNode(nodeInfo);
-		if (children) {
+		if (children && style) {
 			cordYList[`${children[0].category}`] = 0; // childrenY
 			circulate(children, parentsChildren, cordYList);
-			nodeInfo.style!.height = (cordYList[`inner-${node.category}`] + 1) * 70;
+			style.height = (cordYList[`inner-${node.category}`] + 1) * NODE_OFFSET_Y;
 			// console.log("node, cordYList", node, cordYList);
 			placeNode(nodeInfo);
 		}

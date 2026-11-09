@@ -2,10 +2,7 @@ import { Background, Controls, MarkerType, ReactFlow } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { useDiagrams } from "@/lib/diagram/useDiagrams";
 import { Button } from "../ui/button";
-import { DefendantNode, PlaintiffNode } from "./CustomNodes";
-
-const nodeTypes = { plaintiff: PlaintiffNode, defendant: DefendantNode };
-// const edgeTypes = { custom: CustomEdge };
+import { nodeTypes } from "./CustomNodes";
 
 export default function DiagramPage() {
   const { saveHandler, ...props } = useDiagrams();

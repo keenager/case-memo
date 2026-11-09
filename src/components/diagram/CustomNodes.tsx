@@ -9,7 +9,8 @@ import { CLAIM_CATEGORIES, type ClaimCategory } from "@/lib/diagram/types";
 import { Badge } from "../ui/badge";
 import { Item, ItemContent, ItemDescription, ItemHeader } from "../ui/item";
 
-type CustomNode = Node<{ category: ClaimCategory; content: string }, "aaa">;
+export const nodeTypes = { plaintiff: PlaintiffNode, defendant: DefendantNode };
+export type CustomNode = Node<{ category: ClaimCategory; content: string }, keyof typeof nodeTypes >;
 export type CustomNodeType = BuiltInNode | CustomNode;
 
 export function PlaintiffNode({ data }: NodeProps<CustomNode>) {
