@@ -18,6 +18,7 @@ import { Route as CaseIdNotesRouteImport } from './routes/$caseId/notes'
 import { Route as CaseIdPrinciplesPrecedentsRouteImport } from './routes/$caseId/principles-precedents'
 import { Route as CaseIdTriralsRouteRouteImport } from './routes/$caseId/trirals/route'
 import { Route as CaseIdWitnessTestimonyRouteImport } from './routes/$caseId/witness-testimony'
+import { Route as CaseIdHearingsIndexRouteImport } from './routes/$caseId/hearings/index'
 import { Route as CaseIdHearingsHearingIdRouteImport } from './routes/$caseId/hearings/$hearingId'
 import { Route as CaseIdTriralsTrialsIdRouteImport } from './routes/$caseId/trirals/$trialsId'
 
@@ -67,6 +68,11 @@ const CaseIdWitnessTestimonyRoute = CaseIdWitnessTestimonyRouteImport.update({
   path: '/witness-testimony',
   getParentRoute: () => CaseIdRouteRoute,
 } as any)
+const CaseIdHearingsIndexRoute = CaseIdHearingsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => CaseIdHearingsRouteRoute,
+} as any)
 const CaseIdHearingsHearingIdRoute = CaseIdHearingsHearingIdRouteImport.update({
   id: '/$hearingId',
   path: '/$hearingId',
@@ -90,12 +96,12 @@ export interface FileRoutesByFullPath {
   '/$caseId/witness-testimony': typeof CaseIdWitnessTestimonyRoute
   '/$caseId/hearings/$hearingId': typeof CaseIdHearingsHearingIdRoute
   '/$caseId/trirals/$trialsId': typeof CaseIdTriralsTrialsIdRoute
+  '/$caseId/hearings/': typeof CaseIdHearingsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$caseId': typeof CaseIdRouteRouteWithChildren
   '/about': typeof AboutRoute
-  '/$caseId/hearings': typeof CaseIdHearingsRouteRouteWithChildren
   '/$caseId/trirals': typeof CaseIdTriralsRouteRouteWithChildren
   '/$caseId/arguments-summary': typeof CaseIdArgumentsSummaryRoute
   '/$caseId/notes': typeof CaseIdNotesRoute
@@ -103,6 +109,7 @@ export interface FileRoutesByTo {
   '/$caseId/witness-testimony': typeof CaseIdWitnessTestimonyRoute
   '/$caseId/hearings/$hearingId': typeof CaseIdHearingsHearingIdRoute
   '/$caseId/trirals/$trialsId': typeof CaseIdTriralsTrialsIdRoute
+  '/$caseId/hearings': typeof CaseIdHearingsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -117,6 +124,7 @@ export interface FileRoutesById {
   '/$caseId/witness-testimony': typeof CaseIdWitnessTestimonyRoute
   '/$caseId/hearings/$hearingId': typeof CaseIdHearingsHearingIdRoute
   '/$caseId/trirals/$trialsId': typeof CaseIdTriralsTrialsIdRoute
+  '/$caseId/hearings/': typeof CaseIdHearingsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -132,12 +140,12 @@ export interface FileRouteTypes {
     | '/$caseId/witness-testimony'
     | '/$caseId/hearings/$hearingId'
     | '/$caseId/trirals/$trialsId'
+    | '/$caseId/hearings/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/$caseId'
     | '/about'
-    | '/$caseId/hearings'
     | '/$caseId/trirals'
     | '/$caseId/arguments-summary'
     | '/$caseId/notes'
@@ -145,6 +153,7 @@ export interface FileRouteTypes {
     | '/$caseId/witness-testimony'
     | '/$caseId/hearings/$hearingId'
     | '/$caseId/trirals/$trialsId'
+    | '/$caseId/hearings'
   id:
     | '__root__'
     | '/'
@@ -158,6 +167,7 @@ export interface FileRouteTypes {
     | '/$caseId/witness-testimony'
     | '/$caseId/hearings/$hearingId'
     | '/$caseId/trirals/$trialsId'
+    | '/$caseId/hearings/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -231,6 +241,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CaseIdWitnessTestimonyRouteImport
       parentRoute: typeof CaseIdRouteRoute
     }
+    '/$caseId/hearings/': {
+      id: '/$caseId/hearings/'
+      path: '/'
+      fullPath: '/$caseId/hearings/'
+      preLoaderRoute: typeof CaseIdHearingsIndexRouteImport
+      parentRoute: typeof CaseIdHearingsRouteRoute
+    }
     '/$caseId/hearings/$hearingId': {
       id: '/$caseId/hearings/$hearingId'
       path: '/$hearingId'
@@ -250,10 +267,12 @@ declare module '@tanstack/react-router' {
 
 interface CaseIdHearingsRouteRouteChildren {
   CaseIdHearingsHearingIdRoute: typeof CaseIdHearingsHearingIdRoute
+  CaseIdHearingsIndexRoute: typeof CaseIdHearingsIndexRoute
 }
 
 const CaseIdHearingsRouteRouteChildren: CaseIdHearingsRouteRouteChildren = {
   CaseIdHearingsHearingIdRoute: CaseIdHearingsHearingIdRoute,
+  CaseIdHearingsIndexRoute: CaseIdHearingsIndexRoute,
 }
 
 const CaseIdHearingsRouteRouteWithChildren =

@@ -1,9 +1,3 @@
-export const PARTIES = [
-	{ id: "plaintiff", value: "plaintiff", label: "원고" },
-	{ id: "defendant", value: "defendant", label: "피고" },
-] as const;
-export type Party = (typeof PARTIES)[number]["value"];
-
 export const CLAIM_CATEGORIES = {
 	relief: "청구취지",
 	ground: "청구원인",

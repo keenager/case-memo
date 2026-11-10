@@ -7,7 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import type { CamelCase } from "@/lib/camelize";
 import { formattedDate, strToDate } from "@/lib/date";
 import { getHearingData } from "@/lib/db/read";
-import type { HearingInDB } from "@/lib/hearing";
+import type { HearingInDB, HearingInList } from "@/lib/hearing";
 import { useHearing } from "@/store/hearing";
 
 const searchParams = z.object({
@@ -20,12 +20,12 @@ export const Route = createFileRoute("/$caseId/hearings")({
 		const hearingDataList = (await getHearingData(
 			params.caseId,
 		)) as CamelCase<HearingInDB>[];
-		const simpleList = hearingDataList.map((data) => ({
-			id: data.id,
+		const simpleList: HearingInList[] = hearingDataList.map((data) => ({
+			id: data.id.toString(),
 			hearingDate: strToDate(data.hearingDate),
 			hearingTime: data.hearingTime,
 		}));
-		useHearing.setState({ hearingList: simpleList });
+		useHearing.setState({ hearingDataList, hearingList: simpleList });
 	},
 	component: RouteComponent,
 });
@@ -41,11 +41,11 @@ function RouteComponent() {
 
 	return (
 		<div className="flex-1 overflow-y-auto flex">
-			<div className="w-64 border-r text-center flex flex-col">
+			<div className="min-w-60 border-r text-center flex flex-col">
 				<p className="p-2">기일</p>
 				<Separator />
 				{hearingList.map((hearing, idx) => (
-					<>
+					<div key={hearing.id}>
 						<div
 							className={`p-2 flex justify-around items-center ${selectedId === hearing.id && "bg-accent"}`}
 						>
@@ -69,7 +69,7 @@ function RouteComponent() {
 							</div>
 						</div>
 						<Separator />
-					</>
+					</div>
 				))}
 				<NewHearingDialog />
 			</div>

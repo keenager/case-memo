@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
 	Field,
@@ -9,32 +9,86 @@ import {
 	FieldSet,
 } from "@/components/ui/field";
 import { type CamelCase, toSnake } from "@/lib/camelize";
+import { PARTIES, type ResultOfUseState } from "@/lib/commonType";
+import { formattedDate } from "@/lib/date";
 import { getDB } from "@/lib/db/db";
-import type { HearingInDB } from "@/lib/hearing";
-
-const CHECK_LIST = [
-	{ title: "원고", name: "plaintiff" },
-	{ title: "원고 대리인", name: "plaintiffLawyer" },
-	{ title: "피고", name: "defendant" },
-	{ title: "피고 대리인", name: "defendantLawyer" },
-] as const;
+import { handleError } from "@/lib/error";
+import { getNoShowHearings, type HearingInDB } from "@/lib/hearing";
+import { useHearing } from "@/store/hearing";
+import { toast } from "../ui/toast";
 
 type ACProps = { hearingId: string; loadedHearing: CamelCase<HearingInDB> };
 
-export default function AttendanceCheck({ hearingId, loadedHearing }: ACProps) {
+export default function AttendanceCheck({
+	hearingId,
+	loadedHearing: {
+		plaintiffAttended,
+		plaintiffNoState,
+		plaintiffNotAttended,
+		plaintiffLawyerAttended,
+		plaintiffLawyerNoState,
+		plaintiffLawyerNotAttended,
+		defendantAttended,
+		defendantNoState,
+		defendantNotAttended,
+		defendantLawyerAttended,
+		defendantLawyerNoState,
+		defendantLawyerNotAttended,
+	},
+}: ACProps) {
+	const useStateObj = {
+		plaintiff: {
+			attended: useState(!!plaintiffAttended),
+			noState: useState(!!plaintiffNoState),
+			notAttended: useState(!!plaintiffNotAttended),
+		},
+		plaintiffLawyer: {
+			attended: useState(!!plaintiffLawyerAttended),
+			noState: useState(!!plaintiffLawyerNoState),
+			notAttended: useState(!!plaintiffLawyerNotAttended),
+		},
+		defendant: {
+			attended: useState(!!defendantAttended),
+			noState: useState(!!defendantNoState),
+			notAttended: useState(!!defendantNotAttended),
+		},
+		defendantLawyer: {
+			attended: useState(!!defendantLawyerAttended),
+			noState: useState(!!defendantLawyerNoState),
+			notAttended: useState(!!defendantLawyerNotAttended),
+		},
+	};
+
+	const dataList = useHearing((state) => state.hearingDataList);
+	useEffect(() => {
+		const noShowHearings = getNoShowHearings(dataList);
+		if (noShowHearings.length >= 2)
+			toast.add({
+				title: "2회 쌍불",
+				description: (
+					<ol className="list-decimal list-inside">
+						{noShowHearings.map((h) => (
+							<li key={h.id}>
+								{formattedDate(h.hearingDate)} {h.hearingTime}
+							</li>
+						))}
+					</ol>
+				),
+			});
+	}, [dataList]);
+
 	return (
 		<div className="flex flex-col gap-2">
 			<h2>출석 여부 체크</h2>
 			<div className="flex flex-wrap gap-1 mx-2">
 				{/* //TODO: 선임된 변호사들 이름 띄운 다움에 표시할 수 있게 */}
-				{CHECK_LIST.map((item) => {
-					const savedAttended = !!loadedHearing[`${item.name}Attended`];
-					const savedNotAttended = !!loadedHearing[`${item.name}NotAttended`];
+				{PARTIES.map((item) => {
 					const params = {
 						...item,
 						hearingId,
-						savedAttended,
-						savedNotAttended,
+						attendedStatus: useStateObj[item.name].attended,
+						noStateStatus: useStateObj[item.name].noState,
+						notAttendedStatus: useStateObj[item.name].notAttended,
 					};
 					return <CheckList key={item.name} {...params} />;
 				})}
@@ -43,10 +97,11 @@ export default function AttendanceCheck({ hearingId, loadedHearing }: ACProps) {
 	);
 }
 
-type CheckListProps = (typeof CHECK_LIST)[number] & {
+type CheckListProps = (typeof PARTIES)[number] & {
 	hearingId: string;
-	savedAttended: boolean;
-	savedNotAttended: boolean;
+	attendedStatus: ResultOfUseState<boolean>;
+	noStateStatus: ResultOfUseState<boolean>;
+	notAttendedStatus: ResultOfUseState<boolean>;
 };
 
 const getOppositeName = (name: string) => {
@@ -57,14 +112,14 @@ const getOppositeName = (name: string) => {
 };
 
 function CheckList({
-	title,
+	label,
 	name,
 	hearingId,
-	savedAttended,
-	savedNotAttended,
+	attendedStatus: [attended, setAttended],
+	noStateStatus: [noState, setNoState],
+	notAttendedStatus: [notAttended, setNotAttended],
 }: CheckListProps) {
-	const [attended, setAttended] = useState(savedAttended);
-	const [notAttended, setNotAttended] = useState(savedNotAttended);
+	const setDataList = useHearing((state) => state.setHearingDataListWithPrev);
 
 	const saveAttendanceStatus = async (name: string, status: boolean) => {
 		const snakeName = toSnake(name);
@@ -80,12 +135,25 @@ function CheckList({
 				[status ? 1 : 0, status ? 0 : 1, hearingId],
 			);
 		} catch (error) {
-			console.log("Error saving attendance status:", error);
+			handleError(error);
 		}
 	};
+	const saveNoStateStatus = async (name: string, status: boolean) => {
+		const snakeName = toSnake(name);
+		try {
+			const db = await getDB();
+			await db.execute(
+				`UPDATE hearings SET ${snakeName}_no_state=$1, updated_at=CURRENT_TIMESTAMP WHERE id=$2`,
+				[status ? 1 : 0, hearingId],
+			);
+		} catch (error) {
+			handleError(error);
+		}
+	};
+
 	return (
 		<FieldSet className="min-w-30 max-w-50 mb-3">
-			<FieldLegend variant="label">{title}</FieldLegend>
+			<FieldLegend variant="label">{label}</FieldLegend>
 			{/* <FieldDescription>
 					Select the items you want to show on the desktop.
 				</FieldDescription> */}
@@ -97,23 +165,75 @@ function CheckList({
 						checked={attended}
 						onCheckedChange={(checked: boolean) => {
 							setAttended(checked);
+							setNoState(false);
 							setNotAttended(!checked);
 							saveAttendanceStatus(`${name}Attended`, checked);
+							setDataList((prev) => {
+								const idx = prev.findIndex(
+									(d) => d.id.toString() === hearingId,
+								);
+								const newList = prev.toSpliced(idx, 1, {
+									...prev[idx],
+									[`${name}Attended`]: checked,
+									[`${name}NoState`]: false,
+									[`${name}NotAttended`]: !checked,
+								});
+								return newList;
+							});
 						}}
 					/>
 					<FieldLabel htmlFor={`${name}Attended`} className="font-normal">
 						출석
 					</FieldLabel>
 				</Field>
+				{attended && (
+					<Field orientation="horizontal">
+						<Checkbox
+							id={`${name}NoState`}
+							name={`${name}NoState`}
+							checked={noState}
+							onCheckedChange={(checked: boolean) => {
+								setNoState(checked);
+								saveNoStateStatus(name, checked);
+								setDataList((prev) => {
+									const idx = prev.findIndex(
+										(d) => d.id.toString() === hearingId,
+									);
+									const newList = prev.toSpliced(idx, 1, {
+										...prev[idx],
+										[`${name}NoState`]: checked,
+									});
+									return newList;
+								});
+							}}
+						/>
+						<FieldLabel htmlFor={`${name}NoState`} className="font-normal">
+							진술 X
+						</FieldLabel>
+					</Field>
+				)}
 				<Field orientation="horizontal">
 					<Checkbox
 						id={`${name}NotAttended`}
 						name={`${name}NotAttended`}
 						checked={notAttended}
 						onCheckedChange={(checked: boolean) => {
-							setNotAttended(checked);
 							setAttended(!checked);
+							setNoState(false);
+							setNotAttended(checked);
 							saveAttendanceStatus(`${name}NotAttended`, checked);
+							setDataList((prev) => {
+								const idx = prev.findIndex(
+									(d) => d.id.toString() === hearingId,
+								);
+								const newList = prev.toSpliced(idx, 1, {
+									...prev[idx],
+									[`${name}Attended`]: !checked,
+									[`${name}NoState`]: false,
+									[`${name}NotAttended`]: checked,
+								});
+								return newList;
+							});
 						}}
 					/>
 					<FieldLabel htmlFor={`${name}NotAttended`} className="font-normal">

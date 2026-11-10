@@ -15,5 +15,8 @@
 	"css.validate": false,
 	"files.associations": {
 		"*.css": "tailwindcss"
+	},
+	"[typescriptreact]": {
+		"editor.defaultFormatter": "biomejs.biome"
 	}
 }

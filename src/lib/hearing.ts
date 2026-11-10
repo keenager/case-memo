@@ -1,5 +1,5 @@
 import z from "zod";
-import type { SnakeCase } from "./camelize";
+import type { CamelCase, SnakeCase } from "./camelize";
 import { formattedDate } from "./date";
 import { getDB } from "./db/db";
 
@@ -22,17 +22,21 @@ export type HearingBasicInDB = Omit<HearingBasicInForm, "hearingDate"> & {
 
 export type AttendanceStatus = {
 	plaintiffAttended: boolean;
+	plaintiffNoState: boolean;
 	plaintiffNotAttended: boolean;
 	defendantAttended: boolean;
+	defendantNoState: boolean;
 	defendantNotAttended: boolean;
 	plaintiffLawyerAttended: boolean;
+	plaintiffLawyerNoState: boolean;
 	plaintiffLawyerNotAttended: boolean;
 	defendantLawyerAttended: boolean;
+	defendantLawyerNoState: boolean;
 	defendantLawyerNotAttended: boolean;
 };
 
 type Others = {
-	id: string;
+	id: number;
 	caseId: string;
 } & AttendanceStatus;
 
@@ -74,4 +78,26 @@ export const getSortedHearingList = (newList: HearingInList[]) => {
 		return a.hearingTime.localeCompare(b.hearingTime);
 	});
 	return newList;
+};
+
+export const getNoShowHearings = (
+	hearingDataList: CamelCase<HearingInDB>[],
+) => {
+	return hearingDataList.filter((h) => {
+		const isPlaintiffNoShow =
+			h.plaintiffNotAttended || (h.plaintiffAttended && h.plaintiffNoState);
+		const isPlaintiffLawyerNoShow =
+			h.plaintiffLawyerNotAttended ||
+			(h.plaintiffLawyerAttended && h.plaintiffLawyerNoState);
+		const isPNoShow = isPlaintiffNoShow && isPlaintiffLawyerNoShow;
+
+		const isDefendantNoShow =
+			h.defendantNotAttended || (h.defendantAttended && h.defendantNoState);
+		const isDefendantLawyerNoShow =
+			h.defendantLawyerNotAttended ||
+			(h.defendantLawyerAttended && h.defendantLawyerNoState);
+		const isDNoShow = isDefendantNoShow && isDefendantLawyerNoShow;
+
+		return isPNoShow && isDNoShow;
+	});
 };

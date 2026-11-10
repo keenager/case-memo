@@ -30,8 +30,6 @@ export default function UpdateHearingDialog({ targetHearing }: Props) {
 
 	const navi = useNavigate();
 
-	console.log("targetHearing: ", targetHearing);
-
 	const form = useForm<z.infer<typeof newHearingFormSchema>>({
 		resolver: zodResolver(newHearingFormSchema),
 		values: targetHearing,
