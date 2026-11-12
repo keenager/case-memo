@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
 	Field,
@@ -8,57 +8,17 @@ import {
 	FieldLegend,
 	FieldSet,
 } from "@/components/ui/field";
-import { type CamelCase, toSnake } from "@/lib/camelize";
-import { PARTIES, type ResultOfUseState } from "@/lib/commonType";
+import { PARTIES } from "@/lib/commonType";
 import { formattedDate } from "@/lib/date";
-import { getDB } from "@/lib/db/db";
-import { handleError } from "@/lib/error";
-import { getNoShowHearings, type HearingInDB } from "@/lib/hearing";
+import { getNoShowHearings } from "@/lib/hearing";
+import {
+	saveAttendanceStatus,
+	saveNoStateStatus,
+} from "@/lib/hearing/attendance";
 import { useHearing } from "@/store/hearing";
 import { toast } from "../ui/toast";
 
-type ACProps = { hearingId: string; loadedHearing: CamelCase<HearingInDB> };
-
-export default function AttendanceCheck({
-	hearingId,
-	loadedHearing: {
-		plaintiffAttended,
-		plaintiffNoState,
-		plaintiffNotAttended,
-		plaintiffLawyerAttended,
-		plaintiffLawyerNoState,
-		plaintiffLawyerNotAttended,
-		defendantAttended,
-		defendantNoState,
-		defendantNotAttended,
-		defendantLawyerAttended,
-		defendantLawyerNoState,
-		defendantLawyerNotAttended,
-	},
-}: ACProps) {
-	const useStateObj = {
-		plaintiff: {
-			attended: useState(!!plaintiffAttended),
-			noState: useState(!!plaintiffNoState),
-			notAttended: useState(!!plaintiffNotAttended),
-		},
-		plaintiffLawyer: {
-			attended: useState(!!plaintiffLawyerAttended),
-			noState: useState(!!plaintiffLawyerNoState),
-			notAttended: useState(!!plaintiffLawyerNotAttended),
-		},
-		defendant: {
-			attended: useState(!!defendantAttended),
-			noState: useState(!!defendantNoState),
-			notAttended: useState(!!defendantNotAttended),
-		},
-		defendantLawyer: {
-			attended: useState(!!defendantLawyerAttended),
-			noState: useState(!!defendantLawyerNoState),
-			notAttended: useState(!!defendantLawyerNotAttended),
-		},
-	};
-
+export default function AttendanceCheck() {
 	const dataList = useHearing((state) => state.hearingDataList);
 	useEffect(() => {
 		const noShowHearings = getNoShowHearings(dataList);
@@ -82,74 +42,23 @@ export default function AttendanceCheck({
 			<h2>출석 여부 체크</h2>
 			<div className="flex flex-wrap gap-1 mx-2">
 				{/* //TODO: 선임된 변호사들 이름 띄운 다움에 표시할 수 있게 */}
-				{PARTIES.map((item) => {
-					const params = {
-						...item,
-						hearingId,
-						attendedStatus: useStateObj[item.name].attended,
-						noStateStatus: useStateObj[item.name].noState,
-						notAttendedStatus: useStateObj[item.name].notAttended,
-					};
-					return <CheckList key={item.name} {...params} />;
-				})}
+				{PARTIES.map((item) => (
+					<CheckList key={item.name} {...item} />
+				))}
 			</div>
 		</div>
 	);
 }
 
-type CheckListProps = (typeof PARTIES)[number] & {
-	hearingId: string;
-	attendedStatus: ResultOfUseState<boolean>;
-	noStateStatus: ResultOfUseState<boolean>;
-	notAttendedStatus: ResultOfUseState<boolean>;
-};
-
-const getOppositeName = (name: string) => {
-	const arr = name.split("_");
-	return arr.includes("not")
-		? arr.toSpliced(arr.indexOf("not"), 1).join("_")
-		: arr.toSpliced(arr.length - 1, 0, "not").join("_");
-};
-
-function CheckList({
-	label,
-	name,
-	hearingId,
-	attendedStatus: [attended, setAttended],
-	noStateStatus: [noState, setNoState],
-	notAttendedStatus: [notAttended, setNotAttended],
-}: CheckListProps) {
+function CheckList({ label, name }: (typeof PARTIES)[number]) {
+	const hearingId = useHearing((state) => state.selectedId);
 	const setDataList = useHearing((state) => state.setHearingDataListWithPrev);
-
-	const saveAttendanceStatus = async (name: string, status: boolean) => {
-		const snakeName = toSnake(name);
-		const snakeName2 = getOppositeName(snakeName);
-
-		// console.log(
-		// 	`저장할 내용: 기일 ID ${hearingId} ${snakeName} = ${status} ${snakeName2} = ${!status} 출석 = ${attended}, 불출석 = ${notAttended}`,
-		// );
-		try {
-			const db = await getDB();
-			await db.execute(
-				`UPDATE hearings SET ${snakeName}=$1, ${snakeName2}=$2, updated_at=CURRENT_TIMESTAMP WHERE id=$3`,
-				[status ? 1 : 0, status ? 0 : 1, hearingId],
-			);
-		} catch (error) {
-			handleError(error);
-		}
-	};
-	const saveNoStateStatus = async (name: string, status: boolean) => {
-		const snakeName = toSnake(name);
-		try {
-			const db = await getDB();
-			await db.execute(
-				`UPDATE hearings SET ${snakeName}_no_state=$1, updated_at=CURRENT_TIMESTAMP WHERE id=$2`,
-				[status ? 1 : 0, hearingId],
-			);
-		} catch (error) {
-			handleError(error);
-		}
-	};
+	const currentData = useHearing((state) => state.currentData);
+	const setCurrentData = useHearing((state) => state.setCurrentData);
+	// sqlite에서는 true, false가 아니라 1, 0으로 저장하므로, !!을 통해 boolean 타입으로 변환
+	const attended = !!(currentData?.[`${name}Attended`] ?? false);
+	const noState = !!(currentData?.[`${name}NoState`] ?? false);
+	const notAttended = !!(currentData?.[`${name}NotAttended`] ?? false);
 
 	return (
 		<FieldSet className="min-w-30 max-w-50 mb-3">
@@ -164,21 +73,19 @@ function CheckList({
 						name={`${name}Attended`}
 						checked={attended}
 						onCheckedChange={(checked: boolean) => {
-							setAttended(checked);
-							setNoState(false);
-							setNotAttended(!checked);
-							saveAttendanceStatus(`${name}Attended`, checked);
+							saveAttendanceStatus(hearingId, `${name}Attended`, checked);
+							const newData = {
+								...currentData,
+								[`${name}Attended`]: checked,
+								[`${name}NoState`]: false,
+								[`${name}NotAttended`]: !checked,
+							};
+							setCurrentData(newData);
 							setDataList((prev) => {
 								const idx = prev.findIndex(
 									(d) => d.id.toString() === hearingId,
 								);
-								const newList = prev.toSpliced(idx, 1, {
-									...prev[idx],
-									[`${name}Attended`]: checked,
-									[`${name}NoState`]: false,
-									[`${name}NotAttended`]: !checked,
-								});
-								return newList;
+								return prev.toSpliced(idx, 1, newData);
 							});
 						}}
 					/>
@@ -193,17 +100,17 @@ function CheckList({
 							name={`${name}NoState`}
 							checked={noState}
 							onCheckedChange={(checked: boolean) => {
-								setNoState(checked);
-								saveNoStateStatus(name, checked);
+								saveNoStateStatus(hearingId, name, checked);
+								const newData = {
+									...currentData,
+									[`${name}NoState`]: checked,
+								};
+								setCurrentData(newData);
 								setDataList((prev) => {
 									const idx = prev.findIndex(
 										(d) => d.id.toString() === hearingId,
 									);
-									const newList = prev.toSpliced(idx, 1, {
-										...prev[idx],
-										[`${name}NoState`]: checked,
-									});
-									return newList;
+									return prev.toSpliced(idx, 1, newData);
 								});
 							}}
 						/>
@@ -218,21 +125,19 @@ function CheckList({
 						name={`${name}NotAttended`}
 						checked={notAttended}
 						onCheckedChange={(checked: boolean) => {
-							setAttended(!checked);
-							setNoState(false);
-							setNotAttended(checked);
-							saveAttendanceStatus(`${name}NotAttended`, checked);
+							const newData = {
+								...currentData,
+								[`${name}Attended`]: !checked,
+								[`${name}NoState`]: false,
+								[`${name}NotAttended`]: checked,
+							};
+							setCurrentData(newData);
+							saveAttendanceStatus(hearingId, `${name}NotAttended`, checked);
 							setDataList((prev) => {
 								const idx = prev.findIndex(
 									(d) => d.id.toString() === hearingId,
 								);
-								const newList = prev.toSpliced(idx, 1, {
-									...prev[idx],
-									[`${name}Attended`]: !checked,
-									[`${name}NoState`]: false,
-									[`${name}NotAttended`]: checked,
-								});
-								return newList;
+								return prev.toSpliced(idx, 1, newData);
 							});
 						}}
 					/>

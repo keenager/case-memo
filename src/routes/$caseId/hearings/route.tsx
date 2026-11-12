@@ -7,7 +7,11 @@ import { Separator } from "@/components/ui/separator";
 import type { CamelCase } from "@/lib/camelize";
 import { formattedDate, strToDate } from "@/lib/date";
 import { getHearingData } from "@/lib/db/read";
-import type { HearingInDB, HearingInList } from "@/lib/hearing";
+import {
+	type HearingInDB,
+	type HearingInList,
+	initialAttendanceData,
+} from "@/lib/hearing";
 import { useHearing } from "@/store/hearing";
 
 const searchParams = z.object({
@@ -34,10 +38,13 @@ function RouteComponent() {
 	const { caseId } = Route.useParams();
 
 	const hearingList = useHearing((state) => state.hearingList);
+	const dataList = useHearing((state) => state.hearingDataList);
 	// console.log("hearings: ", hearingList);
 
 	const selectedId = useHearing((state) => state.selectedId);
 	const setSelectedId = useHearing((state) => state.setSelectedId);
+
+	const setCurrentData = useHearing((state) => state.setCurrentData);
 
 	return (
 		<div className="flex-1 overflow-y-auto flex">
@@ -56,6 +63,16 @@ function RouteComponent() {
 								search={{ hearingOrder: idx }}
 								onClick={() => {
 									setSelectedId(hearing.id);
+									const currentData = dataList.find(
+										(d) => d.id.toString() === hearing.id,
+									) ?? {
+										id: +hearing.id,
+										caseId,
+										hearingDate: formattedDate(hearing.hearingDate),
+										hearingTime: hearing.hearingTime,
+										...initialAttendanceData,
+									};
+									setCurrentData(currentData);
 								}}
 							>
 								<p>

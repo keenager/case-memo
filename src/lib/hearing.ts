@@ -1,5 +1,6 @@
 import z from "zod";
 import type { CamelCase, SnakeCase } from "./camelize";
+import { PARTIES } from "./commonType";
 import { formattedDate } from "./date";
 import { getDB } from "./db/db";
 
@@ -20,25 +21,28 @@ export type HearingBasicInDB = Omit<HearingBasicInForm, "hearingDate"> & {
 	hearingDate: string;
 };
 
-export type AttendanceStatus = {
-	plaintiffAttended: boolean;
-	plaintiffNoState: boolean;
-	plaintiffNotAttended: boolean;
-	defendantAttended: boolean;
-	defendantNoState: boolean;
-	defendantNotAttended: boolean;
-	plaintiffLawyerAttended: boolean;
-	plaintiffLawyerNoState: boolean;
-	plaintiffLawyerNotAttended: boolean;
-	defendantLawyerAttended: boolean;
-	defendantLawyerNoState: boolean;
-	defendantLawyerNotAttended: boolean;
+export const ATTENDANCE_STATUS = [
+	"Attended",
+	"NoState",
+	"NotAttended",
+] as const;
+type Party = (typeof PARTIES)[number]["name"];
+type AttendanceStatus = (typeof ATTENDANCE_STATUS)[number];
+export type PartyAttendanceStatus = {
+	[K in `${Party}${AttendanceStatus}`]: boolean;
 };
+
+const entries = PARTIES.flatMap((party) =>
+	ATTENDANCE_STATUS.map((status) => [`${party.name}${status}`, false] as const),
+);
+export const initialAttendanceData = Object.fromEntries(
+	entries,
+) as PartyAttendanceStatus;
 
 type Others = {
 	id: number;
 	caseId: string;
-} & AttendanceStatus;
+} & PartyAttendanceStatus;
 
 export type HearingInForm = HearingBasicInForm & Others;
 

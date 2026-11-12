@@ -1,11 +1,16 @@
 import { create } from "zustand";
 import type { CamelCase } from "@/lib/camelize";
-import type { HearingInDB, HearingInList } from "@/lib/hearing";
+import {
+	type HearingInDB,
+	type HearingInList,
+	initialAttendanceData,
+} from "@/lib/hearing";
 
 type State = {
 	hearingList: HearingInList[];
 	hearingDataList: CamelCase<HearingInDB>[];
-	selectedId: string | undefined;
+	selectedId: string;
+	currentData: CamelCase<HearingInDB>;
 };
 
 type Action = {
@@ -15,12 +20,20 @@ type Action = {
 		updateFn: (prev: CamelCase<HearingInDB>[]) => CamelCase<HearingInDB>[],
 	) => void;
 	setSelectedId: (newId: string) => void;
+	setCurrentData: (newData: CamelCase<HearingInDB> | undefined) => void;
 };
 
-export const useHearing = create<State & Action>((set) => ({
+export const useHearing = create<State & Action>((set, get) => ({
 	hearingList: [],
 	hearingDataList: [],
-	selectedId: undefined,
+	selectedId: "",
+	currentData: {
+		id: 0,
+		caseId: "",
+		hearingDate: "",
+		hearingTime: "",
+		...initialAttendanceData,
+	},
 	setHearingList: (newList: HearingInList[]) => {
 		set({ hearingList: newList });
 	},
@@ -32,5 +45,8 @@ export const useHearing = create<State & Action>((set) => ({
 	},
 	setSelectedId: (newId: string) => {
 		set({ selectedId: newId });
+	},
+	setCurrentData(newData) {
+		set({ currentData: newData });
 	},
 }));
