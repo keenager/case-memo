@@ -10,12 +10,12 @@ import {
 } from "@/components/ui/field";
 import { PARTIES } from "@/lib/commonType";
 import { formattedDate } from "@/lib/date";
-import { getNoShowHearings } from "@/lib/hearing";
+import { getNoShowHearings, initialHearingData } from "@/lib/hearing";
 import {
 	saveAttendanceStatus,
 	saveNoStateStatus,
 } from "@/lib/hearing/attendance";
-import { useHearing } from "@/store/hearing";
+import { setHearingDataListWithPrev, useHearing } from "@/store/hearing";
 import { toast } from "../ui/toast";
 
 export default function AttendanceCheck() {
@@ -38,8 +38,8 @@ export default function AttendanceCheck() {
 	}, [dataList]);
 
 	return (
-		<div className="flex flex-col gap-2">
-			<h2>출석 여부 체크</h2>
+		<div className="flex flex-col gap-2 w-fit border rounded-md">
+			<h2 className="text-center">출석 여부 체크</h2>
 			<div className="flex flex-wrap gap-1 mx-2">
 				{/* //TODO: 선임된 변호사들 이름 띄운 다움에 표시할 수 있게 */}
 				{PARTIES.map((item) => (
@@ -52,9 +52,11 @@ export default function AttendanceCheck() {
 
 function CheckList({ label, name }: (typeof PARTIES)[number]) {
 	const hearingId = useHearing((state) => state.selectedId);
-	const setDataList = useHearing((state) => state.setHearingDataListWithPrev);
-	const currentData = useHearing((state) => state.currentData);
-	const setCurrentData = useHearing((state) => state.setCurrentData);
+	const currentData = useHearing(
+		(state) =>
+			state.hearingDataList.find((d) => d.id.toString() === hearingId) ??
+			initialHearingData,
+	);
 	// sqlite에서는 true, false가 아니라 1, 0으로 저장하므로, !!을 통해 boolean 타입으로 변환
 	const attended = !!(currentData?.[`${name}Attended`] ?? false);
 	const noState = !!(currentData?.[`${name}NoState`] ?? false);
@@ -80,8 +82,7 @@ function CheckList({ label, name }: (typeof PARTIES)[number]) {
 								[`${name}NoState`]: false,
 								[`${name}NotAttended`]: !checked,
 							};
-							setCurrentData(newData);
-							setDataList((prev) => {
+							setHearingDataListWithPrev((prev) => {
 								const idx = prev.findIndex(
 									(d) => d.id.toString() === hearingId,
 								);
@@ -105,8 +106,7 @@ function CheckList({ label, name }: (typeof PARTIES)[number]) {
 									...currentData,
 									[`${name}NoState`]: checked,
 								};
-								setCurrentData(newData);
-								setDataList((prev) => {
+								setHearingDataListWithPrev((prev) => {
 									const idx = prev.findIndex(
 										(d) => d.id.toString() === hearingId,
 									);
@@ -131,9 +131,8 @@ function CheckList({ label, name }: (typeof PARTIES)[number]) {
 								[`${name}NoState`]: false,
 								[`${name}NotAttended`]: checked,
 							};
-							setCurrentData(newData);
 							saveAttendanceStatus(hearingId, `${name}NotAttended`, checked);
-							setDataList((prev) => {
+							setHearingDataListWithPrev((prev) => {
 								const idx = prev.findIndex(
 									(d) => d.id.toString() === hearingId,
 								);

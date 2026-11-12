@@ -10,10 +10,6 @@ export const newHearingFormSchema = z.object({
 			issue.input === undefined ? "날짜를 입력하세요." : "잘못된 날짜입니다.",
 	}),
 	hearingTime: z.string().min(1, { message: "시각을 입력하세요" }),
-	// plaintiffAttended: z.boolean(),
-	// defendantAttended: z.boolean(),
-	// plaintiffLawyerAttended: z.boolean(),
-	// defendantLawyerAttended: z.boolean(),
 });
 
 export type HearingBasicInForm = z.infer<typeof newHearingFormSchema>;
@@ -32,13 +28,6 @@ export type PartyAttendanceStatus = {
 	[K in `${Party}${AttendanceStatus}`]: boolean;
 };
 
-const entries = PARTIES.flatMap((party) =>
-	ATTENDANCE_STATUS.map((status) => [`${party.name}${status}`, false] as const),
-);
-export const initialAttendanceData = Object.fromEntries(
-	entries,
-) as PartyAttendanceStatus;
-
 type Others = {
 	id: number;
 	caseId: string;
@@ -49,6 +38,21 @@ export type HearingInForm = HearingBasicInForm & Others;
 export type HearingInDB = SnakeCase<HearingBasicInDB & Others>;
 
 export type HearingInList = HearingBasicInForm & { id: string };
+
+const entries = PARTIES.flatMap((party) =>
+	ATTENDANCE_STATUS.map((status) => [`${party.name}${status}`, false] as const),
+);
+export const initialAttendanceData = Object.fromEntries(
+	entries,
+) as PartyAttendanceStatus;
+
+export const initialHearingData: HearingBasicInDB & Others = {
+	id: 0,
+	caseId: "",
+	hearingDate: "",
+	hearingTime: "",
+	...initialAttendanceData,
+};
 
 export const checkSameHearing = async (
 	caseId: string,
