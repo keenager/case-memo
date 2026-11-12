@@ -1,8 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
+import MemoEditor from "@/components/editor/MemoEditor";
 import AttendanceCheck from "@/components/section-detail/AttendanceCheck";
-import MemoEditor from "@/components/section-detail/editor/MemoEditor";
 import type { MemoLayoutProps } from "@/components/section-detail/MemoLayout";
 import MemoLayout from "@/components/section-detail/MemoLayout";
+import { Button } from "@/components/ui/button";
 import { getCaseNumber, getMemo } from "@/lib/db/read";
 import { SECTIONS } from "@/lib/sections";
 
@@ -33,7 +34,10 @@ function RouteComponent() {
 
 	return (
 		<MemoLayout {...props}>
-			<AttendanceCheck key={hearingId} />
+			<div className="flex">
+				<AttendanceCheck key={hearingId} />
+				<Button>할일 등록</Button>
+			</div>
 			<MemoEditor
 				key={`${caseNumber}hearings${hearingId}}`}
 				caseId={caseId}

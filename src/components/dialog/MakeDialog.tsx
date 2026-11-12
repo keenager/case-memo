@@ -16,7 +16,7 @@ export type FieldInfo = {
 	label: string;
 };
 
-type Props = {
+type MakeDialogProps = {
 	title: string;
 	open: boolean;
 	setOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -33,7 +33,7 @@ export default function MakeDialog({
 	open,
 	setOpen,
 	children,
-}: Props) {
+}: MakeDialogProps) {
 	const [triggerButton, ...fields] = React.Children.toArray(children);
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>

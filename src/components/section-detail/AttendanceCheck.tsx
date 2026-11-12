@@ -26,13 +26,13 @@ export default function AttendanceCheck() {
 			toast.add({
 				title: "2회 쌍불",
 				description: (
-					<ol className="list-decimal list-inside">
+					<span>
 						{noShowHearings.map((h) => (
-							<li key={h.id}>
+							<span key={h.id} className="block">
 								{formattedDate(h.hearingDate)} {h.hearingTime}
-							</li>
+							</span>
 						))}
-					</ol>
+					</span>
 				),
 			});
 	}, [dataList]);

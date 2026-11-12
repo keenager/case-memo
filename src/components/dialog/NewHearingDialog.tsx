@@ -15,13 +15,11 @@ import {
 	getSortedHearingList,
 	newHearingFormSchema,
 } from "@/lib/hearing";
-import { useHearing } from "@/store/hearing";
+import { setHearingList, setSelectedId, useHearing } from "@/store/hearing";
 
 export default function NewHearingDialog() {
 	const caseId = useParams({ strict: false }).caseId!;
 	const [open, setOpen] = useState(false);
-	const setHearingList = useHearing((state) => state.setHearingList);
-	const setSelectedId = useHearing((state) => state.setSelectedId);
 	const navi = useNavigate();
 
 	const form = useForm<z.infer<typeof newHearingFormSchema>>({

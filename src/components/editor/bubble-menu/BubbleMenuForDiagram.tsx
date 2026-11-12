@@ -17,7 +17,7 @@ import {
 import { useFlow } from "@/store/diagram";
 import { useBubbleMenu } from "./useBubbleMenu";
 
-export default function BubbleMenuBar({ editor }: { editor: Editor }) {
+export default function BubbleMenuForDiagram({ editor }: { editor: Editor }) {
 	const currentFlowNodesWithContents = useFlow(
 		(state) => state.currentFlowNodesWithContents,
 	);
