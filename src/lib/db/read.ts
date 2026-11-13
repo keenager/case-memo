@@ -1,8 +1,10 @@
 import { type CamelCase, camelizeKeys, type SnakeCase } from "@/lib/camelize";
 import type { Memo } from "@/lib/memo/types";
 import type { FlowEdge, FlowNode } from "../diagram/types";
+import { handleError } from "../error";
 import type { HearingInDB } from "../hearing";
 import type { SectionCategory } from "../sections";
+import type { TodoInDB } from "../todo/todo";
 import { getDB } from "./db";
 
 export const getMemo = async ({
@@ -80,4 +82,15 @@ export const getFlowEdges = async (memoId: number | undefined) => {
 	console.log("flowEdges from db: ", result);
 
 	return result.length > 0 ? result.map((row) => camelizeKeys(row)) : [];
+};
+
+export const readTodos = async () => {
+	try {
+		const db = await getDB();
+		const result: TodoInDB[] = await db.select("SELECT * FROM todos");
+		return result;
+	} catch (error) {
+		handleError(error);
+		return [];
+	}
 };

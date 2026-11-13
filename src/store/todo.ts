@@ -1,12 +1,9 @@
-import type z from "zod";
 import { create } from "zustand";
-import type { TodoSchema } from "@/lib/todo/todo";
+import type { TodoInFront } from "@/lib/todo/todo";
 
-type Todo = { id?: number } & z.infer<typeof TodoSchema>;
-
-type State = { todoList: Todo[] };
+type State = { todoList: TodoInFront[] };
 
 export const useTodo = create<State>(() => ({ todoList: [] }));
 
-export const setTodoList = (newList: Todo[]) =>
+export const setTodoList = (newList: TodoInFront[]) =>
 	useTodo.setState({ todoList: newList });
