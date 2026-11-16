@@ -37,7 +37,7 @@ export type HearingInForm = HearingBasicInForm & Others;
 
 export type HearingInDB = SnakeCase<HearingBasicInDB & Others>;
 
-export type HearingInList = HearingBasicInForm & { id: string };
+export type HearingInList = HearingBasicInForm & { id: number };
 
 const entries = PARTIES.flatMap((party) =>
 	ATTENDANCE_STATUS.map((status) => [`${party.name}${status}`, false] as const),

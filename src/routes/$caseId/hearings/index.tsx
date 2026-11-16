@@ -1,4 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
+import TodoList from "@/components/section-detail/TodoList";
 import { camelizeKeys } from "@/lib/camelize";
 import { formattedDate } from "@/lib/date";
 import { readTodos } from "@/lib/db/read";
@@ -11,7 +12,11 @@ export const Route = createFileRoute("/$caseId/hearings/")({
 		const loadedTodoList = await readTodos();
 		const polished = loadedTodoList
 			.map((t) => camelizeKeys(t))
-			.map((t) => ({ ...t, dueDate: new Date(t.dueDate) }));
+			.map((t) => ({
+				...t,
+				dueDate: new Date(t.dueDate),
+			}))
+			.sort((a, b) => a.dueDate.getTime() - b.dueDate.getTime());
 		setTodoList(polished);
 		return { loadedTodoList: polished };
 	},
@@ -19,7 +24,6 @@ export const Route = createFileRoute("/$caseId/hearings/")({
 });
 
 function RouteComponent() {
-	const { caseId } = Route.useParams();
 	const hearingDataList = useHearing((s) => s.hearingDataList);
 	const noShowHearings = getNoShowHearings(hearingDataList);
 	const todoList = useTodo((s) => s.todoList);
@@ -37,24 +41,7 @@ function RouteComponent() {
 					))}
 				</ol>
 				<li>TO-DO</li>
-				<ol className="list-decimal list-inside pl-3">
-					{todoList.length > 0 &&
-						todoList.map((t) => (
-							<li key={t.id}>
-								{formattedDate(t.dueDate)}:{" "}
-								<Link
-									to="/$caseId/hearings/$hearingId"
-									params={{
-										caseId,
-										hearingId: t.hearingId.toString(),
-									}}
-									className="underline decoration-sky-500 decoration-2 underline-offset-4"
-								>
-									{t.content}
-								</Link>
-							</li>
-						))}
-				</ol>
+				{todoList && todoList.length > 0 && <TodoList todoList={todoList} />}
 			</ul>
 		</div>
 	);

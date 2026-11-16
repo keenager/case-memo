@@ -5,13 +5,13 @@ import type { HearingInDB, HearingInList } from "@/lib/hearing";
 type State = {
 	hearingList: HearingInList[];
 	hearingDataList: CamelCase<HearingInDB>[];
-	selectedId: string;
+	selectedId: number;
 };
 
 export const useHearing = create<State>(() => ({
 	hearingList: [],
 	hearingDataList: [],
-	selectedId: "",
+	selectedId: 0,
 }));
 
 export const setHearingList = (newList: HearingInList[]) =>
@@ -27,5 +27,5 @@ export const setHearingDataListWithPrev = (
 		hearingDataList: updateFn(state.hearingDataList),
 	}));
 
-export const setSelectedId = (newId: string) =>
+export const setSelectedId = (newId: number) =>
 	useHearing.setState({ selectedId: newId });

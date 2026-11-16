@@ -20,8 +20,8 @@ export default function BubbleMenuForTodo({ editor }: { editor: Editor }) {
 
 			const newList = useTodo
 				.getState()
-				.todoList.filter((t) => t.id.toString() !== todoId);
-			setTodoList(newList);
+				.todoList?.filter((t) => t.id.toString() !== todoId);
+			setTodoList(newList ?? []);
 
 			editor
 				.chain()
@@ -52,12 +52,9 @@ export default function BubbleMenuForTodo({ editor }: { editor: Editor }) {
 				<TodoDiaglog editor={editor} existingTodoId={existingTodoId} />
 				{existingTodoId && (
 					<Button
-						onClick={deleteHandler.bind(
-							null,
-							editor.getAttributes("todoHighlight").todoId as
-								| string
-								| undefined,
-						)}
+						onClick={() => {
+							deleteHandler(existingTodoId);
+						}}
 					>
 						할일 삭제
 					</Button>

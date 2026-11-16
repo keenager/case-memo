@@ -6,6 +6,7 @@ import MemoLayout from "@/components/section-detail/MemoLayout";
 import { Button } from "@/components/ui/button";
 import { getCaseNumber, getMemo } from "@/lib/db/read";
 import { SECTIONS } from "@/lib/sections";
+import { useTodo } from "@/store/todo";
 
 export const Route = createFileRoute("/$caseId/hearings/$hearingId")({
 	// beforeLoad:
@@ -31,6 +32,7 @@ function RouteComponent() {
 		hearingOrder: Route.useSearch().hearingOrder,
 	};
 	const contents: string | undefined = loadedMemo?.contents;
+	const todoList = useTodo((s) => s.todoList);
 
 	return (
 		<MemoLayout {...props}>
@@ -44,6 +46,7 @@ function RouteComponent() {
 				sectionCategory="hearings"
 				hearingId={hearingId}
 				contents={contents}
+				todoList={todoList}
 			/>
 		</MemoLayout>
 	);

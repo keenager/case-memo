@@ -1,5 +1,6 @@
 import type { Editor } from "@tiptap/core";
 import type { SectionCategory } from "../sections";
+import type { TodoInFront } from "../todo/types";
 
 type BaseArgsForSaveMemo = {
 	caseId: string;
@@ -15,6 +16,7 @@ type BaseArgsForEditor = {
 type AddArgsForHearings = {
 	sectionCategory: "hearings";
 	hearingId: string;
+	todoList?: TodoInFront[] | null;
 };
 type AddArgsForOthers = {
 	sectionCategory: Exclude<SectionCategory, "hearings">;

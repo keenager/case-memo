@@ -4,7 +4,7 @@ import type { FlowEdge, FlowNode } from "../diagram/types";
 import { handleError } from "../error";
 import type { HearingInDB } from "../hearing";
 import type { SectionCategory } from "../sections";
-import type { TodoInDB } from "../todo/todo";
+import type { TodoInDB } from "../todo/types";
 import { getDB } from "./db";
 
 export const getMemo = async ({

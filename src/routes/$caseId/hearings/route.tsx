@@ -21,7 +21,7 @@ export const Route = createFileRoute("/$caseId/hearings")({
 			params.caseId,
 		)) as CamelCase<HearingInDB>[];
 		const simpleList: HearingInList[] = hearingDataList.map((data) => ({
-			id: data.id.toString(),
+			id: data.id,
 			hearingDate: strToDate(data.hearingDate),
 			hearingTime: data.hearingTime,
 		}));
@@ -49,7 +49,7 @@ function RouteComponent() {
 							<Link
 								key={hearing.id}
 								to={"/$caseId/hearings/$hearingId"}
-								params={{ caseId, hearingId: hearing.id }}
+								params={{ caseId, hearingId: String(hearing.id) }}
 								search={{ hearingOrder: idx }}
 								onClick={() => {
 									setSelectedId(hearing.id);

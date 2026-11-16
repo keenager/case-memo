@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import type z from "zod";
 import { createUpdateTodo } from "@/lib/db/createUpdate";
 import { handleError } from "@/lib/error";
-import { TodoFormSchema } from "@/lib/todo/todo";
+import { TodoFormSchema } from "@/lib/todo/types";
 import { useHearing } from "@/store/hearing";
 import { setTodoList, useTodo } from "@/store/todo";
 
@@ -15,7 +15,7 @@ export const useBubbleForTodo = (
 ) => {
 	const [open, setOpen] = useState(false);
 	const hearingId = useHearing((s) => s.selectedId);
-	const existingTodo = useTodo((s) => s.todoList).find(
+	const existingTodo = useTodo((s) => s.todoList)?.find(
 		(t) => t.id.toString() === existingTodoId,
 	);
 	const { from, to } = editor.state.selection;
@@ -34,15 +34,15 @@ export const useBubbleForTodo = (
 		console.log("hearingId: ", hearingId);
 		try {
 			const result = await createUpdateTodo(
-				{ ...data, hearingId },
+				{ ...data, hearingId, isDone: false },
 				existingTodoId,
 			);
 
 			const todoId =
 				existingTodoId ?? (result.lastInsertId as number).toString();
 			setTodoList([
-				...useTodo.getState().todoList,
-				{ ...data, id: +todoId, hearingId },
+				...(useTodo.getState().todoList ?? []),
+				{ ...data, id: +todoId, hearingId, isDone: false },
 			]);
 
 			editor

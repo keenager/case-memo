@@ -2,6 +2,7 @@ import type { Editor } from "@tiptap/core";
 import { useEffect, useRef, useState } from "react";
 import { debounce } from "@/lib/memo/debounce";
 import { useFlow } from "@/store/diagram";
+import syncEditorWithDB from "../todo/sync";
 import { saveMemo } from "./save";
 import type { ArgsForEditor } from "./types";
 
@@ -15,6 +16,7 @@ export const useMemoEditor = ({
 	const flowNodes = useFlow((state) => state.currentFlowNodes);
 	const [showNoti, setShowNoti] = useState(false);
 	const { caseId, sectionCategory } = props;
+	const todoList = sectionCategory === "hearings" ? props.todoList : undefined;
 
 	const toggleNoti = () => {
 		setShowNoti(true);
@@ -59,7 +61,10 @@ export const useMemoEditor = ({
 	// console.log("MemoEditor contents:", contents);
 
 	useEffect(() => {
-		if (!editor) return;
+		if (!editor || !todoList) return;
+		console.log("check!!!");
+		console.log("todoList: ", todoList);
+		if (todoList) syncEditorWithDB(editor, todoList);
 
 		// flownode로 설정된 문단에 하이라이트 표시
 		flowNodes.forEach((fn) => {
@@ -84,7 +89,7 @@ export const useMemoEditor = ({
 		// editor.commands.focus("start");
 
 		// console.log("MemoEditor contents changed:", contents);
-	}, [editor, flowNodes]);
+	}, [editor, flowNodes, todoList]);
 
 	return { showNoti, debouncedSave };
 };

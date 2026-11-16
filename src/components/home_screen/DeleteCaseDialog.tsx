@@ -3,8 +3,9 @@ import { Trash2Icon } from "lucide-react";
 import { useState } from "react";
 import type { CaseInFront } from "@/lib/case";
 import { deleteCase } from "@/lib/db/delete";
+import { handleError } from "@/lib/error";
+import { MakeAlertDialog } from "../dialog/MakeAlertDialog";
 import { Button } from "../ui/button";
-import { MakeAlertDialog } from "./MakeAlertDialog";
 
 type Props = {
 	selectedCase: CaseInFront;
@@ -22,7 +23,7 @@ export default function DeleteCaseDialog({
 			setOpen(false);
 			navi({ to: "/" });
 		} catch (error) {
-			console.error(error);
+			handleError(error);
 		}
 	};
 

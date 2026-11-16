@@ -18,7 +18,7 @@ export const formattedDate = (dateOrigin: Date | string): string => {
 		date.date = dateOrigin.getDate();
 	}
 
-	return `${date.year}. ${date.month}. ${date.date}`;
+	return `${date.year}. ${date.month}. ${date.date}.`;
 };
 
 export const strToDate = (str: string): Date => {

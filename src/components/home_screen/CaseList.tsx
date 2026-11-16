@@ -1,7 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import type { CaseInFront } from "@/lib/case";
 import { useDefaultCourt } from "@/store/settings";
-import DeleteCaseDialog from "../dialog/DeleteCaseDialog";
 import type { SelectItemList } from "../dialog/fields/SelectField";
 import UpdateCaseDialog from "../dialog/UpdateCaseDialog";
 import BadgeCaseType from "../ui/BadgeCaseType";
@@ -12,6 +11,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "../ui/card";
+import DeleteCaseDialog from "./DeleteCaseDialog";
 
 export default function CaseList({
 	cases,

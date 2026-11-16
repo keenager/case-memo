@@ -9,11 +9,11 @@ export const TodoFormSchema = z.object({
 	}),
 });
 
-type Ids = { id: number; hearingId: string };
+type TodoBasic = { id: number; hearingId: number; isDone: boolean };
 type TodoInForm = z.infer<typeof TodoFormSchema>;
 
-export type TodoInFront = Ids & TodoInForm;
+export type TodoInFront = TodoBasic & TodoInForm;
 
 export type TodoInDB = SnakeCase<
-	Ids & Omit<TodoInForm, "dueDate"> & { dueDate: string }
+	TodoBasic & Omit<TodoInForm, "dueDate"> & { dueDate: string }
 >;
