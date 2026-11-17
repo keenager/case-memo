@@ -3,7 +3,7 @@ import { getDB } from "@/lib/db/db";
 import { handleError } from "@/lib/error";
 
 export const saveAttendanceStatus = async (
-	hearingId: string,
+	hearingId: number,
 	name: string,
 	status: boolean,
 ) => {
@@ -24,7 +24,7 @@ export const saveAttendanceStatus = async (
 	}
 };
 export const saveNoStateStatus = async (
-	hearingId: string,
+	hearingId: number,
 	name: string,
 	status: boolean,
 ) => {

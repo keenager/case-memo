@@ -54,7 +54,7 @@ function CheckList({ label, name }: (typeof PARTIES)[number]) {
 	const hearingId = useHearing((state) => state.selectedId);
 	const currentData = useHearing(
 		(state) =>
-			state.hearingDataList.find((d) => d.id.toString() === hearingId) ??
+			state.hearingDataList.find((d) => d.id === hearingId) ??
 			initialHearingData,
 	);
 	// sqlite에서는 true, false가 아니라 1, 0으로 저장하므로, !!을 통해 boolean 타입으로 변환
@@ -83,9 +83,7 @@ function CheckList({ label, name }: (typeof PARTIES)[number]) {
 								[`${name}NotAttended`]: !checked,
 							};
 							setHearingDataListWithPrev((prev) => {
-								const idx = prev.findIndex(
-									(d) => d.id.toString() === hearingId,
-								);
+								const idx = prev.findIndex((d) => d.id === hearingId);
 								return prev.toSpliced(idx, 1, newData);
 							});
 						}}
@@ -107,9 +105,7 @@ function CheckList({ label, name }: (typeof PARTIES)[number]) {
 									[`${name}NoState`]: checked,
 								};
 								setHearingDataListWithPrev((prev) => {
-									const idx = prev.findIndex(
-										(d) => d.id.toString() === hearingId,
-									);
+									const idx = prev.findIndex((d) => d.id === hearingId);
 									return prev.toSpliced(idx, 1, newData);
 								});
 							}}
@@ -133,9 +129,7 @@ function CheckList({ label, name }: (typeof PARTIES)[number]) {
 							};
 							saveAttendanceStatus(hearingId, `${name}NotAttended`, checked);
 							setHearingDataListWithPrev((prev) => {
-								const idx = prev.findIndex(
-									(d) => d.id.toString() === hearingId,
-								);
+								const idx = prev.findIndex((d) => d.id === hearingId);
 								return prev.toSpliced(idx, 1, newData);
 							});
 						}}
