@@ -12,7 +12,7 @@ export const deleteHearing = async (id: string) => {
 	console.log(result);
 };
 
-export const deleteTodo = async (id: string) => {
+export const deleteTodo = async (id: number) => {
 	const db = await getDB();
 	const result = await db.execute("DELETE FROM todos WHERE id = $1", [id]);
 	console.log(result);

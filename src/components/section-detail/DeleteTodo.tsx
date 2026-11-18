@@ -12,7 +12,7 @@ export default function DeleteTodo({ todo }: { todo: TodoInFront }) {
 	const [open, setOpen] = useState(false);
 	const deleteHandler = async () => {
 		try {
-			await deleteTodo(todo.id.toString());
+			await deleteTodo(todo.id);
 			setTodoList(
 				useTodo.getState().todoList?.filter((t) => t.id !== todo.id) ?? [],
 			);

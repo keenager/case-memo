@@ -12,6 +12,8 @@ import BubbleMenuForTodo from "./bubble-menu/BubbleMenuForTodo";
 import { MenuBar } from "./menu-bar/MenuBar";
 import "./styles.css";
 import "./editor.css";
+import { TaskItem, TaskList } from "@tiptap/extension-list";
+import { syncDBandListWithDoc } from "@/lib/todo/syncDB";
 import { TodoHighlight } from "./custom-extensions/TodoHighlight";
 
 export default function MemoEditor(props: ArgsForEditor) {
@@ -21,6 +23,8 @@ export default function MemoEditor(props: ArgsForEditor) {
 		extensions: [
 			StarterKit,
 			Highlight.configure({ multicolor: true }),
+			TaskList,
+			TaskItem.configure({ nested: true }),
 			TodoHighlight,
 			UniqueID.configure({ types: ["heading", "paragraph"] }),
 		],
@@ -32,6 +36,9 @@ export default function MemoEditor(props: ArgsForEditor) {
 			const currentContents = editor.getJSON();
 			if (isEmpty(currentContents)) return;
 			debouncedSave();
+		},
+		onTransaction({ editor, transaction }) {
+			syncDBandListWithDoc(editor, transaction);
 		},
 	});
 

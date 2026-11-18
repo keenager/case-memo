@@ -70,7 +70,7 @@ export default function BubbleMenuForDiagram({ editor }: { editor: Editor }) {
 	return (
 		<BubbleMenu
 			editor={editor}
-			className="border rounded-md bg-white"
+			className="z-50 max-h-(--available-height) w-(--anchor-width) min-w-32 origin-(--transform-origin) overflow-x-hidden overflow-y-auto rounded-lg bg-popover p-1 text-popover-foreground shadow-md ring-1 ring-foreground/10 duration-100 outline-none data-[side=bottom]:slide-in-from-top-2 data-[side=inline-end]:slide-in-from-left-2 data-[side=inline-start]:slide-in-from-right-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:overflow-hidden data-closed:fade-out-0 data-closed:zoom-out-95"
 			options={{
 				placement: "right",
 				onShow: showHandler,
@@ -80,7 +80,7 @@ export default function BubbleMenuForDiagram({ editor }: { editor: Editor }) {
 			}}
 		>
 			<form className="flex flex-col" onSubmit={submitHandler}>
-				<div className="mt-2 mx-2 flex gap-3">
+				<div className="my-2 mx-2 flex gap-3">
 					<FieldSet>
 						<FieldLegend>당사자</FieldLegend>
 						<Separator />
@@ -146,7 +146,7 @@ export default function BubbleMenuForDiagram({ editor }: { editor: Editor }) {
 						)}
 				</div>
 				<Separator />
-				<div className="flex justify-center">
+				<div className="flex justify-center mt-1">
 					<Button className="my-1" type="submit">
 						{isUpdate ? "수정" : "만들기"}
 					</Button>

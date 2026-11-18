@@ -1,18 +1,16 @@
 import type { Editor } from "@tiptap/core";
-import type { ReactNode } from "react";
 import { DatePickField } from "@/components/dialog/fields/DatePickField";
 import TextField from "@/components/dialog/fields/TextField";
 import MakeDialog from "@/components/dialog/MakeDialog";
 import { useBubbleForTodo } from "../editor/bubble-menu/useBubbleForTodo";
+import { MenuItem } from "../ui/bubble-menu";
 
 export default function TodoDiaglog({
 	editor,
 	existingTodoId,
-	children,
 }: {
 	editor: Editor;
 	existingTodoId: string | undefined;
-	children: ReactNode;
 }) {
 	const { open, setOpen, form, onSubmit } = useBubbleForTodo(
 		editor,
@@ -31,7 +29,12 @@ export default function TodoDiaglog({
 
 	return (
 		<MakeDialog {...props}>
-			{children}
+			<MenuItem
+				text={existingTodoId ? "할 일 수정" : "할 일 추가"}
+				clickHandler={() => {
+					setOpen(true);
+				}}
+			/>
 			<DatePickField
 				fieldInfo={{ name: "dueDate", label: "날짜" }}
 				form={form}

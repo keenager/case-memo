@@ -88,7 +88,8 @@ export const readTodos = async () => {
 	try {
 		const db = await getDB();
 		const result: TodoInDB[] = await db.select("SELECT * FROM todos");
-		return result;
+
+		return result.map((t) => ({ ...t, is_done: Boolean(t.is_done) }));
 	} catch (error) {
 		handleError(error);
 		return [];

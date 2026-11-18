@@ -52,12 +52,14 @@ export const useBubbleForTodo = (
 				.unsetTodoHighlight()
 				.setTextSelection({ from, to })
 				.setTodoHighlight({ todoId })
+				.toggleTaskList()
 				.setTextSelection(editor.state.selection.to)
 				.run();
 			setOpen(false);
 			form.reset();
 		} catch (error) {
 			handleError(error);
+			console.trace(error);
 		}
 	};
 
