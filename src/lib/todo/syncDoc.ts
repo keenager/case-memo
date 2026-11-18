@@ -49,7 +49,7 @@ export default function syncDocWithDB(editor: Editor, todoList: TodoInFront[]) {
 		}
 	});
 
-	console.log("syncTargets: ", syncTargets);
+	// console.log("syncTargets: ", syncTargets);
 
 	let hasChanges = false;
 

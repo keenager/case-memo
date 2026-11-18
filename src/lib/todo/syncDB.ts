@@ -24,7 +24,7 @@ export const syncDBandListWithDoc = (
 			nextNode?.type.name === "taskItem" &&
 			prevNode.attrs.checked !== nextNode.attrs.checked
 		) {
-			console.log("changed!!! changed value: ", nextNode.attrs.checked);
+			// console.log("changed!!! changed value: ", nextNode.attrs.checked);
 			nextNode.descendants((childNode) => {
 				const todoId = getTodoIdFromNode(childNode);
 				if (todoId) {

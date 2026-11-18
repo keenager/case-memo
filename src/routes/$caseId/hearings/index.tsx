@@ -1,25 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import TodoList from "@/components/section-detail/TodoList";
-import { camelizeKeys } from "@/lib/camelize";
 import { formattedDate } from "@/lib/date";
-import { readTodos } from "@/lib/db/read";
 import { getNoShowHearings } from "@/lib/hearing";
 import { useHearing } from "@/store/hearing";
-import { setTodoList, useTodo } from "@/store/todo";
+import { useTodo } from "@/store/todo";
 
 export const Route = createFileRoute("/$caseId/hearings/")({
-	loader: async () => {
-		const loadedTodoList = await readTodos();
-		const polished = loadedTodoList
-			.map((t) => camelizeKeys(t))
-			.map((t) => ({
-				...t,
-				dueDate: new Date(t.dueDate),
-			}))
-			.sort((a, b) => a.dueDate.getTime() - b.dueDate.getTime());
-		setTodoList(polished);
-		return { loadedTodoList: polished };
-	},
 	component: RouteComponent,
 });
 

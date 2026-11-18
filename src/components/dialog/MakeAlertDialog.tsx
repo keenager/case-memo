@@ -1,4 +1,4 @@
-import { type ReactElement, type ReactNode, useState } from "react";
+import type { ReactElement, ReactNode } from "react";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -22,6 +22,7 @@ type Props = {
 		| "ghost"
 		| "destructive";
 	actionLabel: string;
+	actionDisabled?: boolean;
 	clickHandler: () => Promise<void>;
 	open: boolean;
 	setOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -33,6 +34,7 @@ export function MakeAlertDialog({
 	description,
 	actionVariant,
 	actionLabel,
+	actionDisabled,
 	clickHandler,
 	open,
 	setOpen,
@@ -50,7 +52,11 @@ export function MakeAlertDialog({
 				</AlertDialogHeader>
 				<AlertDialogFooter>
 					<AlertDialogCancel variant="outline">취소</AlertDialogCancel>
-					<AlertDialogAction variant={actionVariant} onClick={clickHandler}>
+					<AlertDialogAction
+						variant={actionVariant}
+						onClick={clickHandler}
+						disabled={actionDisabled}
+					>
 						{actionLabel}
 					</AlertDialogAction>
 				</AlertDialogFooter>

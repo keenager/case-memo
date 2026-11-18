@@ -6,7 +6,7 @@ export const deleteCase = async (id: string) => {
 	console.log(result);
 };
 
-export const deleteHearing = async (id: string) => {
+export const deleteHearing = async (id: number) => {
 	const db = await getDB();
 	const result = await db.execute("DELETE FROM hearings WHERE id = $1", [id]);
 	console.log(result);

@@ -2,21 +2,18 @@ import type { Editor } from "@tiptap/core";
 import { DatePickField } from "@/components/dialog/fields/DatePickField";
 import TextField from "@/components/dialog/fields/TextField";
 import MakeDialog from "@/components/dialog/MakeDialog";
-import { useBubbleForTodo } from "../editor/bubble-menu/useBubbleForTodo";
-import { MenuItem } from "../ui/bubble-menu";
+import { useTodoDialog } from "@/lib/todo/useTodoDialog";
+import { MenuItem } from "../../../ui/bubble-menu";
 
-export default function TodoDiaglog({
+export default function TodoWriteDiaglog({
 	editor,
-	existingTodoId,
+	targetTodoId,
 }: {
 	editor: Editor;
-	existingTodoId: string | undefined;
+	targetTodoId: string | undefined;
 }) {
-	const { open, setOpen, form, onSubmit } = useBubbleForTodo(
-		editor,
-		existingTodoId,
-	);
-	const title = existingTodoId ? "할 일 수정" : "할 일 추가";
+	const { open, setOpen, form, onSubmit } = useTodoDialog(editor, targetTodoId);
+	const title = targetTodoId ? "할 일 수정" : "할 일 추가";
 
 	const props = {
 		title,
@@ -30,7 +27,7 @@ export default function TodoDiaglog({
 	return (
 		<MakeDialog {...props}>
 			<MenuItem
-				text={existingTodoId ? "할 일 수정" : "할 일 추가"}
+				text={targetTodoId ? "할 일 수정" : "할 일 추가"}
 				clickHandler={() => {
 					setOpen(true);
 				}}

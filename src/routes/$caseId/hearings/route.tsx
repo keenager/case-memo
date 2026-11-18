@@ -1,14 +1,17 @@
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
+import { useEffect } from "react";
 import z from "zod";
 import DeleteHearingDialog from "@/components/dialog/DeleteHearingDialog";
 import NewHearingDialog from "@/components/dialog/NewHearingDialog";
 import UpdateHearingDialog from "@/components/dialog/UpdateHearingDialog";
 import { Separator } from "@/components/ui/separator";
 import type { CamelCase } from "@/lib/camelize";
+import { camelizeKeys } from "@/lib/camelize";
 import { formattedDate, strToDate } from "@/lib/date";
-import { getHearingData } from "@/lib/db/read";
+import { getHearingData, readTodos } from "@/lib/db/read";
 import type { HearingInDB, HearingInList } from "@/lib/hearing";
 import { setSelectedId, useHearing } from "@/store/hearing";
+import { setTodoList } from "@/store/todo";
 
 const searchParams = z.object({
 	hearingOrder: z.optional(z.int().min(0)),
@@ -25,16 +28,31 @@ export const Route = createFileRoute("/$caseId/hearings")({
 			hearingDate: strToDate(data.hearingDate),
 			hearingTime: data.hearingTime,
 		}));
+		const loadedTodoList = await readTodos();
+		const polished = loadedTodoList
+			.map((t) => camelizeKeys(t))
+			.map((t) => ({
+				...t,
+				dueDate: new Date(t.dueDate),
+			}))
+			.sort((a, b) => a.dueDate.getTime() - b.dueDate.getTime());
 		useHearing.setState({ hearingDataList, hearingList: simpleList });
+
+		return { loadedTodoList: polished };
 	},
 	component: RouteComponent,
 });
 
 function RouteComponent() {
 	const { caseId } = Route.useParams();
+	const { loadedTodoList } = Route.useLoaderData();
 
 	const hearingList = useHearing((state) => state.hearingList);
 	const selectedId = useHearing((state) => state.selectedId);
+
+	useEffect(() => {
+		setTodoList(loadedTodoList);
+	}, [loadedTodoList]);
 
 	return (
 		<div className="flex-1 overflow-y-auto flex">

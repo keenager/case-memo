@@ -19,7 +19,7 @@ export default function DeleteHearingDialog({
 	const [open, setOpen] = useState(false);
 	const navi = useNavigate();
 
-	const deleteHandler = async (hearingId: string) => {
+	const deleteHandler = async (hearingId: number) => {
 		try {
 			await deleteHearing(hearingId);
 			setHearingList(

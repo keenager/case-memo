@@ -9,7 +9,7 @@ import { TodoFormSchema } from "@/lib/todo/types";
 import { useHearing } from "@/store/hearing";
 import { setTodoList, useTodo } from "@/store/todo";
 
-export const useBubbleForTodo = (
+export const useTodoDialog = (
 	editor: Editor,
 	existingTodoId: string | undefined,
 ) => {
